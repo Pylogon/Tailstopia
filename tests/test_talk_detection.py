@@ -43,7 +43,6 @@ class TalkDetectionTests(unittest.TestCase):
         self.assertGreater(after.score,.87)
         self.assertEqual(after.point,(575,293))
         self.assertEqual(self.config["targets"]["talk"]["threshold"],.82)
-        self.assertEqual(self.config["talk"]["point_client"],[515,313])
 
     def test_mask_alone_does_not_fix_measured_font_size_difference(self):
         config = copy.deepcopy(self.config)
@@ -64,7 +63,6 @@ class TalkDetectionTests(unittest.TestCase):
         self.assertGreater(after.score,.99)
         self.assertEqual(after.point,(562,297))
         self.assertEqual(self.config["targets"]["talk"]["threshold"],.82)
-        self.assertEqual(self.config["talk"]["point_client"],[515,313])
 
     def test_original_reference_views_still_pass(self):
         for filename in ("red panda1.png","red panda2.png"):
@@ -75,7 +73,7 @@ class TalkDetectionTests(unittest.TestCase):
 
     def test_other_reference_scenes_do_not_match_talk(self):
         for path in (ROOT/"resource").glob("*.png"):
-            if path.name.startswith("red panda"):
+            if path.name.startswith("red panda") or path.name == "new redpanda.png":
                 continue
             with self.subTest(image=path.name),Image.open(path) as image:
                 origin = (0,0) if image.size == (1280,600) else (43,95)
@@ -130,6 +128,46 @@ class TalkDetectionTests(unittest.TestCase):
     def test_second_live_background_uses_existing_fallback_without_extra_retry(self):
         self.run_live_fallback(SECOND_FIXTURE,[562,297])
 
+    def test_new_start_reference_matches_at_updated_fixed_talk_position(self):
+        point = self.config["talk"]["point_client"]
+        self.assertEqual(point,[544,289])
+        self.assertEqual(self.config["targets"]["talk"]["search_roi_client"],[432,250,597,355])
+        self.assertEqual(self.config["targets"]["talk"]["threshold"],.82)
+        self.assertEqual(self.config["talk"]["first_wait"],5.5)
+        with Image.open(ROOT/"resource/new redpanda.png") as image:
+            match = self.vision.match("talk",lambda box:self.vision.crop_reference(image,box,[43,95]))
+        self.assertTrue(match.found)
+        self.assertGreater(match.score,.99)
+        self.assertEqual(match.point,tuple(point))
+
+    def test_new_start_recording_then_fixed_talk_click_keeps_existing_flow(self):
+        from tailstopia_macro_replay import recording
+        actions,duration = recording(self.base/self.config["start_recording"])
+        class NewStart(FixtureSession):
+            def enter(session,state,loop):
+                super().enter(state,loop)
+                if state == "OPEN_MISSION":
+                    session.frame = "new redpanda.png"
+        self.config["max_loops"] = 1
+        with tempfile.TemporaryDirectory() as directory:
+            session = NewStart(self.config,directory,ROOT/"resource")
+            with session.log,contextlib.redirect_stdout(io.StringIO()):
+                result = MissionFlow(self.config,self.base,session,self.vision).run("OPEN_MISSION")
+            rows = [json.loads(line) for line in (Path(directory)/"execution.jsonl").read_text().splitlines()]
+            if session.last_image is not None:
+                session.last_image.close()
+        self.assertEqual(result.status,"SUCCESS")
+        clicks = [row for row in rows if row["kind"] == "click" and row["label"] == "talk"]
+        self.assertEqual(len(clicks),1)
+        self.assertEqual(clicks[0]["client_point"],[544,289])
+        self.assertEqual(clicks[0]["desktop_point"],[587,384])
+        play = next(row for row in rows if row["kind"] == "state_result" and row["state"] == "PLAY_START")
+        self.assertAlmostEqual(play["elapsed"],duration)
+        opening = next(row for row in rows if row["kind"] == "state_result" and row["state"] == "OPEN_MISSION")
+        self.assertAlmostEqual(opening["elapsed"],5.5+self.config["ui"]["click_hold"])
+        self.assertEqual(sum(row["kind"] == "macro_action" for row in rows),len(actions))
+        self.assertFalse(any(row["kind"] == "recognition" and row["target"] == "talk" for row in rows))
+
     def run_live_fallback(self,fixture,expected_point):
         class LiveBackground(FixtureSession):
             def click_effect(session,label):
@@ -152,7 +190,7 @@ class TalkDetectionTests(unittest.TestCase):
             events = [json.loads(row) for row in (Path(directory)/"execution.jsonl").read_text().splitlines()]
         self.assertEqual(result.status,"SUCCESS")
         clicks = [e for e in events if e["kind"] == "click" and e["label"] == "talk"]
-        self.assertEqual([e["client_point"] for e in clicks[:2]],[[515,313],[515,313]])
+        self.assertEqual([e["client_point"] for e in clicks[:2]],[self.config["talk"]["point_client"]]*2)
         self.assertEqual(len(clicks),3)
         self.assertEqual(clicks[2]["client_point"],expected_point)  # Existing template fallback.
         state = next(e for e in events if e["kind"] == "state_result" and e["state"] == "OPEN_MISSION")

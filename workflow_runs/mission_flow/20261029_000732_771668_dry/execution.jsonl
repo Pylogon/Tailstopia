@@ -1,6 +1,0 @@
-{"time": "2026-10-28T17:07:32.785607+00:00", "kind": "state_entry", "state": "VERIFY_START", "loop": 1, "active_at": 0.0, "timeout": 120}
-{"time": "2026-10-28T17:07:32.890225+00:00", "kind": "hud", "state": "VERIFY_START", "loop": 1, "active_at": 0.0, "status": "READY", "score": 1.0}
-{"time": "2026-10-28T17:07:32.892520+00:00", "kind": "retry", "state": "VERIFY_START", "loop": 1, "active_at": 0.0, "status": "RETRY", "reason": "HUD=READY; confirmations=1/2"}
-{"time": "2026-10-28T17:07:32.955577+00:00", "kind": "hud", "state": "VERIFY_START", "loop": 1, "active_at": 3.0, "status": "READY", "score": 1.0}
-{"time": "2026-10-28T17:07:32.956445+00:00", "kind": "state_result", "state": "VERIFY_START", "loop": 1, "active_at": 3.0, "status": "SUCCESS", "reason": "Expected state result satisfied", "elapsed": 3.0, "wall_elapsed": 0.17149820000031468}
-{"time": "2026-10-28T17:07:32.957787+00:00", "kind": "run_result", "state": "VERIFY_START", "loop": 1, "active_at": 3.0, "status": "SUCCESS", "reason": "Stopped after requested step: VERIFY_START", "loops_completed": 0}

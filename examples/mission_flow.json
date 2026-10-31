@@ -39,6 +39,9 @@
           ]
         },
         {
+          "template_image": "../resource/templates/talk_new_start.png"
+        },
+        {
           "template_image": "../resource/templates/talk_live_small.png"
         }
       ]
@@ -131,10 +134,10 @@
   },
   "talk": {
     "point_client": [
-      515,
-      313
+      544,
+      289
     ],
-    "first_wait": 5.5,
+    "first_wait": 5,
     "retry_delay": 1,
     "retry_wait": 5.5,
     "fallback_wait": 5.5
@@ -165,12 +168,12 @@
     "confirmations": 2
   },
   "result": {
-    "after_mission_start": 80,
+    "after_mission_start": 75,
     "poll": 1,
     "confirmations": 2
   },
   "reward": {
-    "settle": 6,
+    "settle": 4.5,
     "slots_client": [
       [
         416,

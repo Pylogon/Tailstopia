@@ -1,0 +1,50 @@
+# Python bytecode and local environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+ENV/
+
+# Test, analysis and build artifacts
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+build/
+dist/
+*.egg-info/
+
+# Local workflow logs, failure screenshots and rollback backups
+/workflow_runs/
+/rollback/
+*.log
+
+# Generated reroll diagnostics; this panel is also a recorded-smoke fixture
+/tailstopia_debug/*
+!/tailstopia_debug/last_panel.png
+
+# Raw recorder sessions stay local; keep the recording used by macro_craft.py
+/recordings/input_*.json
+/recordings/input_*.csv
+!/recordings/input_20261030_195738.json
+!/recordings/input_20261030_195738.csv
+
+# Local secrets and editor/OS files
+.env
+.env.*
+!.env.example
+!.env.template
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*~

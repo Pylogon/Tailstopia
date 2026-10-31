@@ -1,2 +1,0 @@
-{"time": "2026-10-29T13:05:25.004127+00:00", "kind": "run_start", "state": "PREFLIGHT", "loop": 0, "active_at": 77061.4688405, "log_path": "C:\\New folder\\workflow_runs\\mission_flow\\20261029_200525_000982_live\\execution.jsonl"}
-{"time": "2026-10-29T13:05:25.013355+00:00", "kind": "run_result", "state": "PREFLIGHT", "loop": 0, "active_at": 77061.4778046, "status": "FAIL", "reason": "ValueError: Unsupported/reserved key: \u0e01"}

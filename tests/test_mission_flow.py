@@ -70,8 +70,9 @@ class MissionFlowTests(unittest.TestCase):
         self.assertEqual(result.status,"SUCCESS")
         clicks = [e for e in events if e["kind"] == "click" and e["label"] == "talk"]
         self.assertEqual(len(clicks),3)
-        self.assertEqual(clicks[0]["desktop_point"],[558,408])
-        self.assertNotEqual(clicks[2]["desktop_point"],[558,408])
+        point = [a+b for a,b in zip(self.config["reference_client_origin"],self.config["talk"]["point_client"])]
+        self.assertEqual(clicks[0]["desktop_point"],point)
+        self.assertNotEqual(clicks[2]["desktop_point"],point)
         self.assertEqual(sum(e["kind"] == "recording_start" for e in events),1)
 
     def test_talk_absent_fails_without_random_fallback_click(self):

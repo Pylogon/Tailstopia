@@ -1,65 +1,65 @@
 {
-  "created_at": "2026-10-28T21:02:10",
-  "active_duration_seconds": 7.6563,
+  "created_at": "2026-10-31T08:55:37",
+  "active_duration_seconds": 4.7402,
   "event_count": 9,
   "events": [
     {
-      "t": 1.7763,
+      "t": 1.2097,
       "type": "mouse_down",
       "button": "right",
-      "x": 765,
-      "y": 224
+      "x": 686,
+      "y": 419
     },
     {
-      "t": 2.4969,
+      "t": 1.3576,
       "type": "key_down",
       "key": "s"
     },
     {
-      "t": 2.5228,
+      "t": 1.6302,
       "type": "key_down",
       "key": "a"
     },
     {
-      "t": 4.4901,
+      "t": 3.2588,
+      "type": "key_up",
+      "key": "a"
+    },
+    {
+      "t": 3.2588,
+      "type": "key_hold",
+      "key": "a",
+      "duration": 1.6286,
+      "ended_by": "release"
+    },
+    {
+      "t": 3.2669,
       "type": "key_up",
       "key": "s"
     },
     {
-      "t": 4.4901,
+      "t": 3.2669,
       "type": "key_hold",
       "key": "s",
-      "duration": 1.9932,
+      "duration": 1.9093,
       "ended_by": "release"
     },
     {
-      "t": 4.5376,
+      "t": 3.2848,
       "type": "mouse_up",
       "button": "right",
       "x": 682,
       "y": 394
     },
     {
-      "t": 4.5376,
+      "t": 3.2848,
       "type": "mouse_hold",
       "button": "right",
-      "x": 765,
-      "y": 224,
+      "x": 686,
+      "y": 419,
       "end_x": 682,
       "end_y": 394,
-      "duration": 2.7613,
-      "ended_by": "release"
-    },
-    {
-      "t": 4.5464,
-      "type": "key_up",
-      "key": "a"
-    },
-    {
-      "t": 4.5464,
-      "type": "key_hold",
-      "key": "a",
-      "duration": 2.0235,
+      "duration": 2.0751,
       "ended_by": "release"
     }
   ]

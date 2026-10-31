@@ -17,6 +17,7 @@ def main():
     parser.add_argument("--loops",type=int,help="Number of full loops, default from config")
     parser.add_argument("--dry-run",action="store_true",help="Fast simulated input/time; real reference-image recognition")
     parser.add_argument("--through",choices=STATES,help="Run initial steps through this state, then stop")
+    parser.add_argument("--verbose-actions",action="store_true",help="Also print every macro action; JSONL always keeps all actions")
     args = parser.parse_args()
     config,base = load_mission_config(args.config)
     if args.loops is not None:
@@ -44,7 +45,8 @@ def main():
     if args.dry_run:
         session = FixtureSession(config,directory("dry"),ROOT/"resource")
         print("DRY RUN: no OS input; virtual waits. Reward pickup is a synthetic image change.",flush=True)
-        result = MissionFlow(config,base,session,vision).run(args.through)
+        with session.log:
+            result = MissionFlow(config,base,session,vision,verbose_actions=args.verbose_actions).run(args.through)
         print(result)
         print("Log:",session.log.directory)
         return 0 if result.status == "SUCCESS" else 1
@@ -64,8 +66,9 @@ def main():
                     session = LiveSession(config,directory("live"),window)
                     log_path = (session.log.directory/"execution.jsonl").resolve()
                     print("Log:",log_path,flush=True)
-                    session.event("run_start",log_path=str(log_path))
-                    result = MissionFlow(config,base,session,vision).run(args.through)
+                    with session.log:
+                        session.event("run_start",log_path=str(log_path))
+                        result = MissionFlow(config,base,session,vision,verbose_actions=args.verbose_actions).run(args.through)
                     print(result)
                     print("Log:",session.log.directory)
                     if result.stopped:

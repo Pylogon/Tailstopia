@@ -16,12 +16,13 @@ class FlowResult:
 
 
 class MissionFlow:
-    def __init__(self,config,base,session,vision):
+    def __init__(self,config,base,session,vision,verbose_actions=False):
         self.config = validate_mission_config(config)
         self.session,self.vision = session,vision
         self.state,self.completed,self.deadline = "PREFLIGHT",0,None
         self.mission_started,self.stage_clicked = None,None
         self.timings = {}
+        self.verbose_actions = verbose_actions
         # Both recordings and all keys are validated before dispatching input.
         self.macros = {}
         for name,key in (("start","start_recording"),("mission","mission_recording")):
@@ -29,6 +30,7 @@ class MissionFlow:
             self.macros[name] = (validate_inputs(actions,session.api),duration)
 
     def measure(self,category,operation,*args,**kwargs):
+        capture_before = self.timings.get("vision_capture",{}).get("seconds",0.0)
         started = time.perf_counter()
         try:
             return operation(*args,**kwargs)
@@ -36,11 +38,23 @@ class MissionFlow:
             # Aggregate only; no timing log, capture, or recognition per wait poll.
             stats = self.timings.setdefault(category,{"calls":0,"seconds":0.0})
             stats["calls"] += 1
-            stats["seconds"] += time.perf_counter()-started
+            elapsed = time.perf_counter()-started
+            stats["seconds"] += elapsed
+            if category == "vision":
+                captured = self.timings.get("vision_capture",{}).get("seconds",0.0)-capture_before
+                processing = self.timings.setdefault("vision_processing",{"calls":0,"seconds":0.0})
+                processing["calls"] += 1
+                processing["seconds"] += max(0.0,elapsed-captured)
 
     def timing_summary(self):
-        return {name:{"calls":value["calls"],"seconds":round(value["seconds"],6)}
-                for name,value in self.timings.items()}
+        summary = {name:{"calls":value["calls"],"seconds":round(value["seconds"],6)}
+                   for name,value in self.timings.items()}
+        summary["logging"] = self.session.log.timing_summary()
+        return summary
+
+    def capture(self,box):
+        # These are the existing vision captures, timed without extra frames.
+        return self.measure("vision_capture",self.session.capture,box)
 
     def check(self):
         self.session.check()
@@ -61,7 +75,7 @@ class MissionFlow:
 
     def match(self,name):
         self.check()
-        match = self.measure("vision",self.vision.match,name,self.session.capture)
+        match = self.measure("vision",self.vision.match,name,self.capture)
         self.check()
         self.session.event("recognition",target=name,found=match.found,score=match.score,point=match.point,
                            threshold=self.config["targets"][name]["threshold"])
@@ -69,7 +83,7 @@ class MissionFlow:
 
     def hud(self):
         self.check()
-        observation = self.measure("vision",self.vision.hud,self.session.capture)
+        observation = self.measure("vision",self.vision.hud,self.capture)
         self.check()
         self.session.event("hud",status=observation.status,score=observation.score,
                            white_fraction=observation.white_fraction)
@@ -132,7 +146,7 @@ class MissionFlow:
             self.session.event("macro_action",recording=name,action=action,dispatched_seconds=dispatched,
                                lateness_ms=(dispatched-action["t"])*1000)
         self.measure("macro",replay,actions,duration,self.session.api,self.check,clock=self.session.now,sleep=self.session.sleep,
-               on_action=action_report)
+               on_action=action_report,verbose=self.verbose_actions)
         self.check()
         self.session.event("recording_complete",recording=name)
 
@@ -160,7 +174,7 @@ class MissionFlow:
             raise RuntimeError("Camera calibration requires all previous inputs released")
         while True:
             self.check()
-            observation = self.measure("vision",self.vision.camera.observe,self.session.capture,scan_sides=(count == 0))
+            observation = self.measure("vision",self.vision.camera.observe,self.capture,scan_sides=(count == 0))
             self.check()
             count = count+1 if observation.aligned else 0
             if observation.side == "left":
@@ -353,6 +367,7 @@ class MissionFlow:
                 for self.state in STATES:
                     self.session.enter(self.state,loop)
                     self.timings = {}
+                    self.session.log.reset_timing()
                     started,wall = self.session.now(),time.perf_counter()
                     self.deadline = started+self.config["timeouts"][self.state]
                     self.session.event("state_entry",timeout=self.config["timeouts"][self.state])

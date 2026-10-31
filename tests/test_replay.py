@@ -1,6 +1,10 @@
 from pathlib import Path
 import unittest
-from tailstopia_macro_replay import recording, replay, validate_inputs, DEFAULT_RECORDING, StopRequested
+from tailstopia_macro_replay import recording, replay, validate_inputs, StopRequested
+
+
+# Keep hold/timestamp regressions independent of user-editable live recordings.
+FIXTURE_RECORDING = Path(__file__).parent / "fixtures/replay_overlapping.json"
 
 
 class FakeAPI:
@@ -34,7 +38,7 @@ class FakeAPI:
 class ReplayTests(unittest.TestCase):
     def test_actual_recording_preserves_overlapping_holds(self):
         api = FakeAPI()
-        actions, duration = recording(DEFAULT_RECORDING)
+        actions, duration = recording(FIXTURE_RECORDING)
         self.assertEqual(len(actions), 6)
         seen_overlap = []
         def check():
@@ -54,7 +58,7 @@ class ReplayTests(unittest.TestCase):
 
     def test_stop_releases_overlapping_inputs(self):
         api = FakeAPI()
-        actions, duration = recording(DEFAULT_RECORDING)
+        actions, duration = recording(FIXTURE_RECORDING)
         def check():
             if api.now >= 3:
                 raise StopRequested("F9 pressed")
@@ -66,7 +70,7 @@ class ReplayTests(unittest.TestCase):
 
     def test_focus_loss_releases_inputs(self):
         api = FakeAPI()
-        actions, duration = recording(DEFAULT_RECORDING)
+        actions, duration = recording(FIXTURE_RECORDING)
         def check():
             if api.buttons:
                 raise RuntimeError("Game lost focus")
