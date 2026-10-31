@@ -1,0 +1,21 @@
+{
+  "events": [
+    {
+      "t": 0,
+      "type": "key_down",
+      "key": "w"
+    },
+    {
+      "t": 0.02,
+      "type": "key_up",
+      "key": "w"
+    },
+    {
+      "t": 0.02,
+      "type": "key_hold",
+      "key": "w",
+      "duration": 0.02,
+      "ended_by": "release"
+    }
+  ]
+}

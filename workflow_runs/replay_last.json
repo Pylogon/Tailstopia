@@ -1,0 +1,70 @@
+{
+  "status": "COMPLETE",
+  "actions": [
+    {
+      "action": {
+        "t": 1.7763,
+        "type": "mouse_down",
+        "button": "right",
+        "x": 765,
+        "y": 224
+      },
+      "dispatched_seconds": 1.783287799989921,
+      "lateness_ms": 6.987799989921051,
+      "call_ms": 0.4791000101249665
+    },
+    {
+      "action": {
+        "t": 2.4969,
+        "type": "key_down",
+        "key": "s"
+      },
+      "dispatched_seconds": 2.4979825999907916,
+      "lateness_ms": 1.0825999907915218,
+      "call_ms": 0.7834999996703118
+    },
+    {
+      "action": {
+        "t": 2.5228,
+        "type": "key_down",
+        "key": "a"
+      },
+      "dispatched_seconds": 2.529511000000639,
+      "lateness_ms": 6.711000000638734,
+      "call_ms": 1.670199999352917
+    },
+    {
+      "action": {
+        "t": 4.4901,
+        "type": "key_up",
+        "key": "s"
+      },
+      "dispatched_seconds": 4.505149699994945,
+      "lateness_ms": 15.049699994944987,
+      "call_ms": 0.5296000017551705
+    },
+    {
+      "action": {
+        "t": 4.5376,
+        "type": "mouse_up",
+        "button": "right",
+        "x": 682,
+        "y": 394
+      },
+      "dispatched_seconds": 4.553510099998675,
+      "lateness_ms": 15.910099998674987,
+      "call_ms": 0.705400001606904
+    },
+    {
+      "action": {
+        "t": 4.5464,
+        "type": "key_up",
+        "key": "a"
+      },
+      "dispatched_seconds": 4.556010999993305,
+      "lateness_ms": 9.610999993304503,
+      "call_ms": 1.208700006827712
+    }
+  ],
+  "elapsed_seconds": 7.6646400000026915
+}

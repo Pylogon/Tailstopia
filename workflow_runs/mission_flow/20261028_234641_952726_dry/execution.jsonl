@@ -1,0 +1,150 @@
+{"time": "2026-10-28T16:46:41.957220+00:00", "kind": "state_entry", "state": "VERIFY_START", "loop": 1, "active_at": 0.0, "timeout": 120}
+{"time": "2026-10-28T16:46:41.991617+00:00", "kind": "hud", "state": "VERIFY_START", "loop": 1, "active_at": 0.0, "status": "READY", "score": 1.0}
+{"time": "2026-10-28T16:46:41.993135+00:00", "kind": "retry", "state": "VERIFY_START", "loop": 1, "active_at": 0.0, "status": "RETRY", "reason": "HUD=READY; confirmations=1/2"}
+{"time": "2026-10-28T16:46:42.027049+00:00", "kind": "hud", "state": "VERIFY_START", "loop": 1, "active_at": 3.0, "status": "READY", "score": 1.0}
+{"time": "2026-10-28T16:46:42.028082+00:00", "kind": "state_result", "state": "VERIFY_START", "loop": 1, "active_at": 3.0, "status": "SUCCESS", "reason": "Expected state result satisfied", "elapsed": 3.0, "wall_elapsed": 0.07096980000005715}
+{"time": "2026-10-28T16:46:42.028816+00:00", "kind": "state_entry", "state": "PLAY_START", "loop": 1, "active_at": 3.0, "timeout": 30}
+{"time": "2026-10-28T16:46:42.029675+00:00", "kind": "recording_start", "state": "PLAY_START", "loop": 1, "active_at": 3.0, "recording": "start", "actions": 6, "duration": 7.6563}
+{"time": "2026-10-28T16:46:42.032628+00:00", "kind": "action", "state": "PLAY_START", "loop": 1, "active_at": 4.7763, "method": "mouseDown", "params": {"x": 765, "y": 224, "button": "right", "_pause": false}}
+{"time": "2026-10-28T16:46:42.034038+00:00", "kind": "action", "state": "PLAY_START", "loop": 1, "active_at": 5.4969, "method": "keyDown", "key": "s"}
+{"time": "2026-10-28T16:46:42.035438+00:00", "kind": "action", "state": "PLAY_START", "loop": 1, "active_at": 5.5228, "method": "keyDown", "key": "a"}
+{"time": "2026-10-28T16:46:42.037454+00:00", "kind": "action", "state": "PLAY_START", "loop": 1, "active_at": 7.4901, "method": "keyUp", "key": "s"}
+{"time": "2026-10-28T16:46:42.038455+00:00", "kind": "action", "state": "PLAY_START", "loop": 1, "active_at": 7.5376, "method": "mouseUp", "params": {"x": 682, "y": 394, "button": "right", "_pause": false}}
+{"time": "2026-10-28T16:46:42.039623+00:00", "kind": "action", "state": "PLAY_START", "loop": 1, "active_at": 7.5464, "method": "keyUp", "key": "a"}
+{"time": "2026-10-28T16:46:42.042697+00:00", "kind": "recording_complete", "state": "PLAY_START", "loop": 1, "active_at": 10.6563, "recording": "start"}
+{"time": "2026-10-28T16:46:42.043679+00:00", "kind": "state_result", "state": "PLAY_START", "loop": 1, "active_at": 10.6563, "status": "SUCCESS", "reason": "Expected state result satisfied", "elapsed": 7.6563, "wall_elapsed": 0.014727199999924778}
+{"time": "2026-10-28T16:46:42.045144+00:00", "kind": "state_entry", "state": "OPEN_MISSION", "loop": 1, "active_at": 10.6563, "timeout": 35}
+{"time": "2026-10-28T16:46:42.079147+00:00", "kind": "recognition", "state": "OPEN_MISSION", "loop": 1, "active_at": 10.6563, "target": "room_list", "found": false, "score": 0.1664653867483139, "point": null}
+{"time": "2026-10-28T16:46:42.079786+00:00", "kind": "click", "state": "OPEN_MISSION", "loop": 1, "active_at": 10.6563, "label": "talk", "client_point": [515, 313], "desktop_point": [558, 408]}
+{"time": "2026-10-28T16:46:42.080413+00:00", "kind": "action", "state": "OPEN_MISSION", "loop": 1, "active_at": 10.6563, "method": "mouseDown", "params": {"x": 558, "y": 408, "button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:42.081035+00:00", "kind": "action", "state": "OPEN_MISSION", "loop": 1, "active_at": 10.7063, "method": "mouseUp", "params": {"button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:42.113505+00:00", "kind": "recognition", "state": "OPEN_MISSION", "loop": 1, "active_at": 16.2063, "target": "room_list", "found": true, "score": 1.0, "point": [1120, 386]}
+{"time": "2026-10-28T16:46:42.114134+00:00", "kind": "state_result", "state": "OPEN_MISSION", "loop": 1, "active_at": 16.2063, "status": "SUCCESS", "reason": "Expected state result satisfied", "elapsed": 5.549999999999999, "wall_elapsed": 0.0692761000000246}
+{"time": "2026-10-28T16:46:42.115020+00:00", "kind": "state_entry", "state": "OPEN_ROOM_LIST", "loop": 1, "active_at": 16.2063, "timeout": 20}
+{"time": "2026-10-28T16:46:42.152221+00:00", "kind": "recognition", "state": "OPEN_ROOM_LIST", "loop": 1, "active_at": 16.2063, "target": "create", "found": false, "score": 0.397001713514328, "point": null}
+{"time": "2026-10-28T16:46:42.188505+00:00", "kind": "recognition", "state": "OPEN_ROOM_LIST", "loop": 1, "active_at": 16.2063, "target": "room_list", "found": true, "score": 1.0, "point": [1120, 386]}
+{"time": "2026-10-28T16:46:42.189159+00:00", "kind": "click", "state": "OPEN_ROOM_LIST", "loop": 1, "active_at": 16.2063, "label": "room_list", "client_point": [1120, 386], "desktop_point": [1163, 481]}
+{"time": "2026-10-28T16:46:42.189784+00:00", "kind": "action", "state": "OPEN_ROOM_LIST", "loop": 1, "active_at": 16.2063, "method": "mouseDown", "params": {"x": 1163, "y": 481, "button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:42.190393+00:00", "kind": "action", "state": "OPEN_ROOM_LIST", "loop": 1, "active_at": 16.2563, "method": "mouseUp", "params": {"button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:42.220422+00:00", "kind": "recognition", "state": "OPEN_ROOM_LIST", "loop": 1, "active_at": 17.2563, "target": "create", "found": true, "score": 1.0, "point": [1120, 386]}
+{"time": "2026-10-28T16:46:42.221077+00:00", "kind": "state_result", "state": "OPEN_ROOM_LIST", "loop": 1, "active_at": 17.2563, "status": "SUCCESS", "reason": "Expected state result satisfied", "elapsed": 1.0500000000000007, "wall_elapsed": 0.10622809999995297}
+{"time": "2026-10-28T16:46:42.222257+00:00", "kind": "state_entry", "state": "CREATE_ROOM", "loop": 1, "active_at": 17.2563, "timeout": 20}
+{"time": "2026-10-28T16:46:42.255653+00:00", "kind": "recognition", "state": "CREATE_ROOM", "loop": 1, "active_at": 17.2563, "target": "start", "found": false, "score": 0.3396216928958893, "point": null}
+{"time": "2026-10-28T16:46:42.287439+00:00", "kind": "recognition", "state": "CREATE_ROOM", "loop": 1, "active_at": 17.2563, "target": "create", "found": true, "score": 1.0, "point": [1120, 386]}
+{"time": "2026-10-28T16:46:42.288065+00:00", "kind": "click", "state": "CREATE_ROOM", "loop": 1, "active_at": 17.2563, "label": "create", "client_point": [1120, 386], "desktop_point": [1163, 481]}
+{"time": "2026-10-28T16:46:42.288691+00:00", "kind": "action", "state": "CREATE_ROOM", "loop": 1, "active_at": 17.2563, "method": "mouseDown", "params": {"x": 1163, "y": 481, "button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:42.289248+00:00", "kind": "action", "state": "CREATE_ROOM", "loop": 1, "active_at": 17.3063, "method": "mouseUp", "params": {"button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:42.397780+00:00", "kind": "recognition", "state": "CREATE_ROOM", "loop": 1, "active_at": 18.3063, "target": "start", "found": true, "score": 1.0, "point": [1134, 385]}
+{"time": "2026-10-28T16:46:42.398529+00:00", "kind": "state_result", "state": "CREATE_ROOM", "loop": 1, "active_at": 18.3063, "status": "SUCCESS", "reason": "Expected state result satisfied", "elapsed": 1.0500000000000007, "wall_elapsed": 0.17642939999996088}
+{"time": "2026-10-28T16:46:42.399607+00:00", "kind": "state_entry", "state": "START_STAGE", "loop": 1, "active_at": 18.3063, "timeout": 10}
+{"time": "2026-10-28T16:46:42.453763+00:00", "kind": "recognition", "state": "START_STAGE", "loop": 1, "active_at": 18.3063, "target": "start", "found": true, "score": 1.0, "point": [1134, 385]}
+{"time": "2026-10-28T16:46:42.454543+00:00", "kind": "click", "state": "START_STAGE", "loop": 1, "active_at": 18.3063, "label": "start", "client_point": [1134, 385], "desktop_point": [1177, 480]}
+{"time": "2026-10-28T16:46:42.455375+00:00", "kind": "action", "state": "START_STAGE", "loop": 1, "active_at": 18.3063, "method": "mouseDown", "params": {"x": 1177, "y": 480, "button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:42.456050+00:00", "kind": "action", "state": "START_STAGE", "loop": 1, "active_at": 18.3563, "method": "mouseUp", "params": {"button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:42.456977+00:00", "kind": "state_result", "state": "START_STAGE", "loop": 1, "active_at": 18.3563, "status": "SUCCESS", "reason": "Expected state result satisfied", "elapsed": 0.05000000000000071, "wall_elapsed": 0.0573896999999306}
+{"time": "2026-10-28T16:46:42.467058+00:00", "kind": "state_entry", "state": "WAIT_STAGE_LOADING", "loop": 1, "active_at": 18.3563, "timeout": 60}
+{"time": "2026-10-28T16:46:42.494642+00:00", "kind": "hud", "state": "WAIT_STAGE_LOADING", "loop": 1, "active_at": 18.3563, "status": "LOADING", "score": 0.0}
+{"time": "2026-10-28T16:46:42.495271+00:00", "kind": "state_result", "state": "WAIT_STAGE_LOADING", "loop": 1, "active_at": 18.3563, "status": "SUCCESS", "reason": "Expected state result satisfied", "elapsed": 0.0, "wall_elapsed": 0.03610630000002857}
+{"time": "2026-10-28T16:46:42.496142+00:00", "kind": "state_entry", "state": "VERIFY_STAGE", "loop": 1, "active_at": 18.3563, "timeout": 120}
+{"time": "2026-10-28T16:46:42.531325+00:00", "kind": "hud", "state": "VERIFY_STAGE", "loop": 1, "active_at": 28.3563, "status": "READY", "score": 0.9350337386131287}
+{"time": "2026-10-28T16:46:42.532357+00:00", "kind": "retry", "state": "VERIFY_STAGE", "loop": 1, "active_at": 28.3563, "status": "RETRY", "reason": "HUD=READY; confirmations=1/2"}
+{"time": "2026-10-28T16:46:42.565684+00:00", "kind": "hud", "state": "VERIFY_STAGE", "loop": 1, "active_at": 29.8563, "status": "READY", "score": 0.9350337386131287}
+{"time": "2026-10-28T16:46:42.566330+00:00", "kind": "state_result", "state": "VERIFY_STAGE", "loop": 1, "active_at": 29.8563, "status": "SUCCESS", "reason": "Expected state result satisfied", "elapsed": 11.5, "wall_elapsed": 0.07042920000003505}
+{"time": "2026-10-28T16:46:42.567204+00:00", "kind": "state_entry", "state": "PLAY_MISSION", "loop": 1, "active_at": 29.8563, "timeout": 90}
+{"time": "2026-10-28T16:46:42.568749+00:00", "kind": "recording_start", "state": "PLAY_MISSION", "loop": 1, "active_at": 29.8563, "recording": "mission", "actions": 36, "duration": 31.4192}
+{"time": "2026-10-28T16:46:42.570480+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 30.6916, "method": "keyDown", "key": "d"}
+{"time": "2026-10-28T16:46:42.572128+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 31.3657, "method": "keyDown", "key": "w"}
+{"time": "2026-10-28T16:46:42.574455+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 32.1635, "method": "keyUp", "key": "d"}
+{"time": "2026-10-28T16:46:42.576934+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 32.698100000000004, "method": "keyUp", "key": "w"}
+{"time": "2026-10-28T16:46:42.578836+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 32.8123, "method": "keyDown", "key": "2"}
+{"time": "2026-10-28T16:46:42.580922+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 33.0012, "method": "keyUp", "key": "2"}
+{"time": "2026-10-28T16:46:42.583689+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 35.7311, "method": "keyDown", "key": "0"}
+{"time": "2026-10-28T16:46:42.585331+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 35.825900000000004, "method": "keyUp", "key": "0"}
+{"time": "2026-10-28T16:46:42.587130+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 35.9558, "method": "keyDown", "key": "d"}
+{"time": "2026-10-28T16:46:42.589011+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 36.8814, "method": "keyUp", "key": "d"}
+{"time": "2026-10-28T16:46:42.591926+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 37.2452, "method": "keyDown", "key": "a"}
+{"time": "2026-10-28T16:46:42.593847+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 37.467, "method": "keyUp", "key": "a"}
+{"time": "2026-10-28T16:46:42.595851+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 40.1158, "method": "keyDown", "key": "w"}
+{"time": "2026-10-28T16:46:42.598031+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 44.1331, "method": "keyUp", "key": "w"}
+{"time": "2026-10-28T16:46:42.599650+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 44.4744, "method": "keyDown", "key": "w"}
+{"time": "2026-10-28T16:46:42.601313+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 44.6828, "method": "keyUp", "key": "w"}
+{"time": "2026-10-28T16:46:42.603237+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 47.620000000000005, "method": "keyDown", "key": "2"}
+{"time": "2026-10-28T16:46:42.604765+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 47.7616, "method": "keyUp", "key": "2"}
+{"time": "2026-10-28T16:46:42.607050+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 50.5553, "method": "keyDown", "key": "d"}
+{"time": "2026-10-28T16:46:42.609896+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 50.8321, "method": "keyDown", "key": "8"}
+{"time": "2026-10-28T16:46:42.611387+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 50.9476, "method": "keyUp", "key": "8"}
+{"time": "2026-10-28T16:46:42.613045+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 51.5623, "method": "keyDown", "key": "w"}
+{"time": "2026-10-28T16:46:42.614729+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 51.6646, "method": "keyDown", "key": "9"}
+{"time": "2026-10-28T16:46:42.616451+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 51.7907, "method": "keyUp", "key": "9"}
+{"time": "2026-10-28T16:46:42.618243+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 52.5715, "method": "keyUp", "key": "d"}
+{"time": "2026-10-28T16:46:42.620053+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 53.6984, "method": "keyDown", "key": "a"}
+{"time": "2026-10-28T16:46:42.621742+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 53.9673, "method": "keyUp", "key": "a"}
+{"time": "2026-10-28T16:46:42.623907+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 54.4639, "method": "keyDown", "key": "a"}
+{"time": "2026-10-28T16:46:42.625951+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 54.616, "method": "keyUp", "key": "a"}
+{"time": "2026-10-28T16:46:42.627694+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 54.9525, "method": "keyUp", "key": "w"}
+{"time": "2026-10-28T16:46:42.629300+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 55.1177, "method": "keyDown", "key": "2"}
+{"time": "2026-10-28T16:46:42.630934+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 55.2783, "method": "keyUp", "key": "2"}
+{"time": "2026-10-28T16:46:42.632956+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 58.3215, "method": "keyDown", "key": "8"}
+{"time": "2026-10-28T16:46:42.634452+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 58.488, "method": "keyUp", "key": "8"}
+{"time": "2026-10-28T16:46:42.636254+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 59.0895, "method": "keyDown", "key": "7"}
+{"time": "2026-10-28T16:46:42.637918+00:00", "kind": "action", "state": "PLAY_MISSION", "loop": 1, "active_at": 59.2676, "method": "keyUp", "key": "7"}
+{"time": "2026-10-28T16:46:42.639660+00:00", "kind": "recording_complete", "state": "PLAY_MISSION", "loop": 1, "active_at": 61.2755, "recording": "mission"}
+{"time": "2026-10-28T16:46:42.640943+00:00", "kind": "state_result", "state": "PLAY_MISSION", "loop": 1, "active_at": 61.2755, "status": "SUCCESS", "reason": "Expected state result satisfied", "elapsed": 31.4192, "wall_elapsed": 0.07331010000007154}
+{"time": "2026-10-28T16:46:42.642901+00:00", "kind": "state_entry", "state": "WAIT_RESULT", "loop": 1, "active_at": 61.2755, "timeout": 240}
+{"time": "2026-10-28T16:46:42.644704+00:00", "kind": "result_timer", "state": "WAIT_RESULT", "loop": 1, "active_at": 61.2755, "mission_elapsed": 31.4192, "remaining": 48.580799999999996}
+{"time": "2026-10-28T16:46:42.679747+00:00", "kind": "recognition", "state": "WAIT_RESULT", "loop": 1, "active_at": 109.8563, "target": "result", "found": true, "score": 1.0, "point": [638, 89]}
+{"time": "2026-10-28T16:46:42.680382+00:00", "kind": "retry", "state": "WAIT_RESULT", "loop": 1, "active_at": 109.8563, "status": "RETRY", "reason": "Waiting for stable Mission Result"}
+{"time": "2026-10-28T16:46:42.712550+00:00", "kind": "recognition", "state": "WAIT_RESULT", "loop": 1, "active_at": 110.8563, "target": "result", "found": true, "score": 1.0, "point": [638, 89]}
+{"time": "2026-10-28T16:46:42.713186+00:00", "kind": "state_result", "state": "WAIT_RESULT", "loop": 1, "active_at": 110.8563, "status": "SUCCESS", "reason": "Expected state result satisfied", "elapsed": 49.5808, "wall_elapsed": 0.07107029999997394}
+{"time": "2026-10-28T16:46:42.714056+00:00", "kind": "state_entry", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 110.8563, "timeout": 60}
+{"time": "2026-10-28T16:46:42.747184+00:00", "kind": "recognition", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 120.8563, "target": "result", "found": true, "score": 1.0, "point": [638, 89]}
+{"time": "2026-10-28T16:46:42.747850+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 120.8563, "method": "moveTo", "args": [943, 595]}
+{"time": "2026-10-28T16:46:42.811589+00:00", "kind": "recognition", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 121.1563, "target": "result", "found": true, "score": 1.0, "point": [638, 89]}
+{"time": "2026-10-28T16:46:42.812207+00:00", "kind": "click", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 121.1563, "label": "reward_1", "client_point": [416, 290], "desktop_point": [459, 385]}
+{"time": "2026-10-28T16:46:42.812889+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 121.1563, "method": "mouseDown", "params": {"x": 459, "y": 385, "button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:42.813577+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 121.2063, "method": "mouseUp", "params": {"button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:42.814220+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 121.2063, "method": "moveTo", "args": [943, 595]}
+{"time": "2026-10-28T16:46:42.846722+00:00", "kind": "reward_observation", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 121.5063, "changed": true, "fraction": 0.5452380952380952, "confirmation": 1}
+{"time": "2026-10-28T16:46:42.877160+00:00", "kind": "reward_observation", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 121.8063, "changed": true, "fraction": 0.5452380952380952, "confirmation": 2}
+{"time": "2026-10-28T16:46:42.877762+00:00", "kind": "reward_verified", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 121.8063, "slot": 1, "verification": "Your Items image changed in consecutive checks"}
+{"time": "2026-10-28T16:46:42.911352+00:00", "kind": "recognition", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 122.0563, "target": "result", "found": true, "score": 1.0, "point": [638, 89]}
+{"time": "2026-10-28T16:46:42.911970+00:00", "kind": "click", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 122.0563, "label": "reward_2", "client_point": [446, 290], "desktop_point": [489, 385]}
+{"time": "2026-10-28T16:46:42.912626+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 122.0563, "method": "mouseDown", "params": {"x": 489, "y": 385, "button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:42.913330+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 122.10629999999999, "method": "mouseUp", "params": {"button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:42.945170+00:00", "kind": "recognition", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 122.35629999999999, "target": "result", "found": true, "score": 1.0, "point": [638, 89]}
+{"time": "2026-10-28T16:46:42.945886+00:00", "kind": "click", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 122.35629999999999, "label": "reward_3", "client_point": [476, 290], "desktop_point": [519, 385]}
+{"time": "2026-10-28T16:46:42.946505+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 122.35629999999999, "method": "mouseDown", "params": {"x": 519, "y": 385, "button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:42.947154+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 122.40629999999999, "method": "mouseUp", "params": {"button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:42.978917+00:00", "kind": "recognition", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 122.65629999999999, "target": "result", "found": true, "score": 1.0, "point": [638, 89]}
+{"time": "2026-10-28T16:46:42.979528+00:00", "kind": "click", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 122.65629999999999, "label": "reward_4", "client_point": [506, 290], "desktop_point": [549, 385]}
+{"time": "2026-10-28T16:46:42.980155+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 122.65629999999999, "method": "mouseDown", "params": {"x": 549, "y": 385, "button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:42.980724+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 122.70629999999998, "method": "mouseUp", "params": {"button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:43.013803+00:00", "kind": "recognition", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 122.95629999999998, "target": "result", "found": true, "score": 1.0, "point": [638, 89]}
+{"time": "2026-10-28T16:46:43.014418+00:00", "kind": "click", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 122.95629999999998, "label": "reward_5", "client_point": [536, 290], "desktop_point": [579, 385]}
+{"time": "2026-10-28T16:46:43.015068+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 122.95629999999998, "method": "mouseDown", "params": {"x": 579, "y": 385, "button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:43.015608+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 123.00629999999998, "method": "mouseUp", "params": {"button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:43.046921+00:00", "kind": "recognition", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 123.25629999999998, "target": "result", "found": true, "score": 1.0, "point": [638, 89]}
+{"time": "2026-10-28T16:46:43.047571+00:00", "kind": "click", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 123.25629999999998, "label": "reward_6", "client_point": [566, 290], "desktop_point": [609, 385]}
+{"time": "2026-10-28T16:46:43.048195+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 123.25629999999998, "method": "mouseDown", "params": {"x": 609, "y": 385, "button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:43.048862+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 123.30629999999998, "method": "mouseUp", "params": {"button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:43.118698+00:00", "kind": "recognition", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 123.55629999999998, "target": "result", "found": true, "score": 1.0, "point": [638, 89]}
+{"time": "2026-10-28T16:46:43.119514+00:00", "kind": "click", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 123.55629999999998, "label": "reward_7", "client_point": [596, 290], "desktop_point": [639, 385]}
+{"time": "2026-10-28T16:46:43.120357+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 123.55629999999998, "method": "mouseDown", "params": {"x": 639, "y": 385, "button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:43.124063+00:00", "kind": "action", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 123.60629999999998, "method": "mouseUp", "params": {"button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:43.125024+00:00", "kind": "reward_row_clicked", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 123.85629999999998, "slots": 7, "verified_slots": [1]}
+{"time": "2026-10-28T16:46:43.125872+00:00", "kind": "state_result", "state": "COLLECT_REWARDS", "loop": 1, "active_at": 123.85629999999998, "status": "SUCCESS", "reason": "Expected state result satisfied", "elapsed": 12.999999999999972, "wall_elapsed": 0.41193569999995816}
+{"time": "2026-10-28T16:46:43.126816+00:00", "kind": "state_entry", "state": "RETURN_CAMP", "loop": 1, "active_at": 123.85629999999998, "timeout": 15}
+{"time": "2026-10-28T16:46:43.180137+00:00", "kind": "recognition", "state": "RETURN_CAMP", "loop": 1, "active_at": 123.85629999999998, "target": "camp", "found": true, "score": 1.0, "point": [853, 457]}
+{"time": "2026-10-28T16:46:43.180915+00:00", "kind": "click", "state": "RETURN_CAMP", "loop": 1, "active_at": 123.85629999999998, "label": "camp", "client_point": [853, 457], "desktop_point": [896, 552]}
+{"time": "2026-10-28T16:46:43.182251+00:00", "kind": "action", "state": "RETURN_CAMP", "loop": 1, "active_at": 123.85629999999998, "method": "mouseDown", "params": {"x": 896, "y": 552, "button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:43.183554+00:00", "kind": "action", "state": "RETURN_CAMP", "loop": 1, "active_at": 123.90629999999997, "method": "mouseUp", "params": {"button": "left", "_pause": false}}
+{"time": "2026-10-28T16:46:43.185138+00:00", "kind": "state_result", "state": "RETURN_CAMP", "loop": 1, "active_at": 123.90629999999997, "status": "SUCCESS", "reason": "Expected state result satisfied", "elapsed": 0.04999999999999716, "wall_elapsed": 0.058282599999984086}
+{"time": "2026-10-28T16:46:43.186207+00:00", "kind": "state_entry", "state": "WAIT_RETURN_LOADING", "loop": 1, "active_at": 123.90629999999997, "timeout": 120}
+{"time": "2026-10-28T16:46:43.212763+00:00", "kind": "hud", "state": "WAIT_RETURN_LOADING", "loop": 1, "active_at": 123.90629999999997, "status": "LOADING", "score": 0.0}
+{"time": "2026-10-28T16:46:43.213510+00:00", "kind": "state_result", "state": "WAIT_RETURN_LOADING", "loop": 1, "active_at": 123.90629999999997, "status": "SUCCESS", "reason": "Expected state result satisfied", "elapsed": 0.0, "wall_elapsed": 0.02748010000004797}
+{"time": "2026-10-28T16:46:43.214507+00:00", "kind": "state_entry", "state": "VERIFY_RETURN_START", "loop": 1, "active_at": 123.90629999999997, "timeout": 120}
+{"time": "2026-10-28T16:46:43.277137+00:00", "kind": "hud", "state": "VERIFY_RETURN_START", "loop": 1, "active_at": 123.90629999999997, "status": "READY", "score": 1.0}
+{"time": "2026-10-28T16:46:43.277925+00:00", "kind": "retry", "state": "VERIFY_RETURN_START", "loop": 1, "active_at": 123.90629999999997, "status": "RETRY", "reason": "HUD=READY; confirmations=1/2"}
+{"time": "2026-10-28T16:46:43.314430+00:00", "kind": "hud", "state": "VERIFY_RETURN_START", "loop": 1, "active_at": 126.90629999999997, "status": "READY", "score": 1.0}
+{"time": "2026-10-28T16:46:43.315152+00:00", "kind": "state_result", "state": "VERIFY_RETURN_START", "loop": 1, "active_at": 126.90629999999997, "status": "SUCCESS", "reason": "Expected state result satisfied", "elapsed": 3.0, "wall_elapsed": 0.10090440000021772}
+{"time": "2026-10-28T16:46:43.316161+00:00", "kind": "run_result", "state": "VERIFY_RETURN_START", "loop": 1, "active_at": 126.90629999999997, "status": "SUCCESS", "reason": "Loop limit reached; return verified", "loops_completed": 1}

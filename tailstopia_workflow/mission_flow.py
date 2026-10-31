@@ -1,0 +1,394 @@
+"""Ordered, bounded execution of all ten steps in note.txt."""
+from dataclasses import dataclass
+import time
+
+from tailstopia_macro_replay import recording, replay, validate_inputs, StopRequested
+from .mission_config import STATES, validate_mission_config
+
+
+@dataclass(frozen=True)
+class FlowResult:
+    status: str
+    reason: str
+    state: str
+    loops_completed: int
+    stopped: bool = False
+
+
+class MissionFlow:
+    def __init__(self,config,base,session,vision):
+        self.config = validate_mission_config(config)
+        self.session,self.vision = session,vision
+        self.state,self.completed,self.deadline = "PREFLIGHT",0,None
+        self.mission_started,self.stage_clicked = None,None
+        self.timings = {}
+        # Both recordings and all keys are validated before dispatching input.
+        self.macros = {}
+        for name,key in (("start","start_recording"),("mission","mission_recording")):
+            actions,duration = recording(base/config[key])
+            self.macros[name] = (validate_inputs(actions,session.api),duration)
+
+    def measure(self,category,operation,*args,**kwargs):
+        started = time.perf_counter()
+        try:
+            return operation(*args,**kwargs)
+        finally:
+            # Aggregate only; no timing log, capture, or recognition per wait poll.
+            stats = self.timings.setdefault(category,{"calls":0,"seconds":0.0})
+            stats["calls"] += 1
+            stats["seconds"] += time.perf_counter()-started
+
+    def timing_summary(self):
+        return {name:{"calls":value["calls"],"seconds":round(value["seconds"],6)}
+                for name,value in self.timings.items()}
+
+    def check(self):
+        self.session.check()
+        if self.deadline is not None and self.session.now() >= self.deadline:
+            raise TimeoutError(f"{self.state}: state deadline exceeded")
+
+    def wait(self,seconds):
+        return self.measure("wait",self._wait,seconds)
+
+    def _wait(self,seconds):
+        target = self.session.now()+max(0,seconds)
+        while True:
+            self.check()
+            remaining = target-self.session.now()
+            if remaining <= 0:
+                return
+            self.session.sleep(min(.05,remaining))
+
+    def match(self,name):
+        self.check()
+        match = self.measure("vision",self.vision.match,name,self.session.capture)
+        self.check()
+        self.session.event("recognition",target=name,found=match.found,score=match.score,point=match.point,
+                           threshold=self.config["targets"][name]["threshold"])
+        return match
+
+    def hud(self):
+        self.check()
+        observation = self.measure("vision",self.vision.hud,self.session.capture)
+        self.check()
+        self.session.event("hud",status=observation.status,score=observation.score,
+                           white_fraction=observation.white_fraction)
+        return observation
+
+    def click(self,point,label):
+        self.check()
+        # UI clicks are paired down/up and tracked independently of macro inputs.
+        self.measure("click",self.session.click,point,label)
+        self.check()
+
+    def click_matched(self,name):
+        match = self.match(name)
+        if not match.found:
+            raise RuntimeError(f"Cannot find {name}; no click sent")
+        self.click(match.point,name)
+
+    def wait_hud(self,poll,confirmations):
+        count = 0
+        while True:
+            observation = self.hud()
+            count = count+1 if observation.status == "READY" else 0
+            if count >= confirmations:
+                return
+            self.session.event("retry",status="RETRY",reason=f"HUD={observation.status}; confirmations={count}/{confirmations}")
+            self.wait(poll)
+
+    def wait_loading(self,poll):
+        destination = "Stage" if self.state == "WAIT_STAGE_LOADING" else "Camp"
+        policy = self.config["stage"] if destination == "Stage" else self.config["return"]
+        ready_count = 0
+        # A missed loading frame is allowed. On entry, reject early source HUD
+        # until the existing minimum wait after Start has elapsed.
+        ready_after = (self.stage_clicked+policy["min_entry_wait"]
+                       if destination == "Stage" else self.session.now())
+        while True:
+            observation = self.hud()
+            if observation.status == "LOADING":
+                # The next VERIFY state still requires stable Time HUD.
+                return
+            eligible = self.session.now() >= ready_after
+            ready_count = ready_count+1 if observation.status == "READY" and eligible else 0
+            if ready_count >= policy["confirmations"]:
+                self.session.event("loading_skipped",destination=destination,
+                                   reason="Stable Time HUD accepted without an observed loading frame",
+                                   ready_confirmations=ready_count,score=observation.score)
+                return
+            self.session.event("retry",status="RETRY",reason="Waiting for loading or stable Time HUD; no action repeated",
+                               hud_status=observation.status,destination=destination,
+                               ready_confirmations=ready_count,minimum_wait_remaining=max(0,ready_after-self.session.now()))
+            self.wait(poll)
+
+    def play(self,name):
+        self.session.prepare_macro(name)
+        actions,duration = self.macros[name]
+        self.session.event("recording_start",recording=name,actions=len(actions),duration=duration)
+        if name == "mission":
+            self.mission_started = self.session.now()
+        def action_report(action,dispatched):
+            self.session.event("macro_action",recording=name,action=action,dispatched_seconds=dispatched,
+                               lateness_ms=(dispatched-action["t"])*1000)
+        self.measure("macro",replay,actions,duration,self.session.api,self.check,clock=self.session.now,sleep=self.session.sleep,
+               on_action=action_report)
+        self.check()
+        self.session.event("recording_complete",recording=name)
+
+    def rotate_camera(self,key):
+        policy = self.config["camera"]
+        # Reuse the existing English-layout/focus guard without replaying or
+        # changing either recording. C/Z are camera controls confirmed by user.
+        self.session.prepare_macro("camera_calibration")
+        self.check()
+        try:
+            self.session.api.keyDown(key,_pause=False)
+            self._wait(policy["rotation_seconds"])
+            self.check()
+            self.session.api.keyUp(key,_pause=False)
+        finally:
+            # Release on F9, focus loss, timeout, or a backend exception too.
+            if key in self.session.api.held_keys:
+                self.session.api.release_all()
+
+    def calibrate_camera(self):
+        policy = self.config["camera"]
+        count,rotations = 0,0
+        direction = policy["rotation_key"]
+        if self.session.api.held_keys or self.session.api.held_buttons:
+            raise RuntimeError("Camera calibration requires all previous inputs released")
+        while True:
+            self.check()
+            observation = self.measure("vision",self.vision.camera.observe,self.session.capture,scan_sides=(count == 0))
+            self.check()
+            count = count+1 if observation.aligned else 0
+            if observation.side == "left":
+                direction = policy["left_rotation_key"]
+            elif observation.side == "right":
+                direction = "z" if policy["left_rotation_key"] == "c" else "c"
+            self.session.event("camera_observation",aligned=observation.aligned,
+                               blue_pixels=observation.blue_pixels,blob_pixels=observation.blob_pixels,
+                               min_blue_blob_pixels=policy["min_blue_blob_pixels"],point=observation.point,
+                               roi=list(self.vision.camera.roi),confirmations=count,rotations=rotations,
+                               side=observation.side,side_blob_pixels=observation.side_blob_pixels,
+                               side_point=observation.side_point,search_key=direction)
+            if count >= policy["confirmations"]:
+                self.session.event("camera_calibrated",rotations=rotations,blue_pixels=observation.blue_pixels,
+                                   blob_pixels=observation.blob_pixels,point=observation.point)
+                return
+            if not observation.aligned:
+                if rotations >= policy["max_rotations"]:
+                    raise RuntimeError(f"Camera calibration retry budget exhausted; rotations={rotations}; "
+                                       f"blue_pixels={observation.blue_pixels}; blob_pixels={observation.blob_pixels}")
+                self.session.event("retry",status="RETRY",reason="Camera landmark unconfirmed; rotate then recheck",
+                                   attempt=rotations+1,key=direction,duration=policy["rotation_seconds"],side=observation.side)
+                self.measure("rotation",self.rotate_camera,direction)
+                rotations += 1
+            # No capture/OpenCV while rotating. A positive match is confirmed
+            # by a second independent observation with the camera stationary.
+            self.wait(policy["settle_seconds"])
+
+    def open_mission(self):
+        spec = self.config["talk"]
+        if self.match("room_list").found:
+            return
+        self.click(spec["point_client"],"talk")
+        self.wait(spec["first_wait"])
+        if self.match("room_list").found:
+            return
+        self.session.event("retry",status="RETRY",reason="Room List absent; retry fixed Talk position once")
+        self.wait(spec["retry_delay"])
+        if self.match("room_list").found:
+            return
+        self.click(spec["point_client"],"talk")
+        self.wait(spec["retry_wait"])
+        if self.match("room_list").found:
+            return
+        self.session.event("retry",status="RETRY",reason="Fixed Talk failed; locating Talk template")
+        self.click_matched("talk")
+        self.wait(spec["fallback_wait"])
+        if not self.match("room_list").found:
+            raise RuntimeError("Talk fallback did not open Room List")
+
+    def advance(self,source,target):
+        policy = self.config["ui"]
+        last_source = last_target = None
+        for attempt in range(policy["additional_retries"]+1):
+            if attempt:
+                self.wait(policy["retry_delay"])
+            # A transition can hide Source before Target is recognized. Always
+            # look for Target first, and never click an unconfirmed Source.
+            last_target = self.match(target)
+            if last_target.found:
+                return
+            last_source = self.match(source)
+            if not last_source.found:
+                self.session.event("retry",status="RETRY",attempt=attempt,
+                                   reason=f"{source} and {target} unconfirmed; no click sent",
+                                   source_score=last_source.score,target_score=last_target.score)
+                continue
+            self.click(last_source.point,source)
+            self.wait(policy["settle"])
+            last_target = self.match(target)
+            if last_target.found:
+                return
+            self.session.event("retry",status="RETRY",attempt=attempt,
+                               reason=f"{target} absent after {source}; recheck before another click",
+                               source_score=last_source.score,target_score=last_target.score)
+        raise RuntimeError(f"{source} -> {target}: UI retry budget exhausted; "
+                           f"source_score={last_source.score:.6f}, target_score={last_target.score:.6f}")
+
+    def wait_result(self):
+        # 80s includes the time already spent executing the mission recording.
+        elapsed = self.session.now()-self.mission_started
+        remaining = max(0,self.config["result"]["after_mission_start"]-elapsed)
+        self.session.event("result_timer",mission_elapsed=elapsed,remaining=remaining)
+        self.wait(remaining)
+        count = 0
+        while True:
+            match = self.match("result")
+            count = count+1 if match.found else 0
+            if count >= self.config["result"]["confirmations"]:
+                return
+            self.session.event("retry",status="RETRY",reason="Waiting for stable Mission Result")
+            self.wait(self.config["result"]["poll"])
+
+    def received(self,baseline):
+        policy = self.config["reward"]
+        for index in range(policy["confirmations"]):
+            self.check()
+            with self.session.capture(self.vision.reward_box) as after:
+                changed,fraction = self.vision.change(baseline,after)
+            self.check()
+            self.session.event("reward_observation",changed=changed,fraction=fraction,confirmation=index+1)
+            if not changed:
+                return False
+            if index+1 < policy["confirmations"]:
+                self.wait(policy["verify_wait"])
+        return True
+
+    def collect(self):
+        policy = self.config["reward"]
+        self.wait(policy["settle"])
+        if not self.match("result").found:
+            raise RuntimeError("Mission Result disappeared before reward collection")
+        self.session.rest_pointer()
+        self.wait(policy["verify_wait"])
+        baseline = self.session.capture(self.vision.reward_box)
+        try:
+            if not self.vision.empty_slot(baseline):
+                raise RuntimeError("First Your Items slot is not empty at entry; cannot verify a new pickup")
+            for attempt in range(policy["additional_retries"]+1):
+                if attempt:
+                    self.wait(policy["retry_delay"])
+                    # A delayed pickup may have arrived: do not click again then.
+                    if self.received(baseline):
+                        break
+                    self.session.event("retry",status="RETRY",reason="First pickup missing; retry first slot only",attempt=attempt)
+                if not self.match("result").found:
+                    raise RuntimeError("Mission Result disappeared during reward retry")
+                self.click(policy["slots_client"][0],"reward_1")
+                self.session.rest_pointer()
+                self.wait(policy["verify_wait"])
+                if self.received(baseline):
+                    break
+            else:
+                raise RuntimeError("First pickup not detected after reward retry budget")
+        finally:
+            baseline.close()
+        self.session.event("reward_verified",slot=1,verification="Your Items image changed in consecutive checks")
+        for index,point in enumerate(policy["slots_client"][1:],start=2):
+            self.wait(policy["between_slots"])
+            if not self.match("result").found:
+                raise RuntimeError("Mission Result disappeared before all seven slots were clicked")
+            self.click(point,f"reward_{index}")
+        self.wait(policy["between_slots"])
+        self.session.event("reward_row_clicked",slots=7,verified_slots=[1])
+
+    def execute_state(self):
+        c,s = self.config,self.state
+        if s == "VERIFY_START":
+            self.wait_hud(self.vision.start.config["poll_seconds"],self.vision.start.config["ready_confirmations"])
+        elif s == "PLAY_START":
+            self.play("start")
+        elif s == "OPEN_MISSION":
+            self.open_mission()
+        elif s == "OPEN_ROOM_LIST":
+            self.advance("room_list","create")
+        elif s == "CREATE_ROOM":
+            self.advance("create","start")
+        elif s == "START_STAGE":
+            self.click_matched("start")
+            self.stage_clicked = self.session.now()
+        elif s == "WAIT_STAGE_LOADING":
+            self.wait_loading(c["stage"]["loading_poll"])
+        elif s == "VERIFY_STAGE":
+            self.wait(c["stage"]["min_entry_wait"]-(self.session.now()-self.stage_clicked))
+            self.wait_hud(c["stage"]["time_poll"],c["stage"]["confirmations"])
+        elif s == "CALIBRATE_CAMERA":
+            self.calibrate_camera()
+        elif s == "PLAY_MISSION":
+            self.play("mission")
+        elif s == "WAIT_RESULT":
+            self.wait_result()
+        elif s == "COLLECT_REWARDS":
+            self.collect()
+        elif s == "RETURN_CAMP":
+            self.click_matched("camp")
+        elif s == "WAIT_RETURN_LOADING":
+            self.wait_loading(c["return"]["loading_poll"])
+        elif s == "VERIFY_RETURN_START":
+            self.wait_hud(c["return"]["time_poll"],c["return"]["confirmations"])
+        else:
+            raise ValueError("Unknown state: " + s)
+        self.check()
+
+    def run(self,through=None):
+        if through is not None and through not in STATES:
+            raise ValueError("Unknown stopping state")
+        result = None
+        try:
+            for loop in range(1,self.config["max_loops"]+1):
+                for self.state in STATES:
+                    self.session.enter(self.state,loop)
+                    self.timings = {}
+                    started,wall = self.session.now(),time.perf_counter()
+                    self.deadline = started+self.config["timeouts"][self.state]
+                    self.session.event("state_entry",timeout=self.config["timeouts"][self.state])
+                    try:
+                        self.check()
+                        self.execute_state()
+                    except BaseException as exc:
+                        self.session.event("state_result",status="FAIL",reason=f"{type(exc).__name__}: {exc}",
+                                           elapsed=self.session.now()-started,wall_elapsed=time.perf_counter()-wall,timing=self.timing_summary())
+                        raise
+                    self.session.event("state_result",status="SUCCESS",reason="Expected state result satisfied",
+                                       elapsed=self.session.now()-started,wall_elapsed=time.perf_counter()-wall,timing=self.timing_summary())
+                    if through == self.state and self.state != STATES[-1]:
+                        result = FlowResult("SUCCESS",f"Stopped after requested step: {through}",self.state,self.completed)
+                        break
+                if result is not None:
+                    break
+                self.completed += 1
+            if result is None:
+                result = FlowResult("SUCCESS","Loop limit reached; return verified",self.state,self.completed)
+        except (Exception,KeyboardInterrupt) as exc:
+            result = FlowResult("FAIL",f"{type(exc).__name__}: {exc}",self.state,self.completed,
+                                isinstance(exc,(StopRequested,KeyboardInterrupt)))
+        finally:
+            try:
+                self.session.api.release_all()
+            except Exception as exc:
+                reason = f"Input release failed: {exc}"
+                if result is not None:
+                    reason = result.reason+"; "+reason
+                result = FlowResult("FAIL",reason,self.state,self.completed,
+                                    result.stopped if result is not None else False)
+            if result is not None and result.status == "FAIL":
+                try:
+                    self.session.debug("stopped" if result.stopped else "failure")
+                except Exception as exc:
+                    self.session.event("debug_error",reason=str(exc))
+        self.session.event("run_result",status=result.status,reason=result.reason,loops_completed=result.loops_completed)
+        return result

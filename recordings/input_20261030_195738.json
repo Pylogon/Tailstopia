@@ -1,0 +1,57 @@
+{
+  "created_at": "2026-10-30T19:57:38",
+  "active_duration_seconds": 4.4731,
+  "event_count": 6,
+  "events": [
+    {
+      "t": 0.6627,
+      "type": "mouse_down",
+      "button": "left",
+      "x": 885,
+      "y": 417
+    },
+    {
+      "t": 0.788,
+      "type": "mouse_up",
+      "button": "left",
+      "x": 885,
+      "y": 417
+    },
+    {
+      "t": 0.788,
+      "type": "mouse_hold",
+      "button": "left",
+      "x": 885,
+      "y": 417,
+      "end_x": 885,
+      "end_y": 417,
+      "duration": 0.1253,
+      "ended_by": "release"
+    },
+    {
+      "t": 3.2389,
+      "type": "mouse_down",
+      "button": "left",
+      "x": 884,
+      "y": 526
+    },
+    {
+      "t": 3.335,
+      "type": "mouse_up",
+      "button": "left",
+      "x": 884,
+      "y": 526
+    },
+    {
+      "t": 3.335,
+      "type": "mouse_hold",
+      "button": "left",
+      "x": 884,
+      "y": 526,
+      "end_x": 884,
+      "end_y": 526,
+      "duration": 0.0961,
+      "ended_by": "release"
+    }
+  ]
+}

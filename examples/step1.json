@@ -1,0 +1,35 @@
+{
+  "reference_image": "../resource/intiate.png",
+  "reference_client_origin": [
+    43,
+    95
+  ],
+  "template_box_client": [
+    352,
+    4,
+    383,
+    19
+  ],
+  "search_roi_client": [
+    346,
+    0,
+    389,
+    25
+  ],
+  "ready_threshold": 0.85,
+  "loading_min_channel": 220,
+  "loading_white_fraction": 0.95,
+  "poll_seconds": 3.0,
+  "timeout_seconds": 120.0,
+  "ready_confirmations": 2,
+  "text_hsv_lower": [
+    15,
+    60,
+    100
+  ],
+  "text_hsv_upper": [
+    45,
+    255,
+    255
+  ]
+}

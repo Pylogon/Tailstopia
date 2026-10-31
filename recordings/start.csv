@@ -1,0 +1,10 @@
+﻿t,type,key,button,x,y,end_x,end_y,duration,dx,dy,ended_by
+1.7763,mouse_down,,right,765,224,,,,,,
+2.4969,key_down,s,,,,,,,,,
+2.5228,key_down,a,,,,,,,,,
+4.4901,key_up,s,,,,,,,,,
+4.4901,key_hold,s,,,,,,1.9932,,,release
+4.5376,mouse_up,,right,682,394,,,,,,
+4.5376,mouse_hold,,right,765,224,682,394,2.7613,,,release
+4.5464,key_up,a,,,,,,,,,
+4.5464,key_hold,a,,,,,,2.0235,,,release

@@ -1,0 +1,66 @@
+{
+  "created_at": "2026-10-28T21:02:10",
+  "active_duration_seconds": 7.6563,
+  "event_count": 9,
+  "events": [
+    {
+      "t": 1.7763,
+      "type": "mouse_down",
+      "button": "right",
+      "x": 765,
+      "y": 224
+    },
+    {
+      "t": 2.4969,
+      "type": "key_down",
+      "key": "s"
+    },
+    {
+      "t": 2.5228,
+      "type": "key_down",
+      "key": "a"
+    },
+    {
+      "t": 4.4901,
+      "type": "key_up",
+      "key": "s"
+    },
+    {
+      "t": 4.4901,
+      "type": "key_hold",
+      "key": "s",
+      "duration": 1.9932,
+      "ended_by": "release"
+    },
+    {
+      "t": 4.5376,
+      "type": "mouse_up",
+      "button": "right",
+      "x": 682,
+      "y": 394
+    },
+    {
+      "t": 4.5376,
+      "type": "mouse_hold",
+      "button": "right",
+      "x": 765,
+      "y": 224,
+      "end_x": 682,
+      "end_y": 394,
+      "duration": 2.7613,
+      "ended_by": "release"
+    },
+    {
+      "t": 4.5464,
+      "type": "key_up",
+      "key": "a"
+    },
+    {
+      "t": 4.5464,
+      "type": "key_hold",
+      "key": "a",
+      "duration": 2.0235,
+      "ended_by": "release"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+﻿t,type,key,button,x,y,end_x,end_y,duration,dx,dy,ended_by
+0.6627,mouse_down,,left,885,417,,,,,,
+0.788,mouse_up,,left,885,417,,,,,,
+0.788,mouse_hold,,left,885,417,885,417,0.1253,,,release
+3.2389,mouse_down,,left,884,526,,,,,,
+3.335,mouse_up,,left,884,526,,,,,,
+3.335,mouse_hold,,left,884,526,884,526,0.0961,,,release

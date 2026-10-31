@@ -1,0 +1,381 @@
+{
+  "created_at": "2026-10-30T07:53:11",
+  "active_duration_seconds": 33.567,
+  "event_count": 66,
+  "events": [
+    {
+      "t": 1.7727,
+      "type": "key_down",
+      "key": "d"
+    },
+    {
+      "t": 2.6294,
+      "type": "key_down",
+      "key": "w"
+    },
+    {
+      "t": 3.5336,
+      "type": "key_up",
+      "key": "d"
+    },
+    {
+      "t": 3.5336,
+      "type": "key_hold",
+      "key": "d",
+      "duration": 1.761,
+      "ended_by": "release"
+    },
+    {
+      "t": 4.0906,
+      "type": "key_up",
+      "key": "w"
+    },
+    {
+      "t": 4.0906,
+      "type": "key_hold",
+      "key": "w",
+      "duration": 1.4612,
+      "ended_by": "release"
+    },
+    {
+      "t": 4.1851,
+      "type": "key_down",
+      "key": "2"
+    },
+    {
+      "t": 4.3132,
+      "type": "key_up",
+      "key": "2"
+    },
+    {
+      "t": 4.3132,
+      "type": "key_hold",
+      "key": "2",
+      "duration": 0.1281,
+      "ended_by": "release"
+    },
+    {
+      "t": 7.1794,
+      "type": "key_down",
+      "key": "0"
+    },
+    {
+      "t": 7.2528,
+      "type": "key_up",
+      "key": "0"
+    },
+    {
+      "t": 7.2528,
+      "type": "key_hold",
+      "key": "0",
+      "duration": 0.0734,
+      "ended_by": "release"
+    },
+    {
+      "t": 7.3307,
+      "type": "key_down",
+      "key": "0"
+    },
+    {
+      "t": 7.4205,
+      "type": "key_up",
+      "key": "0"
+    },
+    {
+      "t": 7.4205,
+      "type": "key_hold",
+      "key": "0",
+      "duration": 0.0898,
+      "ended_by": "release"
+    },
+    {
+      "t": 7.4882,
+      "type": "key_down",
+      "key": "0"
+    },
+    {
+      "t": 7.5695,
+      "type": "key_up",
+      "key": "0"
+    },
+    {
+      "t": 7.5695,
+      "type": "key_hold",
+      "key": "0",
+      "duration": 0.0812,
+      "ended_by": "release"
+    },
+    {
+      "t": 7.6518,
+      "type": "key_down",
+      "key": "d"
+    },
+    {
+      "t": 8.7366,
+      "type": "key_up",
+      "key": "d"
+    },
+    {
+      "t": 8.7366,
+      "type": "key_hold",
+      "key": "d",
+      "duration": 1.0848,
+      "ended_by": "release"
+    },
+    {
+      "t": 9.2601,
+      "type": "key_down",
+      "key": "d"
+    },
+    {
+      "t": 9.4647,
+      "type": "key_up",
+      "key": "d"
+    },
+    {
+      "t": 9.4647,
+      "type": "key_hold",
+      "key": "d",
+      "duration": 0.2046,
+      "ended_by": "release"
+    },
+    {
+      "t": 11.7372,
+      "type": "key_down",
+      "key": "w"
+    },
+    {
+      "t": 16.3315,
+      "type": "key_up",
+      "key": "w"
+    },
+    {
+      "t": 16.3315,
+      "type": "key_hold",
+      "key": "w",
+      "duration": 4.5943,
+      "ended_by": "release"
+    },
+    {
+      "t": 19.4472,
+      "type": "key_down",
+      "key": "2"
+    },
+    {
+      "t": 19.6041,
+      "type": "key_up",
+      "key": "2"
+    },
+    {
+      "t": 19.6041,
+      "type": "key_hold",
+      "key": "2",
+      "duration": 0.1569,
+      "ended_by": "release"
+    },
+    {
+      "t": 19.7316,
+      "type": "key_down",
+      "key": "2"
+    },
+    {
+      "t": 19.9035,
+      "type": "key_up",
+      "key": "2"
+    },
+    {
+      "t": 19.9035,
+      "type": "key_hold",
+      "key": "2",
+      "duration": 0.1719,
+      "ended_by": "release"
+    },
+    {
+      "t": 22.5458,
+      "type": "key_down",
+      "key": "8"
+    },
+    {
+      "t": 22.6435,
+      "type": "key_up",
+      "key": "8"
+    },
+    {
+      "t": 22.6435,
+      "type": "key_hold",
+      "key": "8",
+      "duration": 0.0978,
+      "ended_by": "release"
+    },
+    {
+      "t": 22.7817,
+      "type": "key_down",
+      "key": "8"
+    },
+    {
+      "t": 22.8236,
+      "type": "key_down",
+      "key": "d"
+    },
+    {
+      "t": 22.9343,
+      "type": "key_up",
+      "key": "8"
+    },
+    {
+      "t": 22.9343,
+      "type": "key_hold",
+      "key": "8",
+      "duration": 0.1525,
+      "ended_by": "release"
+    },
+    {
+      "t": 23.5237,
+      "type": "key_down",
+      "key": "w"
+    },
+    {
+      "t": 24.3818,
+      "type": "key_up",
+      "key": "d"
+    },
+    {
+      "t": 24.3818,
+      "type": "key_hold",
+      "key": "d",
+      "duration": 1.5582,
+      "ended_by": "release"
+    },
+    {
+      "t": 25.1373,
+      "type": "key_down",
+      "key": "9"
+    },
+    {
+      "t": 25.2566,
+      "type": "key_up",
+      "key": "9"
+    },
+    {
+      "t": 25.2566,
+      "type": "key_hold",
+      "key": "9",
+      "duration": 0.1193,
+      "ended_by": "release"
+    },
+    {
+      "t": 25.3545,
+      "type": "key_down",
+      "key": "9"
+    },
+    {
+      "t": 25.4791,
+      "type": "key_up",
+      "key": "9"
+    },
+    {
+      "t": 25.4791,
+      "type": "key_hold",
+      "key": "9",
+      "duration": 0.1245,
+      "ended_by": "release"
+    },
+    {
+      "t": 26.1811,
+      "type": "key_down",
+      "key": "a"
+    },
+    {
+      "t": 26.3196,
+      "type": "key_up",
+      "key": "a"
+    },
+    {
+      "t": 26.3196,
+      "type": "key_hold",
+      "key": "a",
+      "duration": 0.1385,
+      "ended_by": "release"
+    },
+    {
+      "t": 27.0762,
+      "type": "key_up",
+      "key": "w"
+    },
+    {
+      "t": 27.0762,
+      "type": "key_hold",
+      "key": "w",
+      "duration": 3.5526,
+      "ended_by": "release"
+    },
+    {
+      "t": 27.1196,
+      "type": "key_down",
+      "key": "2"
+    },
+    {
+      "t": 27.2796,
+      "type": "key_up",
+      "key": "2"
+    },
+    {
+      "t": 27.2796,
+      "type": "key_hold",
+      "key": "2",
+      "duration": 0.16,
+      "ended_by": "release"
+    },
+    {
+      "t": 28.4059,
+      "type": "key_down",
+      "key": "2"
+    },
+    {
+      "t": 28.6154,
+      "type": "key_up",
+      "key": "2"
+    },
+    {
+      "t": 28.6154,
+      "type": "key_hold",
+      "key": "2",
+      "duration": 0.2094,
+      "ended_by": "release"
+    },
+    {
+      "t": 30.2196,
+      "type": "key_down",
+      "key": "8"
+    },
+    {
+      "t": 30.4219,
+      "type": "key_up",
+      "key": "8"
+    },
+    {
+      "t": 30.4219,
+      "type": "key_hold",
+      "key": "8",
+      "duration": 0.2023,
+      "ended_by": "release"
+    },
+    {
+      "t": 30.5435,
+      "type": "key_down",
+      "key": "8"
+    },
+    {
+      "t": 30.7453,
+      "type": "key_up",
+      "key": "8"
+    },
+    {
+      "t": 30.7453,
+      "type": "key_hold",
+      "key": "8",
+      "duration": 0.2018,
+      "ended_by": "release"
+    }
+  ]
+}

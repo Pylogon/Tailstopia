@@ -1,0 +1,147 @@
+{
+  "max_loops": 1,
+  "macro_a": "macro_a.json",
+  "macro_b": "macro_b.csv",
+  "output": "../workflow_runs/recorded_smoke",
+  "states": {
+    "VERIFY_START": {
+      "timeout": 10,
+      "retries": 2,
+      "retry_delay": 0.1
+    },
+    "PLAY_MACRO_A": {
+      "timeout": 10,
+      "retries": 2,
+      "retry_delay": 0.1
+    },
+    "ENTER_STAGE": {
+      "timeout": 10,
+      "retries": 2,
+      "retry_delay": 0.1
+    },
+    "VERIFY_STAGE": {
+      "timeout": 10,
+      "retries": 2,
+      "retry_delay": 0.1
+    },
+    "PLAY_MACRO_B": {
+      "timeout": 10,
+      "retries": 2,
+      "retry_delay": 0.1
+    },
+    "VERIFY_COMPLETE": {
+      "timeout": 10,
+      "retries": 2,
+      "retry_delay": 0.1
+    },
+    "SCAN_REWARD": {
+      "timeout": 10,
+      "retries": 2,
+      "retry_delay": 0.1
+    },
+    "SELECT_REWARD": {
+      "timeout": 10,
+      "retries": 2,
+      "retry_delay": 0.1
+    },
+    "RETURN_START": {
+      "timeout": 10,
+      "retries": 2,
+      "retry_delay": 0.1
+    }
+  },
+  "enter_stage": [
+    {
+      "type": "click",
+      "x": 100,
+      "y": 100,
+      "wait": 0.1
+    },
+    {
+      "type": "click",
+      "x": 200,
+      "y": 100,
+      "wait": 0.1
+    },
+    {
+      "type": "click",
+      "x": 300,
+      "y": 100,
+      "wait": 0.1
+    },
+    {
+      "type": "click",
+      "x": 400,
+      "y": 100,
+      "wait": 0.1
+    }
+  ],
+  "return_start": [
+    {
+      "type": "click",
+      "x": 50,
+      "y": 50,
+      "wait": 0.1
+    }
+  ],
+  "reward": {
+    "priority": [
+      "rare",
+      "common"
+    ],
+    "fallback": {
+      "x": 100,
+      "y": 200
+    }
+  },
+  "screen": {
+    "backend": "recorded",
+    "frames": {
+      "start": [
+        "../tailstopia_debug/last_panel.png"
+      ],
+      "stage": [
+        "../tailstopia_debug/last_panel.png"
+      ],
+      "complete": [
+        "../tailstopia_debug/last_panel.png"
+      ],
+      "rewards": [
+        "../tailstopia_debug/last_panel.png"
+      ]
+    },
+    "checks": {
+      "start": {
+        "template": "../tailstopia_debug/last_panel.png",
+        "roi": [
+          0,
+          0,
+          137,
+          96
+        ],
+        "max_error": 0
+      },
+      "stage": {
+        "template": "../tailstopia_debug/last_panel.png",
+        "roi": [
+          0,
+          0,
+          137,
+          96
+        ],
+        "max_error": 0
+      },
+      "complete": {
+        "template": "../tailstopia_debug/last_panel.png",
+        "roi": [
+          0,
+          0,
+          137,
+          96
+        ],
+        "max_error": 0
+      }
+    },
+    "rewards": []
+  }
+}
