@@ -248,7 +248,7 @@
     "confirmations": 2
   },
   "result": {
-    "after_mission_start": 0,
+    "after_mission_start": 5,
     "poll": 1,
     "confirmations": 2,
     "failure_target": "mission_failed"
