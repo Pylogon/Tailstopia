@@ -19,10 +19,10 @@
         316
       ],
       "search_roi_client": [
-        540,
-        250,
-        710,
-        360
+        420,
+        210,
+        860,
+        410
       ],
       "threshold": 0.82,
       "glyph_hsv_lower": [
@@ -55,6 +55,9 @@
         },
         {
           "template_image": "../resource/templates/talk_live_small.png"
+        },
+        {
+          "template_image": "../resource/templates/talk_95_live.png"
         }
       ]
     },
@@ -197,10 +200,14 @@
     "poll_interval": 0.5,
     "fallback_wait": 5.5,
     "recovery": {
-      "max_attempts": 0,
+      "max_attempts": 2,
       "hold_seconds": 0.25,
       "confirm_wait": 0.5,
-      "settle_seconds": 0.5
+      "settle_seconds": 0.5,
+      "keys": [
+        "w",
+        "a"
+      ]
     },
     "opened_target": "mission_list"
   },

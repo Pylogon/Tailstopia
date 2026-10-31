@@ -22,7 +22,12 @@ class NoPickup(outcomes.ResultSession):
 
 
 class MissingRewardTests(unittest.TestCase):
-    setUp=outcomes.MissionOutcomeTests.setUp
+    def setUp(self):
+        outcomes.MissionOutcomeTests.setUp(self)
+        # Delayed-pickup fixtures deliver at 0.8s; give their virtual timeline
+        # fixed waits independent of the user's live timing adjustments.
+        self.config['reward'].update(retry_delay=1,verify_wait=.3)
+
     run_case=outcomes.MissionOutcomeTests.run_case
     summary=outcomes.MissionOutcomeTests.summary
 

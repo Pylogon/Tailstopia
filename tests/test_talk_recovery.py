@@ -138,6 +138,38 @@ class TalkRecoveryTests(unittest.TestCase):
         self.assertEqual(sum(r['kind']=='talk_recovery_move' for r in self.rows()),2)
         self.assert_released()
 
+    def test_configured_w_a_uses_same_bounded_burst_and_release(self):
+        self.config['talk']['recovery']['keys']=['w','a']
+        self.talk_results=[False,False,True]
+        self.open()
+        held=[(dt,keys,buttons) for dt,keys,buttons in self.session.holds if 'right' in buttons]
+        self.assertTrue(held)
+        self.assertTrue(all(keys=={'w','a'} and buttons=={'right'} for _,keys,buttons in held))
+        self.assertAlmostEqual(sum(dt for dt,_,_ in held),.25)
+        self.assertEqual(self.movements(),1)
+        self.assertFalse(any(method=='keyDown' and key=='s' for method,key in self.session.api.backend.calls))
+        move=next(r for r in self.rows() if r['kind']=='talk_recovery_move')
+        self.assertEqual(move['keys'],['w','a'])
+        self.assert_released()
+
+    def test_configured_w_a_releases_on_interruption_or_partial_dispatch(self):
+        for error in (StopRequested('F9'),RuntimeError('Game lost focus'),TimeoutError('deadline')):
+            with self.subTest(error=type(error).__name__):
+                self.setUp()
+                self.config['talk']['recovery']['keys']=['w','a']
+                self.session.stop_at,self.session.stop_error=.1,error
+                with self.assertRaises(type(error)):self.flow.move_toward_talk(.25)
+                self.assert_released()
+                self.assertFalse(self.session.captures)
+        for failure in (('keyDown','w'),('keyDown','a'),('keyUp','w'),('mouseUp','right')):
+            with self.subTest(failure=failure):
+                self.setUp()
+                self.config['talk']['recovery']['keys']=['w','a']
+                self.session.api.backend.fail_once=failure
+                with self.assertRaises(RuntimeError):self.flow.move_toward_talk(.25)
+                self.session.api.release_all()
+                self.assert_released()
+
     def test_room_list_after_movement_prevents_second_move_and_fallback_click(self):
         self.room_found = lambda:self.movements() >= 1
         self.open()
@@ -213,7 +245,8 @@ class TalkRecoveryTests(unittest.TestCase):
     def test_invalid_recovery_settings_rejected_before_input(self):
         for key,value in (('hold_seconds',0),('hold_seconds',.31),('hold_seconds',float('nan')),
                           ('hold_seconds',True),('max_attempts',-1),('max_attempts',1.5),('max_attempts',True),
-                          ('confirm_wait',0),('settle_seconds',-1)):
+                          ('confirm_wait',0),('settle_seconds',-1),('keys',None),('keys','wa'),('keys',[]),
+                          ('keys',['w']),('keys',['w','w']),('keys',['w','a','s']),('keys',['cmd','a'])):
             with self.subTest(key=key,value=value):
                 config,_=load_mission_config(ROOT/'examples/mission_flow.json')
                 config['talk']['recovery'][key]=value

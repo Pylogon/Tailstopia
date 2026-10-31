@@ -26,7 +26,8 @@ def mission_states(config):
     return states
 
 
-TALK_RECOVERY_DEFAULTS = {"max_attempts":2,"hold_seconds":0.25,"confirm_wait":0.5,"settle_seconds":0.5}
+TALK_RECOVERY_DEFAULTS = {"max_attempts":2,"hold_seconds":0.25,"confirm_wait":0.5,"settle_seconds":0.5,
+                          "keys":["s","a"]}
 
 
 def load_mission_config(path):
@@ -80,6 +81,8 @@ def validate_mission_config(config):
     number(config["talk"].get("poll_interval",0.5),True)
     recovery = {**TALK_RECOVERY_DEFAULTS,**config["talk"].get("recovery",{})}
     count(recovery["max_attempts"])
+    if not isinstance(recovery["keys"],list) or recovery["keys"] not in (["s","a"],["w","a"]):
+        raise ValueError("Talk recovery keys must be ['s', 'a'] or ['w', 'a']")
     for key in ("hold_seconds","confirm_wait","settle_seconds"):
         number(recovery[key],True)
     if recovery["hold_seconds"] > 0.3:

@@ -277,12 +277,12 @@ class MissionFlow:
             raise RuntimeError("Talk recovery needs a right-mouse anchor in the start recording")
         self.session.prepare_macro("talk_recovery")
         self.check()
+        policy = {**TALK_RECOVERY_DEFAULTS,**self.config["talk"].get("recovery",{})}
         try:
             api.mouseDown(x=anchor["x"],y=anchor["y"],button="right",_pause=False)
-            self.check()
-            api.keyDown("s",_pause=False)
-            self.check()
-            api.keyDown("a",_pause=False)
+            for key in policy["keys"]:
+                self.check()
+                api.keyDown(key,_pause=False)
             self._wait(seconds)
         finally:
             # Includes partially dispatched input, F9, lost focus and timeout.
@@ -306,12 +306,15 @@ class MissionFlow:
             if attempts >= policy["max_attempts"]:
                 raise RuntimeError(f"Talk recovery retry budget exhausted; attempts={attempts}; "
                                    f"talk_score={confirmed.score:.6f}; no fallback click sent")
-            self.session.event("retry",status="RETRY",reason="Talk absent in two checks; short right-mouse + S + A recovery",
+            direction = " + ".join(key.upper() for key in policy["keys"])
+            self.session.event("retry",status="RETRY",reason=f"Talk absent in two checks; short right-mouse + {direction} recovery",
                                attempt=attempts+1,max_attempts=policy["max_attempts"],
-                               duration=policy["hold_seconds"],previous_score=missing.score,score=confirmed.score)
+                               duration=policy["hold_seconds"],keys=list(policy["keys"]),
+                               previous_score=missing.score,score=confirmed.score)
             self.measure("recovery_move",self.move_toward_talk,policy["hold_seconds"])
             attempts += 1
             self.session.event("talk_recovery_move",attempt=attempts,duration=policy["hold_seconds"],
+                               keys=list(policy["keys"]),
                                cumulative_hold_seconds=attempts*policy["hold_seconds"])
             # All inputs are released before settling or taking either ROI.
             self.wait(policy["settle_seconds"])
