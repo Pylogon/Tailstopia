@@ -16,6 +16,8 @@ class FlowResult:
 
 
 class MissionFlow:
+    RETURN_READY_MAX_AGE = 1.0  # Wall time, including pauses and slow captures.
+
     def __init__(self,config,base,session,vision,verbose_actions=False):
         self.config = validate_mission_config(config)
         self.session,self.vision = session,vision
@@ -23,11 +25,38 @@ class MissionFlow:
         self.mission_started,self.stage_clicked = None,None
         self.timings = {}
         self.verbose_actions = verbose_actions
+        self.reset_return_verification()
         # Both recordings and all keys are validated before dispatching input.
         self.macros = {}
         for name,key in (("start","start_recording"),("mission","mission_recording")):
             actions,duration = recording(base/config[key])
             self.macros[name] = (validate_inputs(actions,session.api),duration)
+
+    def reset_return_verification(self):
+        self._return_clicked_loop = None
+        self._return_loading_loop = None
+        self._return_loading_context = None
+        self._return_confirmation = None
+
+    def pause_marker(self):
+        return (getattr(self.session,"paused_total",0),getattr(self.session,"pause_requested",False))
+
+    def return_confirmation_reason(self,proof,poll,confirmations):
+        loop = getattr(self.session,"loop",None)
+        if loop is None or loop <= 1 or proof["loop"] != loop-1:
+            return "Not the immediately following loop"
+        age = time.perf_counter()-proof["at"]
+        if not 0 <= age <= self.RETURN_READY_MAX_AGE:
+            return "Previous return confirmation expired"
+        if self.pause_marker() != proof["pause"] or self.pause_marker()[1]:
+            return "Pause state changed"
+        if getattr(self.session,"capture_context",None) != proof["context"]:
+            return "Game window or capture geometry changed"
+        if proof["confirmations"] < max(2,confirmations) or proof["poll"] < poll:
+            return "Previous confirmation policy is weaker"
+        if self.session.api.held_keys or self.session.api.held_buttons:
+            return "Inputs are still held"
+        return None
 
     def measure(self,category,operation,*args,**kwargs):
         capture_before = self.timings.get("vision_capture",{}).get("seconds",0.0)
@@ -83,8 +112,16 @@ class MissionFlow:
 
     def hud(self):
         self.check()
+        # Timestamp before capture/logging so slow work cannot make an old frame fresh.
+        self._last_hud_at = time.perf_counter()
         observation = self.measure("vision",self.vision.hud,self.capture)
         self.check()
+        loop = getattr(self.session,"loop",None)
+        if (self.state in ("WAIT_RETURN_LOADING","VERIFY_RETURN_START") and
+                loop is not None and getattr(self,"_return_clicked_loop",None) == loop and
+                observation.status == "LOADING"):
+            self._return_loading_loop = loop
+            self._return_loading_context = getattr(self.session,"capture_context",None)
         self.session.event("hud",status=observation.status,score=observation.score,
                            white_fraction=observation.white_fraction)
         return observation
@@ -101,11 +138,21 @@ class MissionFlow:
             raise RuntimeError(f"Cannot find {name}; no click sent")
         self.click(match.point,name)
 
-    def wait_hud(self,poll,confirmations):
+    def wait_hud(self,poll,confirmations,return_proof=None):
         count = 0
         while True:
             observation = self.hud()
             count = count+1 if observation.status == "READY" else 0
+            if return_proof is not None:
+                reason = self.return_confirmation_reason(return_proof,poll,confirmations)
+                if reason is None and observation.status == "READY":
+                    self.session.event("return_verification_reused",source_loop=return_proof["loop"],
+                                       age_seconds=time.perf_counter()-return_proof["at"],score=observation.score)
+                    return
+                self.session.event("return_verification_fallback",source_loop=return_proof["loop"],
+                                   reason=reason or f"Fresh HUD={observation.status}")
+                return_proof = None
+                # Keep this first observation/count; do not capture again immediately.
             if count >= confirmations:
                 return
             self.session.event("retry",status="RETRY",reason=f"HUD={observation.status}; confirmations={count}/{confirmations}")
@@ -203,24 +250,30 @@ class MissionFlow:
             # by a second independent observation with the camera stationary.
             self.wait(policy["settle_seconds"])
 
+    def wait_room_list(self,initial_wait,poll_timeout):
+        # A failed poll never clicks. The complete polling window must expire
+        # before the caller may enter the verified Talk-template fallback.
+        self.wait(initial_wait)
+        until = self.session.now()+poll_timeout
+        while True:
+            if self.match("room_list").found:
+                return True
+            remaining = until-self.session.now()
+            if remaining <= 0:
+                return False
+            # One observation per interval, with a final check at the budget.
+            self.wait(min(self.config["talk"].get("poll_interval",0.5),remaining))
+
     def open_mission(self):
         spec = self.config["talk"]
         if self.match("room_list").found:
             return
         self.click(spec["point_client"],"talk")
-        self.wait(spec["first_wait"])
-        if self.match("room_list").found:
+        if self.wait_room_list(spec["first_wait"],spec.get("poll_timeout",5)):
             return
-        self.session.event("retry",status="RETRY",reason="Room List absent; retry fixed Talk position once")
-        self.wait(spec["retry_delay"])
-        if self.match("room_list").found:
-            return
-        self.click(spec["point_client"],"talk")
-        self.wait(spec["retry_wait"])
-        if self.match("room_list").found:
-            return
-        self.session.event("retry",status="RETRY",reason="Fixed Talk failed; locating Talk template")
+        self.session.event("retry",status="RETRY",reason="Room List absent after Talk polling window; locating Talk template")
         self.click_matched("talk")
+        # Preserve the verified-text fallback and its existing settle time.
         self.wait(spec["fallback_wait"])
         if not self.match("room_list").found:
             raise RuntimeError("Talk fallback did not open Room List")
@@ -322,8 +375,12 @@ class MissionFlow:
 
     def execute_state(self):
         c,s = self.config,self.state
+        if s not in ("VERIFY_START","VERIFY_RETURN_START"):
+            self._return_confirmation = None
         if s == "VERIFY_START":
-            self.wait_hud(self.vision.start.config["poll_seconds"],self.vision.start.config["ready_confirmations"])
+            proof = getattr(self,"_return_confirmation",None)
+            self._return_confirmation = None  # Single use, even on failure or interruption.
+            self.wait_hud(self.vision.start.config["poll_seconds"],self.vision.start.config["ready_confirmations"],proof)
         elif s == "PLAY_START":
             self.play("start")
         elif s == "OPEN_MISSION":
@@ -349,11 +406,24 @@ class MissionFlow:
         elif s == "COLLECT_REWARDS":
             self.collect()
         elif s == "RETURN_CAMP":
+            self.reset_return_verification()
             self.click_matched("camp")
+            self._return_clicked_loop = self.session.loop
         elif s == "WAIT_RETURN_LOADING":
             self.wait_loading(c["return"]["loading_poll"])
         elif s == "VERIFY_RETURN_START":
+            self._return_confirmation = None
+            pause = self.pause_marker()
             self.wait_hud(c["return"]["time_poll"],c["return"]["confirmations"])
+            loop = self.session.loop
+            context = getattr(self.session,"capture_context",None)
+            if (self._return_clicked_loop == loop and self._return_loading_loop == loop and
+                    self._return_loading_context == context and pause == self.pause_marker() and
+                    not pause[1] and c["return"]["confirmations"] >= 2 and
+                    not (self.session.api.held_keys or self.session.api.held_buttons)):
+                self._return_confirmation = {"loop":loop,"at":self._last_hud_at,"pause":pause,
+                                             "context":context,"confirmations":c["return"]["confirmations"],
+                                             "poll":c["return"]["time_poll"]}
         else:
             raise ValueError("Unknown state: " + s)
         self.check()
@@ -362,6 +432,7 @@ class MissionFlow:
         if through is not None and through not in STATES:
             raise ValueError("Unknown stopping state")
         result = None
+        self.reset_return_verification()
         try:
             for loop in range(1,self.config["max_loops"]+1):
                 for self.state in STATES:
@@ -392,6 +463,7 @@ class MissionFlow:
             result = FlowResult("FAIL",f"{type(exc).__name__}: {exc}",self.state,self.completed,
                                 isinstance(exc,(StopRequested,KeyboardInterrupt)))
         finally:
+            self.reset_return_verification()
             try:
                 self.session.api.release_all()
             except Exception as exc:

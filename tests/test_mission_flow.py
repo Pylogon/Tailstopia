@@ -53,26 +53,26 @@ class MissionFlowTests(unittest.TestCase):
         from tailstopia_macro_replay import recording
         _,duration = recording(self.base/self.config["mission_recording"])
         self.assertAlmostEqual(timers[0]["mission_elapsed"],duration)
-        self.assertAlmostEqual(timers[0]["remaining"],80-duration)
+        self.assertAlmostEqual(timers[0]["remaining"],max(0,self.config["result"]["after_mission_start"]-duration))
         mission = next(e["active_at"] for e in events if e["kind"] == "recording_start" and e["recording"] == "mission")
         first_result = next(e["active_at"] for e in events if e["state"] == "WAIT_RESULT" and e["kind"] == "recognition")
-        self.assertAlmostEqual(first_result-mission,80)
+        self.assertAlmostEqual(first_result-mission,max(duration,self.config["result"]["after_mission_start"]))
         self.assertLess(session.now(),300)
 
-    def test_talk_fallback_after_two_fixed_clicks(self):
+    def test_talk_template_fallback_after_first_click_polling_expires(self):
         class Fallback(FixtureSession):
             def click_effect(self,label):
-                if label == "talk" and self.click_counts.get(label,0) < 2:
+                if label == "talk" and self.click_counts.get(label,0) < 1:
                     self.click_counts[label] = self.click_counts.get(label,0)+1
                 else:
                     super().click_effect(label)
         result,events,_ = self.run_case(Fallback,"OPEN_MISSION")
         self.assertEqual(result.status,"SUCCESS")
         clicks = [e for e in events if e["kind"] == "click" and e["label"] == "talk"]
-        self.assertEqual(len(clicks),3)
+        self.assertEqual(len(clicks),2)
         point = [a+b for a,b in zip(self.config["reference_client_origin"],self.config["talk"]["point_client"])]
         self.assertEqual(clicks[0]["desktop_point"],point)
-        self.assertNotEqual(clicks[2]["desktop_point"],point)
+        self.assertNotEqual(clicks[1]["desktop_point"],point)
         self.assertEqual(sum(e["kind"] == "recording_start" for e in events),1)
 
     def test_talk_absent_fails_without_random_fallback_click(self):
@@ -86,7 +86,7 @@ class MissionFlowTests(unittest.TestCase):
                     super().click_effect(label)
         result,events,_ = self.run_case(NoTalk)
         self.assertEqual((result.status,result.state),("FAIL","OPEN_MISSION"))
-        self.assertEqual(sum(e["kind"] == "click" and e["label"] == "talk" for e in events),2)
+        self.assertEqual(sum(e["kind"] == "click" and e["label"] == "talk" for e in events),1)
         self.assertFalse(any(e.get("recording") == "mission" for e in events))
         self.assertTrue(list(self.directory.glob("*_failure.png")))
 

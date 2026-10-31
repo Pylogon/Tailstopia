@@ -122,7 +122,7 @@ class TalkDetectionTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     validate_mission_config(config)
 
-    def test_live_background_fallback_keeps_fixed_clicks_and_existing_waits(self):
+    def test_live_background_fallback_follows_full_polling_window(self):
         self.run_live_fallback(FIXTURE,[575,293])
 
     def test_second_live_background_uses_existing_fallback_without_extra_retry(self):
@@ -130,10 +130,10 @@ class TalkDetectionTests(unittest.TestCase):
 
     def test_new_start_reference_matches_at_updated_fixed_talk_position(self):
         point = self.config["talk"]["point_client"]
-        self.assertEqual(point,[544,289])
+        self.assertEqual(point,[478,321])
         self.assertEqual(self.config["targets"]["talk"]["search_roi_client"],[432,250,597,355])
         self.assertEqual(self.config["targets"]["talk"]["threshold"],.82)
-        self.assertEqual(self.config["talk"]["first_wait"],5.5)
+        self.assertEqual(self.config["talk"]["first_wait"],5)
         with Image.open(ROOT/"resource/new redpanda.png") as image:
             match = self.vision.match("talk",lambda box:self.vision.crop_reference(image,box,[43,95]))
         self.assertTrue(match.found)
@@ -159,19 +159,19 @@ class TalkDetectionTests(unittest.TestCase):
         self.assertEqual(result.status,"SUCCESS")
         clicks = [row for row in rows if row["kind"] == "click" and row["label"] == "talk"]
         self.assertEqual(len(clicks),1)
-        self.assertEqual(clicks[0]["client_point"],[544,289])
-        self.assertEqual(clicks[0]["desktop_point"],[587,384])
+        self.assertEqual(clicks[0]["client_point"],[478,321])
+        self.assertEqual(clicks[0]["desktop_point"],[521,416])
         play = next(row for row in rows if row["kind"] == "state_result" and row["state"] == "PLAY_START")
         self.assertAlmostEqual(play["elapsed"],duration)
         opening = next(row for row in rows if row["kind"] == "state_result" and row["state"] == "OPEN_MISSION")
-        self.assertAlmostEqual(opening["elapsed"],5.5+self.config["ui"]["click_hold"])
+        self.assertAlmostEqual(opening["elapsed"],self.config["talk"]["first_wait"]+self.config["ui"]["click_hold"])
         self.assertEqual(sum(row["kind"] == "macro_action" for row in rows),len(actions))
         self.assertFalse(any(row["kind"] == "recognition" and row["target"] == "talk" for row in rows))
 
     def run_live_fallback(self,fixture,expected_point):
         class LiveBackground(FixtureSession):
             def click_effect(session,label):
-                if label == "talk" and session.click_counts.get(label,0) < 2:
+                if label == "talk" and session.click_counts.get(label,0) < 1:
                     session.click_counts[label] = session.click_counts.get(label,0)+1
                 else:
                     super().click_effect(label)
@@ -190,14 +190,14 @@ class TalkDetectionTests(unittest.TestCase):
             events = [json.loads(row) for row in (Path(directory)/"execution.jsonl").read_text().splitlines()]
         self.assertEqual(result.status,"SUCCESS")
         clicks = [e for e in events if e["kind"] == "click" and e["label"] == "talk"]
-        self.assertEqual([e["client_point"] for e in clicks[:2]],[self.config["talk"]["point_client"]]*2)
-        self.assertEqual(len(clicks),3)
-        self.assertEqual(clicks[2]["client_point"],expected_point)  # Existing template fallback.
+        self.assertEqual(clicks[0]["client_point"],self.config["talk"]["point_client"])
+        self.assertEqual(len(clicks),2)
+        self.assertEqual(clicks[1]["client_point"],expected_point)  # Existing template fallback.
         state = next(e for e in events if e["kind"] == "state_result" and e["state"] == "OPEN_MISSION")
         policy = self.config["talk"]
-        expected = policy["first_wait"]+policy["retry_delay"]+policy["retry_wait"]+policy["fallback_wait"]+3*self.config["ui"]["click_hold"]
+        expected = policy["first_wait"]+policy["poll_timeout"]+policy["fallback_wait"]+2*self.config["ui"]["click_hold"]
         self.assertAlmostEqual(state["elapsed"],expected)
-        self.assertEqual(policy["first_wait"],5.5)
+        self.assertEqual(policy["first_wait"],5)
         self.assertFalse(session.api.held_keys or session.api.held_buttons)
 
 

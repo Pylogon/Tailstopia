@@ -134,12 +134,12 @@
   },
   "talk": {
     "point_client": [
-      544,
-      289
+      478,
+      321
     ],
     "first_wait": 5,
-    "retry_delay": 1,
-    "retry_wait": 5.5,
+    "poll_timeout": 5,
+    "poll_interval": 0.5,
     "fallback_wait": 5.5
   },
   "ui": {

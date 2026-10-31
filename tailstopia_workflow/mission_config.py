@@ -30,7 +30,7 @@ def validate_mission_config(config):
     point(config["reference_client_origin"])
     for name in STATES:
         number(config["timeouts"][name],True)
-    for section,keys in {"talk":["first_wait","retry_delay","retry_wait","fallback_wait"],
+    for section,keys in {"talk":["first_wait","fallback_wait"],
                          "ui":["settle","retry_delay","click_hold"],
                          "stage":["min_entry_wait","loading_poll","time_poll"],
                          "result":["after_mission_start","poll"],
@@ -38,6 +38,9 @@ def validate_mission_config(config):
                          "return":["loading_poll","time_poll"]}.items():
         for key in keys:
             number(config[section][key],key in {"poll","loading_poll","time_poll","verify_wait"})
+    # Polling has its own window after first_wait; the state deadline still applies.
+    number(config["talk"].get("poll_timeout",5),True)
+    number(config["talk"].get("poll_interval",0.5),True)
     for section in ("stage","result","reward","return"):
         count(config[section]["confirmations"],1)
     count(config["ui"]["additional_retries"])

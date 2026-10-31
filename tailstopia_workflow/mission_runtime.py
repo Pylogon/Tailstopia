@@ -89,6 +89,7 @@ class Session:
         self.api = InputTrace(backend,self.event)
         self.last_image = None
         self.last_box = None
+        self.capture_context = None
 
     def event(self,kind,**fields):
         self.log.emit(kind,state=self.state,loop=self.loop,active_at=self.now(),**fields)
@@ -207,6 +208,8 @@ class LiveSession(Session):
         if self.last_image is not None:
             self.last_image.close()
         self.last_image,self.last_box = image.copy(),list(box)
+        # Reuse geometry already read for this capture; no extra OS query.
+        self.capture_context = (self.window.hwnd,left,top,width,height)
         self.check()
         return image
 
