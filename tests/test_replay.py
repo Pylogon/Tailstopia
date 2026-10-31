@@ -1,5 +1,6 @@
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 from tailstopia_macro_replay import recording, replay, validate_inputs, DEFAULT_RECORDING, StopRequested
 
 
@@ -51,6 +52,21 @@ class ReplayTests(unittest.TestCase):
         self.assertAlmostEqual(times["key_up","a"] - times["key_down","a"], 2.0236)
         self.assertAlmostEqual(times["key_up","s"] - times["key_down","s"], 1.9932)
         self.assertAlmostEqual(times["mouse_up","right"] - times["mouse_down","right"], 2.7613)
+
+    def test_quiet_replay_preserves_dispatch_and_callback(self):
+        api = FakeAPI()
+        actions, duration = recording(DEFAULT_RECORDING)
+        dispatched = []
+        with patch("builtins.print") as printer:
+            replay(actions, duration, api, lambda: None, api.clock, api.sleep,
+                   on_action=lambda action, at: dispatched.append((action, at)), verbose=False)
+        printer.assert_not_called()
+        self.assertEqual(len(dispatched), len(actions))
+        self.assertEqual(len(api.calls), len(actions))
+        for event, (at, kind, _) in zip(actions, api.calls):
+            self.assertAlmostEqual(event["t"], at)
+            self.assertEqual(event["type"], kind)
+        self.assertFalse(api.keys or api.buttons)
 
     def test_stop_releases_overlapping_inputs(self):
         api = FakeAPI()
