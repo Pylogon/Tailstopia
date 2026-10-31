@@ -280,14 +280,15 @@
     "change_fraction": 0.15,
     "empty_max_mean_error": 10,
     "retry_delay": 1,
-    "additional_retries": 5,
+    "additional_retries": 3,
     "verify_wait": 0.3,
     "confirmations": 2,
     "between_slots": 1.0,
     "pointer_rest_client": [
       900,
       500
-    ]
+    ],
+    "return_if_missing": true
   },
   "return": {
     "loading_poll": 0.5,

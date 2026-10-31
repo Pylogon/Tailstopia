@@ -88,6 +88,8 @@ def validate_mission_config(config):
         count(config[section]["confirmations"],1)
     count(config["ui"]["additional_retries"])
     count(config["reward"]["additional_retries"])
+    if not isinstance(config["reward"].get("return_if_missing",False),bool):
+        raise ValueError("Reward return_if_missing must be a boolean")
     camera = config["camera"]
     number(camera["rotation_seconds"],True)
     number(camera["settle_seconds"],True)

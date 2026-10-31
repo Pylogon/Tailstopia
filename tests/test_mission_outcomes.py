@@ -82,7 +82,7 @@ class MissionOutcomeTests(unittest.TestCase):
         self.assertEqual([(r['pass_with_reward'],r['mission_fail']) for r in outcomes],[(0,1),(1,1),(1,2)])
         summary=self.summary(rows)
         self.assertEqual((summary['pass_with_reward'],summary['mission_fail']),(1,2))
-        self.assertEqual(flow.mission_counts,{'pass_with_reward':1,'mission_fail':2})
+        self.assertEqual(flow.mission_counts,{'pass_with_reward':1,'mission_fail':2,'no_reward':0})
         self.assertEqual(sum(r['kind']=='click' and r['label']=='camp' for r in rows),3)
         self.assertEqual(sum(r['kind']=='recording_start' and r['recording']=='mission' for r in rows),3)
         self.assertEqual(sum(r['kind']=='click' and r['label'].startswith('reward_') for r in rows),3)
@@ -101,7 +101,7 @@ class MissionOutcomeTests(unittest.TestCase):
                 return super().capture(box)
         result,rows,flow,_=self.run_case(Lost)
         self.assertEqual((result.status,result.loops_completed),('SUCCESS',2))
-        self.assertEqual(flow.mission_counts,{'pass_with_reward':0,'mission_fail':2})
+        self.assertEqual(flow.mission_counts,{'pass_with_reward':0,'mission_fail':2,'no_reward':0})
         self.assertEqual(flow.session.reward_slot_captures,0)
         self.assertFalse(any(r['kind']=='click' and r['label'].startswith('reward_') for r in rows))
         self.assertFalse(any(r['kind']=='reward_verified' for r in rows))
@@ -114,17 +114,18 @@ class MissionOutcomeTests(unittest.TestCase):
         verified=next(i for i,r in enumerate(rows) if r['kind']=='reward_verified')
         counted=next(i for i,r in enumerate(rows) if r['kind']=='mission_outcome')
         self.assertLess(verified,counted)
-        self.assertEqual(flow.mission_counts,{'pass_with_reward':1,'mission_fail':0})
+        self.assertEqual(flow.mission_counts,{'pass_with_reward':1,'mission_fail':0,'no_reward':0})
 
-    def test_pass_grade_but_missing_pickup_is_an_automation_failure_not_a_defeat(self):
+    def test_missing_pickup_keeps_safe_stop_when_recovery_is_disabled(self):
         self.config['reward']['additional_retries']=1
+        self.config['reward']['return_if_missing']=False
         class NoPickup(ResultSession):
             def click_effect(session,label):
                 if not label.startswith('reward_'):super().click_effect(label)
         result,rows,flow,_=self.run_case(NoPickup)
         self.assertEqual((result.status,result.state),('FAIL','COLLECT_REWARDS'))
         self.assertIn('First pickup not detected',result.reason)
-        self.assertEqual(flow.mission_counts,{'pass_with_reward':0,'mission_fail':0})
+        self.assertEqual(flow.mission_counts,{'pass_with_reward':0,'mission_fail':0,'no_reward':0})
         self.assertFalse(any(r['kind']=='click' and r['label']=='camp' for r in rows))
 
     def test_verified_pickup_remains_counted_when_return_camp_fails(self):
@@ -134,7 +135,7 @@ class MissionOutcomeTests(unittest.TestCase):
                 return super().capture(box)
         result,rows,flow,_=self.run_case(NoCamp)
         self.assertEqual((result.status,result.state,result.loops_completed),('FAIL','RETURN_CAMP',0))
-        self.assertEqual(flow.mission_counts,{'pass_with_reward':1,'mission_fail':0})
+        self.assertEqual(flow.mission_counts,{'pass_with_reward':1,'mission_fail':0,'no_reward':0})
         self.assertEqual(self.summary(rows)['pass_with_reward'],1)
 
     def test_f9_and_focus_loss_during_grade_confirmation_do_not_count_defeat(self):
@@ -153,7 +154,7 @@ class MissionOutcomeTests(unittest.TestCase):
                 result,rows,flow,_=self.run_case(Interrupted)
                 self.assertEqual(result.status,'FAIL')
                 self.assertEqual(result.stopped,isinstance(error,StopRequested))
-                self.assertEqual(flow.mission_counts,{'pass_with_reward':0,'mission_fail':0})
+                self.assertEqual(flow.mission_counts,{'pass_with_reward':0,'mission_fail':0,'no_reward':0})
                 self.assertFalse(any(r['kind']=='click' and (r['label'].startswith('reward_') or r['label']=='camp') for r in rows))
 
     def test_missing_header_safe_stops_without_reward_or_camp(self):
@@ -167,7 +168,7 @@ class MissionOutcomeTests(unittest.TestCase):
         result,rows,flow,_=self.run_case()
         self.assertEqual((result.status,result.state),('FAIL','COLLECT_REWARDS'))
         self.assertIn('TimeoutError',result.reason)
-        self.assertEqual(flow.mission_counts,{'pass_with_reward':0,'mission_fail':0})
+        self.assertEqual(flow.mission_counts,{'pass_with_reward':0,'mission_fail':0,'no_reward':0})
         self.assertFalse(any(r['kind']=='click' and (r['label'].startswith('reward_') or r['label']=='camp') for r in rows))
         self.assertTrue(list(Path(self.temp.name).glob('*_failure.png')))
 
@@ -181,7 +182,7 @@ class MissionOutcomeTests(unittest.TestCase):
         self.vision.observe_result=observe
         result,rows,flow,_=self.run_case()
         self.assertEqual(result.status,'SUCCESS')
-        self.assertEqual(flow.mission_counts,{'pass_with_reward':1,'mission_fail':0})
+        self.assertEqual(flow.mission_counts,{'pass_with_reward':1,'mission_fail':0,'no_reward':0})
         self.assertTrue(any(r['kind']=='reward_verified' for r in rows))
 
     def test_one_failed_grade_frame_then_two_passes_does_not_trigger_defeat(self):
@@ -195,7 +196,7 @@ class MissionOutcomeTests(unittest.TestCase):
         result,rows,flow,_=self.run_case()
         self.assertEqual(result.status,'SUCCESS')
         self.assertEqual(len(calls),3)
-        self.assertEqual(flow.mission_counts,{'pass_with_reward':1,'mission_fail':0})
+        self.assertEqual(flow.mission_counts,{'pass_with_reward':1,'mission_fail':0,'no_reward':0})
         self.assertFalse(any(r['kind']=='reward_skipped' for r in rows))
 
     def test_duplicate_outcome_does_not_increment_and_conflict_is_rejected(self):
@@ -205,9 +206,9 @@ class MissionOutcomeTests(unittest.TestCase):
             flow.record_mission_outcome('FAIL','confirmed')
             flow.record_mission_outcome('FAIL','same result')
             with self.assertRaisesRegex(RuntimeError,'Conflicting'):flow.record_mission_outcome('PASS_WITH_REWARD','inconsistent')
-        self.assertEqual(flow.mission_counts,{'pass_with_reward':0,'mission_fail':1})
+        self.assertEqual(flow.mission_counts,{'pass_with_reward':0,'mission_fail':1,'no_reward':0})
         flow.reset_mission_counts()
-        self.assertEqual(flow.mission_counts,{'pass_with_reward':0,'mission_fail':0})
+        self.assertEqual(flow.mission_counts,{'pass_with_reward':0,'mission_fail':0,'no_reward':0})
 
     def test_invalid_outcome_config_is_rejected(self):
         for value in (None,{},'missing','result',True):
@@ -219,7 +220,7 @@ class MissionOutcomeTests(unittest.TestCase):
         self.vision=MissionVision(self.config,self.base)
         result,rows,flow,_=self.run_case(FixtureSession)
         self.assertEqual(result.status,'SUCCESS')
-        self.assertEqual(flow.mission_counts,{'pass_with_reward':1,'mission_fail':0})
+        self.assertEqual(flow.mission_counts,{'pass_with_reward':1,'mission_fail':0,'no_reward':0})
         self.assertFalse(any(r['kind']=='recognition' and r['target']=='mission_failed' for r in rows))
 
 

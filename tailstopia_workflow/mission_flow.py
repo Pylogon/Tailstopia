@@ -398,7 +398,7 @@ class MissionFlow:
             self.wait(self.config["result"]["poll"])
 
     def reset_mission_counts(self):
-        self.mission_counts = {"pass_with_reward":0,"mission_fail":0}
+        self.mission_counts = {"pass_with_reward":0,"mission_fail":0,"no_reward":0}
         self._counted_outcome_loop = None
         self._mission_outcome = None
 
@@ -407,7 +407,7 @@ class MissionFlow:
             if self._mission_outcome != outcome:
                 raise RuntimeError("Conflicting mission outcomes in one loop")
             return
-        key = {"PASS_WITH_REWARD":"pass_with_reward","FAIL":"mission_fail"}[outcome]
+        key = {"PASS_WITH_REWARD":"pass_with_reward","FAIL":"mission_fail","NO_REWARD":"no_reward"}[outcome]
         self.mission_counts[key] += 1
         self._counted_outcome_loop,self._mission_outcome = self.session.loop,outcome
         self.session.event("mission_outcome",outcome=outcome,reason=reason,**self.mission_counts)
@@ -482,7 +482,18 @@ class MissionFlow:
                 if self.received(baseline):
                     break
             else:
-                raise RuntimeError("First pickup not detected after reward retry budget")
+                if not policy.get("return_if_missing",False):
+                    raise RuntimeError("First pickup not detected after reward retry budget")
+                # Allow the last click to finish without sending another one.
+                self.wait(policy["retry_delay"])
+                if not self.match("result").found:
+                    raise RuntimeError("Mission Result disappeared after reward retry budget")
+                if not self.received(baseline):
+                    reason = "First pickup unconfirmed after reward retry budget; returning to Mission Camp"
+                    self.record_mission_outcome("NO_REWARD",reason)
+                    self.session.event("reward_skipped",reason=reason,retries=policy["additional_retries"],
+                                       attempts=policy["additional_retries"]+1)
+                    return
         finally:
             baseline.close()
         self.session.event("reward_verified",slot=1,verification="Your Items image changed in consecutive checks")
@@ -585,8 +596,11 @@ class MissionFlow:
                         self.session.event("state_result",status="FAIL",reason=f"{type(exc).__name__}: {exc}",
                                            elapsed=self.session.now()-started,wall_elapsed=time.perf_counter()-wall,timing=self.timing_summary())
                         raise
-                    reason = ("Mission defeated; rewards skipped" if self.state == "COLLECT_REWARDS" and
-                              self._mission_outcome == "FAIL" else "Expected state result satisfied")
+                    reason = "Expected state result satisfied"
+                    if self.state == "COLLECT_REWARDS":
+                        reason = {"FAIL":"Mission defeated; rewards skipped",
+                                  "NO_REWARD":"Reward pickup unconfirmed; returning to Mission Camp"}.get(
+                                      self._mission_outcome,reason)
                     self.session.event("state_result",status="SUCCESS",reason=reason,
                                        elapsed=self.session.now()-started,wall_elapsed=time.perf_counter()-wall,timing=self.timing_summary())
                     if through == self.state and self.state != states[-1]:
