@@ -54,7 +54,7 @@ def validate_inputs(actions, api):
     return result
 
 
-def replay(actions, duration, api, check, clock=time.perf_counter, sleep=time.sleep, dry_run=False, on_action=None):
+def replay(actions, duration, api, check, clock=time.perf_counter, sleep=time.sleep, dry_run=False, on_action=None, verbose=True):
     """Down stays held until its matching up. Summary rows are removed by parser."""
     held_keys, held_buttons = set(), set()
     started = clock()
@@ -74,7 +74,8 @@ def replay(actions, duration, api, check, clock=time.perf_counter, sleep=time.sl
             wait_until(action["t"])
             kind = action["type"]
             dispatched = clock()-started
-            print(f"{dispatched:7.4f}s {action}", flush=True)
+            if verbose:
+                print(f"{dispatched:7.4f}s {action}", flush=True)
             if dry_run:
                 if on_action is not None:
                     on_action(action,dispatched)
