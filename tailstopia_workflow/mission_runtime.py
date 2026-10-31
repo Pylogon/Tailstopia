@@ -287,7 +287,9 @@ class FixtureSession(Session):
         if "vote" in self.config:
             frames.update({"VERIFY_START":"95/talk.png","OPEN_MISSION":"95/talk.png",
                            "WAIT_VOTE":"95/vote.png","VOTE_STAGE":"95/vote.png",
-                           "PLAY_MISSION":"95/vote.png","VERIFY_RETURN_START":"95/talk.png"})
+                           "PLAY_MISSION":"95/vote.png","WAIT_RESULT":"95/reward.png",
+                           "COLLECT_REWARDS":"95/reward.png","RETURN_CAMP":"95/reward.png",
+                           "VERIFY_RETURN_START":"95/talk.png"})
         if "mission_selection" in self.config:
             frames.update({"SELECT_MISSION":"95/create.png","CREATE_ROOM":"95/create.png"})
         if state in frames:
@@ -314,7 +316,7 @@ class FixtureSession(Session):
             origin = (0,0) if self.frame == "screenshot_18.png" else self.config["reference_client_origin"]
             area = (box[0]+origin[0],box[1]+origin[1],box[2]+origin[0],box[3]+origin[1])
             image = source.crop(area).convert("RGB")
-            if self.received and self.frame.startswith("reward") and tuple(box) == tuple(self.config["reward"]["received_box_client"]):
+            if self.received and Path(self.frame).name.startswith("reward") and tuple(box) == tuple(self.config["reward"]["received_box_client"]):
                 # Reference assets have empty Your Items slots only. Place a real
                 # icon crop into that slot to exercise image-change verification.
                 x,y = self.config["reward"]["slots_client"][0]

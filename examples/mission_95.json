@@ -91,7 +91,7 @@
       "threshold": 0.88
     },
     "result": {
-      "image": "../resource/reward1.png",
+      "image": "../resource/95/reward.png",
       "template_box_client": [
         549,
         78,
@@ -107,7 +107,7 @@
       "threshold": 0.9
     },
     "camp": {
-      "image": "../resource/reward1.png",
+      "image": "../resource/95/reward.png",
       "template_box_client": [
         819,
         451,
@@ -258,7 +258,7 @@
       426,
       411
     ],
-    "empty_image": "../resource/reward1.png",
+    "empty_image": "../resource/95/reward.png",
     "change_pixel_delta": 18,
     "change_fraction": 0.15,
     "empty_max_mean_error": 10,

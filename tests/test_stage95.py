@@ -306,6 +306,40 @@ class Stage95Tests(unittest.TestCase):
         cfg=copy.deepcopy(self.config);del cfg['targets']['mission_list']
         with self.assertRaises(ValueError):validate_mission_config(cfg)
 
+    def test_stage95_reward_reference_matches_result_camp_and_empty_slot(self):
+        expected='../resource/95/reward.png'
+        self.assertEqual(self.config['targets']['result']['image'],expected)
+        self.assertEqual(self.config['targets']['camp']['image'],expected)
+        self.assertEqual(self.config['reward']['empty_image'],expected)
+        with Image.open(ROOT/'resource/95/reward.png') as image:
+            capture=lambda box:self.vision.crop_reference(image,box,[43,95])
+            result=self.vision.match('result',capture)
+            camp=self.vision.match('camp',capture)
+            self.assertTrue(result.found and camp.found)
+            self.assertGreater(result.score,.99)
+            self.assertGreater(camp.score,.99)
+            self.assertEqual(camp.point,(853,457))
+            with capture(self.vision.reward_box) as slot:self.assertTrue(self.vision.empty_slot(slot))
+            self.assertFalse(self.vision.match('vote',capture).found)
+        self.assertEqual(self.config['reward']['slots_client'],[[416,290],[446,290],[476,290]])
+
+    def test_reward_fixture_uses_actual_stage95_frame_and_confirms_pickup_before_return(self):
+        class ActualReward(FixtureSession):
+            frames=[]
+            def capture(session,box):
+                if session.state in {'WAIT_RESULT','COLLECT_REWARDS','RETURN_CAMP'}:
+                    session.frames.append(session.frame)
+                return super().capture(box)
+        result,rows,session=self.run_case(ActualReward)
+        self.assertEqual(result.status,'SUCCESS')
+        self.assertTrue(session.frames)
+        self.assertEqual(set(session.frames),{'95/reward.png'})
+        verified=next(i for i,r in enumerate(rows) if r['kind']=='reward_verified')
+        camp=next(i for i,r in enumerate(rows) if r['kind']=='click' and r['label']=='camp')
+        self.assertLess(verified,camp)
+        self.assertEqual(sum(r['kind']=='click' and r['label'].startswith('reward_') for r in rows),3)
+        self.assertTrue(any(r['kind']=='reward_observation' and r['changed'] for r in rows))
+
     def test_original_profile_keeps_original_state_sequence_and_seven_slots(self):
         old,_=load_mission_config(ROOT/'examples/mission_flow.json')
         self.assertEqual(mission_states(old),STATES)
