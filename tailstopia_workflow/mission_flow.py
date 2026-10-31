@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import time
 
 from tailstopia_macro_replay import recording, replay, validate_inputs, StopRequested
-from .mission_config import STATES, validate_mission_config
+from .mission_config import STATES, TALK_RECOVERY_DEFAULTS, validate_mission_config
 
 
 @dataclass(frozen=True)
@@ -264,6 +264,61 @@ class MissionFlow:
             # One observation per interval, with a final check at the budget.
             self.wait(min(self.config["talk"].get("poll_interval",0.5),remaining))
 
+    def move_toward_talk(self,seconds):
+        # Use the original desktop anchor, just as replay does. Never replay
+        # the start recording again or alter its timestamps for recovery.
+        api = self.session.api
+        if api.held_keys or api.held_buttons:
+            raise RuntimeError("Talk recovery requires all previous inputs released")
+        anchor = next((action for action in self.macros["start"][0]
+                       if action["type"] == "mouse_down" and action["button"] == "right"),None)
+        if anchor is None:
+            raise RuntimeError("Talk recovery needs a right-mouse anchor in the start recording")
+        self.session.prepare_macro("talk_recovery")
+        self.check()
+        try:
+            api.mouseDown(x=anchor["x"],y=anchor["y"],button="right",_pause=False)
+            self.check()
+            api.keyDown("s",_pause=False)
+            self.check()
+            api.keyDown("a",_pause=False)
+            self._wait(seconds)
+        finally:
+            # Includes partially dispatched input, F9, lost focus and timeout.
+            # InputTrace attempts every release, even if one backend up fails.
+            api.release_all()
+        self.check()
+
+    def recover_talk(self,missing):
+        policy = {**TALK_RECOVERY_DEFAULTS,**self.config["talk"].get("recovery",{})}
+        attempts = 0
+        while True:
+            # Confirm absence on a separate stationary frame. Check Target
+            # first: a delayed menu must never trigger compensating movement.
+            self.wait(policy["confirm_wait"])
+            if self.match("room_list").found:
+                return None
+            confirmed = self.match("talk")
+            if confirmed.found:
+                return confirmed
+            if attempts >= policy["max_attempts"]:
+                raise RuntimeError(f"Talk recovery retry budget exhausted; attempts={attempts}; "
+                                   f"talk_score={confirmed.score:.6f}; no fallback click sent")
+            self.session.event("retry",status="RETRY",reason="Talk absent in two checks; short right-mouse + S + A recovery",
+                               attempt=attempts+1,max_attempts=policy["max_attempts"],
+                               duration=policy["hold_seconds"],previous_score=missing.score,score=confirmed.score)
+            self.measure("recovery_move",self.move_toward_talk,policy["hold_seconds"])
+            attempts += 1
+            self.session.event("talk_recovery_move",attempt=attempts,duration=policy["hold_seconds"],
+                               cumulative_hold_seconds=attempts*policy["hold_seconds"])
+            # All inputs are released before settling or taking either ROI.
+            self.wait(policy["settle_seconds"])
+            if self.match("room_list").found:
+                return None
+            missing = self.match("talk")
+            if missing.found:
+                return missing
+
     def open_mission(self):
         spec = self.config["talk"]
         if self.match("room_list").found:
@@ -272,7 +327,12 @@ class MissionFlow:
         if self.wait_room_list(spec["first_wait"],spec.get("poll_timeout",5)):
             return
         self.session.event("retry",status="RETRY",reason="Room List absent after Talk polling window; locating Talk template")
-        self.click_matched("talk")
+        talk = self.match("talk")
+        if not talk.found:
+            talk = self.recover_talk(talk)
+        if talk is None:  # Room List appeared during confirmation/recovery.
+            return
+        self.click(talk.point,"talk")
         # Preserve the verified-text fallback and its existing settle time.
         self.wait(spec["fallback_wait"])
         if not self.match("room_list").found:

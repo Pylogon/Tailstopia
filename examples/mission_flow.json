@@ -8,7 +8,7 @@
   "start_recording": "../recordings/start.json",
   "mission_recording": "../recordings/mission.json",
   "output": "../workflow_runs/mission_flow",
-  "max_loops": 100,
+  "max_loops": 300,
   "targets": {
     "talk": {
       "image": "../resource/red panda1.png",
@@ -19,7 +19,7 @@
         317
       ],
       "search_roi_client": [
-        432,
+        380,
         250,
         597,
         355
@@ -27,7 +27,7 @@
       "threshold": 0.82,
       "glyph_hsv_lower": [40, 15, 140],
       "glyph_hsv_upper": [100, 255, 255],
-      "template_scales": [1.0, 0.9],
+      "template_scales": [1.0, 0.9, 1.1],
       "variants": [
         {
           "image": "../resource/red panda2.png",
@@ -140,7 +140,13 @@
     "first_wait": 5,
     "poll_timeout": 5,
     "poll_interval": 0.5,
-    "fallback_wait": 5.5
+    "fallback_wait": 5.5,
+    "recovery": {
+      "max_attempts": 2,
+      "hold_seconds": 0.25,
+      "confirm_wait": 0.5,
+      "settle_seconds": 0.5
+    }
   },
   "ui": {
     "settle": 1,

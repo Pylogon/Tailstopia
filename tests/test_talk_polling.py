@@ -136,11 +136,12 @@ class TalkPollingTests(unittest.TestCase):
 
     def test_missing_talk_template_sends_no_fallback_click(self):
         self.session.talk_found = False
-        with self.assertRaisesRegex(RuntimeError,"Cannot find talk; no click sent"):
+        self.config["talk"]["recovery"]["max_attempts"] = 0
+        with self.assertRaisesRegex(RuntimeError,"Talk recovery retry budget exhausted; attempts=0"):
             self.flow.open_mission()
         self.assertEqual(len(self.session.clicks),1)
-        self.assertAlmostEqual(self.session.now(),10.05)
-        self.assertEqual(sum(target == "talk" for at,target in self.session.captures),1)
+        self.assertAlmostEqual(self.session.now(),10.55)
+        self.assertEqual(sum(target == "talk" for at,target in self.session.captures),2)
 
     def test_fallback_result_uses_original_maximum_wait_and_never_clicks_again(self):
         with self.assertRaisesRegex(RuntimeError,"Talk fallback did not open Room List"):

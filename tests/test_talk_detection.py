@@ -19,6 +19,19 @@ from tailstopia_workflow.mission_vision import MissionVision
 ROOT = Path(__file__).resolve().parents[1]
 FIXTURE = ROOT/"tests/fixtures/talk_live_background_roi.png"
 SECOND_FIXTURE = ROOT/"tests/fixtures/talk_second_live_background_roi.png"
+# Client ROI from 20261031_143010_721755_live/143_OPEN_MISSION_failure_client.png.
+LEFT_FIXTURE = ROOT/"tests/fixtures/talk_loop143_left_roi.png"
+RECORDED_ROI = (432,250,597,355)
+LEFT_ROI = (380,250,597,355)
+
+
+def recorded_talk_capture(fixture,box,recorded_roi=RECORDED_ROI):
+    # Older fixtures contain only the former ROI. Pad unavailable margins with
+    # black; preserve the measured client coordinates of every recorded pixel.
+    with Image.open(fixture) as image:
+        result = Image.new("RGB",(box[2]-box[0],box[3]-box[1]))
+        result.paste(image,(recorded_roi[0]-box[0],recorded_roi[1]-box[1]))
+        return result
 
 
 class TalkDetectionTests(unittest.TestCase):
@@ -27,11 +40,11 @@ class TalkDetectionTests(unittest.TestCase):
         self.vision = MissionVision(self.config,self.base)
 
     def fixture_match(self,vision):
-        with Image.open(FIXTURE) as image:
-            return vision.match("talk",lambda box:image.copy())
+        return vision.match("talk",lambda box:recorded_talk_capture(FIXTURE,box))
 
     def test_live_failure_old_score_and_fixed_score_at_same_threshold(self):
         old = copy.deepcopy(self.config)
+        old["targets"]["talk"]["search_roi_client"] = list(RECORDED_ROI)
         for key in ("glyph_hsv_lower","glyph_hsv_upper","template_scales"):
             old["targets"]["talk"].pop(key)
         old["targets"]["talk"]["variants"] = [v for v in old["targets"]["talk"]["variants"] if "template_image" not in v]
@@ -52,17 +65,38 @@ class TalkDetectionTests(unittest.TestCase):
 
     def test_second_live_failure_passes_with_measured_variant_at_same_threshold(self):
         before_config = copy.deepcopy(self.config)
+        before_config["targets"]["talk"]["search_roi_client"] = list(RECORDED_ROI)
+        before_config["targets"]["talk"]["template_scales"] = [1.0,0.9]
         before_config["targets"]["talk"]["variants"] = [v for v in before_config["targets"]["talk"]["variants"] if "template_image" not in v]
         before_vision = MissionVision(before_config,self.base)
-        with Image.open(SECOND_FIXTURE) as image:
-            before = before_vision.match("talk",lambda box:image.copy())
-            after = self.vision.match("talk",lambda box:image.copy())
+        before = before_vision.match("talk",lambda box:recorded_talk_capture(SECOND_FIXTURE,box))
+        after = self.vision.match("talk",lambda box:recorded_talk_capture(SECOND_FIXTURE,box))
         self.assertFalse(before.found)
         self.assertAlmostEqual(before.score,.7576707,places=5)
         self.assertTrue(after.found)
         self.assertGreater(after.score,.99)
         self.assertEqual(after.point,(562,297))
         self.assertEqual(self.config["targets"]["talk"]["threshold"],.82)
+
+    def test_loop143_failure_needs_both_left_margin_and_measured_scale(self):
+        for roi,scales,expected_score in ((RECORDED_ROI,[1.0,0.9],.421317),
+                                         (LEFT_ROI,[1.0,0.9],.482155)):
+            with self.subTest(roi=roi,scales=scales):
+                config = copy.deepcopy(self.config)
+                config["targets"]["talk"]["search_roi_client"] = list(roi)
+                config["targets"]["talk"]["template_scales"] = scales
+                vision = MissionVision(config,self.base)
+                before = vision.match("talk",lambda box:recorded_talk_capture(LEFT_FIXTURE,box,LEFT_ROI))
+                self.assertFalse(before.found)
+                self.assertAlmostEqual(before.score,expected_score,places=5)
+        after = self.vision.match("talk",lambda box:recorded_talk_capture(LEFT_FIXTURE,box,LEFT_ROI))
+        self.assertTrue(after.found)
+        self.assertAlmostEqual(after.score,.879879,places=5)
+        self.assertEqual(after.point,(424,337))
+        self.assertEqual(self.config["targets"]["talk"]["threshold"],.82)
+
+    def test_loop143_fallback_clicks_real_talk_without_compensating_movement(self):
+        self.run_live_fallback(LEFT_FIXTURE,[424,337],LEFT_ROI)
 
     def test_original_reference_views_still_pass(self):
         for filename in ("red panda1.png","red panda2.png"):
@@ -106,7 +140,7 @@ class TalkDetectionTests(unittest.TestCase):
         calls = []
         def capture(box):
             calls.append(tuple(box))
-            return Image.open(FIXTURE).convert("RGB")
+            return recorded_talk_capture(FIXTURE,box)
         with patch("tailstopia_workflow.mission_vision.cv2.resize",side_effect=AssertionError("Runtime resize")), \
              patch("tailstopia_workflow.mission_vision.cv2.inRange",side_effect=AssertionError("Runtime color filtering")):
             self.assertTrue(self.vision.match("talk",capture).found)
@@ -131,7 +165,7 @@ class TalkDetectionTests(unittest.TestCase):
     def test_new_start_reference_matches_at_updated_fixed_talk_position(self):
         point = self.config["talk"]["point_client"]
         self.assertEqual(point,[478,321])
-        self.assertEqual(self.config["targets"]["talk"]["search_roi_client"],[432,250,597,355])
+        self.assertEqual(self.config["targets"]["talk"]["search_roi_client"],list(LEFT_ROI))
         self.assertEqual(self.config["targets"]["talk"]["threshold"],.82)
         self.assertEqual(self.config["talk"]["first_wait"],5)
         with Image.open(ROOT/"resource/new redpanda.png") as image:
@@ -168,7 +202,7 @@ class TalkDetectionTests(unittest.TestCase):
         self.assertEqual(sum(row["kind"] == "macro_action" for row in rows),len(actions))
         self.assertFalse(any(row["kind"] == "recognition" and row["target"] == "talk" for row in rows))
 
-    def run_live_fallback(self,fixture,expected_point):
+    def run_live_fallback(self,fixture,expected_point,fixture_roi=RECORDED_ROI):
         class LiveBackground(FixtureSession):
             def click_effect(session,label):
                 if label == "talk" and session.click_counts.get(label,0) < 1:
@@ -178,8 +212,7 @@ class TalkDetectionTests(unittest.TestCase):
 
             def capture(session,box):
                 if session.state == "OPEN_MISSION" and session.frame != "mission.png" and tuple(box) == tuple(session.config["targets"]["talk"]["search_roi_client"]):
-                    with Image.open(fixture) as image:
-                        return image.convert("RGB")
+                    return recorded_talk_capture(fixture,box,fixture_roi)
                 return super().capture(box)
 
         self.config["max_loops"] = 1
@@ -192,6 +225,10 @@ class TalkDetectionTests(unittest.TestCase):
         clicks = [e for e in events if e["kind"] == "click" and e["label"] == "talk"]
         self.assertEqual(clicks[0]["client_point"],self.config["talk"]["point_client"])
         self.assertEqual(len(clicks),2)
+        talk_checks = [e for e in events if e["kind"] == "recognition" and e["target"] == "talk"]
+        self.assertEqual(len(talk_checks),1)
+        self.assertFalse(any(e["kind"] == "talk_recovery_move" for e in events))
+        self.assertEqual(sum(e["kind"] == "recording_start" for e in events),1)
         self.assertEqual(clicks[1]["client_point"],expected_point)  # Existing template fallback.
         state = next(e for e in events if e["kind"] == "state_result" and e["state"] == "OPEN_MISSION")
         policy = self.config["talk"]

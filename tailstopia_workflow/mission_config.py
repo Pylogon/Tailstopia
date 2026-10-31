@@ -7,6 +7,9 @@ STATES = ("VERIFY_START","PLAY_START","OPEN_MISSION","OPEN_ROOM_LIST","CREATE_RO
           "RETURN_CAMP","WAIT_RETURN_LOADING","VERIFY_RETURN_START")
 
 
+TALK_RECOVERY_DEFAULTS = {"max_attempts":2,"hold_seconds":0.25,"confirm_wait":0.5,"settle_seconds":0.5}
+
+
 def load_mission_config(path):
     path = Path(path).resolve()
     config = json.loads(path.read_text(encoding="utf-8-sig"))
@@ -41,6 +44,12 @@ def validate_mission_config(config):
     # Polling has its own window after first_wait; the state deadline still applies.
     number(config["talk"].get("poll_timeout",5),True)
     number(config["talk"].get("poll_interval",0.5),True)
+    recovery = {**TALK_RECOVERY_DEFAULTS,**config["talk"].get("recovery",{})}
+    count(recovery["max_attempts"])
+    for key in ("hold_seconds","confirm_wait","settle_seconds"):
+        number(recovery[key],True)
+    if recovery["hold_seconds"] > 0.3:
+        raise ValueError("Talk recovery hold_seconds must not exceed 0.3 seconds")
     for section in ("stage","result","reward","return"):
         count(config[section]["confirmations"],1)
     count(config["ui"]["additional_retries"])
