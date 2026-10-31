@@ -21,6 +21,8 @@ def mission_states(config):
     if "mission_selection" in config:
         create = states.index("CREATE_ROOM")
         states = states[:create]+("SELECT_MISSION",)+states[create:]
+    if config["talk"].get("opened_target","room_list") == "mission_list":
+        states = tuple(state for state in states if state != "OPEN_ROOM_LIST")
     return states
 
 
@@ -48,6 +50,11 @@ def validate_mission_config(config):
     if not config["window_title"].strip():
         raise ValueError("Empty window title")
     point(config["reference_client_origin"])
+    opened_target = config["talk"].get("opened_target","room_list")
+    if opened_target not in ("room_list","mission_list"):
+        raise ValueError("Talk opened_target must be room_list or mission_list")
+    if opened_target not in config["targets"]:
+        raise ValueError("Talk opened_target requires a configured target")
     for name in mission_states(config):
         number(config["timeouts"][name],True)
     if "vote" in config:
@@ -123,7 +130,7 @@ def validate_mission_config(config):
     point(config["talk"]["point_client"])
     if not 0 < config["reward"]["change_fraction"] <= 1:
         raise ValueError("Invalid reward change fraction")
-    targets = ("talk","room_list","create","start","result","camp")
+    targets = ("talk",opened_target,"create","start","result","camp")
     if "vote" in config:
         targets += ("vote",)
     if "mission_selection" in config:

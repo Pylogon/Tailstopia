@@ -58,22 +58,6 @@
         }
       ]
     },
-    "room_list": {
-      "image": "../resource/mission.png",
-      "template_box_client": [
-        1090,
-        379,
-        1150,
-        393
-      ],
-      "search_roi_client": [
-        1067,
-        360,
-        1167,
-        415
-      ],
-      "threshold": 0.88
-    },
     "create": {
       "image": "../resource/95/create.png",
       "template_box_client": [
@@ -201,7 +185,8 @@
       "hold_seconds": 0.25,
       "confirm_wait": 0.5,
       "settle_seconds": 0.5
-    }
+    },
+    "opened_target": "mission_list"
   },
   "ui": {
     "settle": 1,
@@ -252,7 +237,7 @@
     "confirmations": 2
   },
   "reward": {
-    "settle": 4.5,
+    "settle": 4,
     "slots_client": [
       [
         416,
@@ -315,7 +300,7 @@
   "vote": {
     "first_wait": 11,
     "poll": 1,
-    "after_click_wait": 5
+    "after_click_wait": 3
   },
   "mission_selection": {
     "point_client": [

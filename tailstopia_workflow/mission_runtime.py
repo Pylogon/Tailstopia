@@ -302,6 +302,8 @@ class FixtureSession(Session):
                        "start":"loading.png","camp":"loading.png"}
         if "mission_selection" in self.config:
             transitions.update({"room_list":"95/create.png","mission_selection":"95/create.png"})
+        if self.config["talk"].get("opened_target","room_list") == "mission_list":
+            transitions["talk"] = "95/create.png"
         self.frame = transitions.get(label,self.frame)
         if label == "reward_1":
             self.received = True

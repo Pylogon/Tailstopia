@@ -250,13 +250,13 @@ class MissionFlow:
             # by a second independent observation with the camera stationary.
             self.wait(policy["settle_seconds"])
 
-    def wait_room_list(self,initial_wait,poll_timeout):
+    def wait_room_list(self,initial_wait,poll_timeout,target="room_list"):
         # A failed poll never clicks. The complete polling window must expire
         # before the caller may enter the verified Talk-template fallback.
         self.wait(initial_wait)
         until = self.session.now()+poll_timeout
         while True:
-            if self.match("room_list").found:
+            if self.match(target).found:
                 return True
             remaining = until-self.session.now()
             if remaining <= 0:
@@ -291,12 +291,13 @@ class MissionFlow:
 
     def recover_talk(self,missing):
         policy = {**TALK_RECOVERY_DEFAULTS,**self.config["talk"].get("recovery",{})}
+        target = self.config["talk"].get("opened_target","room_list")
         attempts = 0
         while True:
             # Confirm absence on a separate stationary frame. Check Target
             # first: a delayed menu must never trigger compensating movement.
             self.wait(policy["confirm_wait"])
-            if self.match("room_list").found:
+            if self.match(target).found:
                 return None
             confirmed = self.match("talk")
             if confirmed.found:
@@ -313,7 +314,7 @@ class MissionFlow:
                                cumulative_hold_seconds=attempts*policy["hold_seconds"])
             # All inputs are released before settling or taking either ROI.
             self.wait(policy["settle_seconds"])
-            if self.match("room_list").found:
+            if self.match(target).found:
                 return None
             missing = self.match("talk")
             if missing.found:
@@ -321,22 +322,24 @@ class MissionFlow:
 
     def open_mission(self):
         spec = self.config["talk"]
-        if self.match("room_list").found:
+        target = spec.get("opened_target","room_list")
+        title = "Room List" if target == "room_list" else "Mission List"
+        if self.match(target).found:
             return
         self.click(spec["point_client"],"talk")
-        if self.wait_room_list(spec["first_wait"],spec.get("poll_timeout",5)):
+        if self.wait_room_list(spec["first_wait"],spec.get("poll_timeout",5),target):
             return
-        self.session.event("retry",status="RETRY",reason="Room List absent after Talk polling window; locating Talk template")
+        self.session.event("retry",status="RETRY",reason=f"{title} absent after Talk polling window; locating Talk template")
         talk = self.match("talk")
         if not talk.found:
             talk = self.recover_talk(talk)
-        if talk is None:  # Room List appeared during confirmation/recovery.
+        if talk is None:  # The configured destination appeared during recovery.
             return
         self.click(talk.point,"talk")
         # Preserve the verified-text fallback and its existing settle time.
         self.wait(spec["fallback_wait"])
-        if not self.match("room_list").found:
-            raise RuntimeError("Talk fallback did not open Room List")
+        if not self.match(target).found:
+            raise RuntimeError(f"Talk fallback did not open {title}")
 
     def advance(self,source,target,point=None,label=None):
         policy = self.config["ui"]

@@ -40,7 +40,10 @@ class Stage95Tests(unittest.TestCase):
         self.assertEqual((result.status,result.loops_completed),('SUCCESS',2))
         entries=[r['state'] for r in rows if r['kind']=='state_entry']
         self.assertEqual(entries,list(mission_states(self.config))*2)
-        self.assertFalse(set(entries)&{'WAIT_STAGE_LOADING','VERIFY_STAGE','CALIBRATE_CAMERA'})
+        self.assertFalse(set(entries)&{'OPEN_ROOM_LIST','WAIT_STAGE_LOADING','VERIFY_STAGE','CALIBRATE_CAMERA'})
+        self.assertNotIn('room_list',self.config['targets'])
+        self.assertFalse(any(r['kind']=='recognition' and r['target']=='room_list' for r in rows))
+        self.assertFalse(any(r['kind']=='click' and r['label']=='room_list' for r in rows))
         self.assertEqual(sum(r['kind']=='click' and r['label']=='vote' for r in rows),2)
         self.assertEqual(sum(r['kind']=='click' and r['label']=='camp' for r in rows),2)
         reward=[r['label'] for r in rows if r['kind']=='click' and r['label'].startswith('reward_')]
@@ -49,21 +52,21 @@ class Stage95Tests(unittest.TestCase):
         self.assertEqual(sum(r['kind']=='recording_start' and r['recording']=='mission' for r in rows),2)
         self.assertFalse(any(r['kind']=='action' and r.get('key') in {'c','z','win','winleft','cmd'} for r in rows))
 
-    def test_first_vote_capture_is_eleven_seconds_after_start_then_five_seconds_after_vote_release(self):
+    def test_vote_polling_and_post_click_wait_follow_config(self):
         result,rows,_=self.run_case(through='PLAY_MISSION')
         self.assertEqual(result.status,'SUCCESS')
         start=next(r['active_at'] for r in rows if r['kind']=='state_result' and r['state']=='START_STAGE')
         first=next(r['active_at'] for r in rows if r['kind']=='recognition' and r['target']=='vote')
-        self.assertAlmostEqual(first-start,11)
+        self.assertAlmostEqual(first-start,self.config['vote']['first_wait'])
         checks=[r for r in rows if r['kind']=='recognition' and r['target']=='vote']
         self.assertEqual(len(checks),2)  # Discovery then a fresh confirmation before clicking.
-        self.assertTrue(all(r['active_at']-start>=11-1e-8 for r in checks))
+        self.assertTrue(all(r['active_at']-start>=self.config['vote']['first_wait']-1e-8 for r in checks))
         click=next(r for r in rows if r['kind']=='click' and r['label']=='vote')
         self.assertEqual(click['client_point'],[1231,26])
         self.assertEqual(click['desktop_point'],[1274,121])
         release=next(r['active_at'] for r in rows if r['state']=='VOTE_STAGE' and r['kind']=='action' and r['method']=='mouseUp')
         mission=next(r['active_at'] for r in rows if r['kind']=='recording_start' and r['recording']=='mission')
-        self.assertAlmostEqual(mission-release,5)
+        self.assertAlmostEqual(mission-release,self.config['vote']['after_click_wait'])
         actions=[r for r in rows if r['kind']=='macro_action' and r['recording']=='mission']
         self.assertEqual(len(actions),14)
         self.assertAlmostEqual(actions[0]['active_at']-mission,.3646)
@@ -217,6 +220,91 @@ class Stage95Tests(unittest.TestCase):
         result,rows,_=self.run_case(through='CREATE_ROOM')
         self.assertEqual(result.status,'SUCCESS')
         self.assertFalse(any(r['kind']=='click' and r['label']=='mission_selection' for r in rows))
+
+    def test_talk_opens_mission_list_directly_with_only_two_entry_captures(self):
+        result,rows,_=self.run_case(through='OPEN_MISSION')
+        self.assertEqual(result.status,'SUCCESS')
+        checks=[r for r in rows if r['state']=='OPEN_MISSION' and r['kind']=='recognition']
+        self.assertEqual([r['target'] for r in checks],['mission_list','mission_list'])
+        self.assertEqual([r['found'] for r in checks],[False,True])
+        self.assertEqual(sum(r['kind']=='click' and r['label']=='talk' for r in rows),1)
+        state=next(r for r in rows if r['state']=='OPEN_MISSION' and r['kind']=='state_result')
+        self.assertAlmostEqual(state['elapsed'],5.05)
+
+    def test_already_open_direct_list_never_clicks_talk_again(self):
+        class AlreadyOpen(FixtureSession):
+            def enter(session,state,loop):
+                super().enter(state,loop)
+                if state=='OPEN_MISSION':session.frame='95/create.png'
+        result,rows,_=self.run_case(AlreadyOpen,'OPEN_MISSION')
+        self.assertEqual(result.status,'SUCCESS')
+        self.assertFalse(any(r['kind']=='click' and r['label']=='talk' for r in rows))
+        state=next(r for r in rows if r['state']=='OPEN_MISSION' and r['kind']=='state_result')
+        self.assertEqual(state['elapsed'],0)
+
+    def test_direct_list_delayed_during_talk_polling_does_not_reclick_talk(self):
+        class Delayed(FixtureSession):
+            talked=None
+            def click_effect(session,label):
+                if label=='talk':session.talked=session.now()
+                else:super().click_effect(label)
+            def capture(session,box):
+                if session.state=='OPEN_MISSION' and session.talked is not None and session.now()-session.talked>=7.3:
+                    session.frame='95/create.png'
+                return super().capture(box)
+        result,rows,_=self.run_case(Delayed,'OPEN_MISSION')
+        self.assertEqual(result.status,'SUCCESS')
+        self.assertEqual(sum(r['kind']=='click' and r['label']=='talk' for r in rows),1)
+        checks=[r for r in rows if r['state']=='OPEN_MISSION' and r['kind']=='recognition']
+        self.assertTrue(all(r['target']=='mission_list' for r in checks))
+        self.assertEqual(len(checks),7)
+
+    def test_verified_text_fallback_opens_direct_list_after_original_waits(self):
+        class Fallback(FixtureSession):
+            def click_effect(session,label):
+                if label=='talk' and not session.click_counts.get(label):session.click_counts[label]=1
+                else:super().click_effect(label)
+        result,rows,_=self.run_case(Fallback,'OPEN_MISSION')
+        self.assertEqual(result.status,'SUCCESS')
+        self.assertEqual(sum(r['kind']=='click' and r['label']=='talk' for r in rows),2)
+        self.assertFalse(any(r['kind']=='recognition' and r['target']=='room_list' for r in rows))
+        state=next(r for r in rows if r['state']=='OPEN_MISSION' and r['kind']=='state_result')
+        self.assertAlmostEqual(state['elapsed'],15.6)
+
+    def test_delayed_direct_list_during_absent_talk_confirmation_prevents_reclick(self):
+        class DuringConfirmation(FixtureSession):
+            talked=None
+            def click_effect(session,label):
+                if label=='talk':session.talked=session.now()
+                else:super().click_effect(label)
+            def capture(session,box):
+                if session.state=='OPEN_MISSION' and session.talked is not None:
+                    if session.now()-session.talked>=10.4:session.frame='95/create.png'
+                    if tuple(box)==tuple(session.config['targets']['talk']['search_roi_client']):
+                        return Image.new('RGB',(box[2]-box[0],box[3]-box[1]))
+                return super().capture(box)
+        result,rows,_=self.run_case(DuringConfirmation,'OPEN_MISSION')
+        self.assertEqual(result.status,'SUCCESS')
+        self.assertEqual(sum(r['kind']=='click' and r['label']=='talk' for r in rows),1)
+        self.assertFalse(any(r['kind']=='talk_recovery_move' for r in rows))
+        self.assertFalse(any(r['kind']=='recognition' and r['target']=='room_list' for r in rows))
+
+    def test_direct_list_never_appears_safe_stops_before_create(self):
+        class Missing(FixtureSession):
+            def click_effect(session,label):
+                if label!='talk':super().click_effect(label)
+        result,rows,_=self.run_case(Missing)
+        self.assertEqual((result.status,result.state),('FAIL','OPEN_MISSION'))
+        self.assertIn('Talk fallback did not open Mission List',result.reason)
+        self.assertFalse(any(r['kind']=='click' and r['label'] in {'room_list','create','start','vote'} for r in rows))
+        self.assertTrue(list(Path(self.temp.name).glob('*_OPEN_MISSION_failure.png')))
+
+    def test_invalid_talk_destination_is_rejected(self):
+        for target in ('create','missing',''):
+            cfg=copy.deepcopy(self.config);cfg['talk']['opened_target']=target
+            with self.assertRaises(ValueError):validate_mission_config(cfg)
+        cfg=copy.deepcopy(self.config);del cfg['targets']['mission_list']
+        with self.assertRaises(ValueError):validate_mission_config(cfg)
 
     def test_original_profile_keeps_original_state_sequence_and_seven_slots(self):
         old,_=load_mission_config(ROOT/'examples/mission_flow.json')
