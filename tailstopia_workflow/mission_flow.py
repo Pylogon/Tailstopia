@@ -132,7 +132,7 @@ class MissionFlow:
             self.session.event("macro_action",recording=name,action=action,dispatched_seconds=dispatched,
                                lateness_ms=(dispatched-action["t"])*1000)
         self.measure("macro",replay,actions,duration,self.session.api,self.check,clock=self.session.now,sleep=self.session.sleep,
-               on_action=action_report)
+               on_action=action_report,verbose=False)
         self.check()
         self.session.event("recording_complete",recording=name)
 
