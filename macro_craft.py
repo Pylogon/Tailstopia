@@ -11,7 +11,7 @@ from tailstopia_macro_replay import recording, replay, validate_inputs, StopRequ
 
 # Configuration: edit these values before launching the script.
 ROOT = Path(__file__).resolve().parent
-RECORDING_PATH = ROOT / "recordings/input_20261030_195738.json"
+RECORDING_PATH = ROOT / "recordings/craft.json"
 MAX_LOOPS = 100
 LOOP_DELAY_SECONDS = 0.0  # Extra delay; recorded waits are already preserved.
 WINDOW_TITLE = "TailsTopiaOnline"
