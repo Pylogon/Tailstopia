@@ -7,6 +7,23 @@ STATES = ("VERIFY_START","PLAY_START","OPEN_MISSION","OPEN_ROOM_LIST","CREATE_RO
           "RETURN_CAMP","WAIT_RETURN_LOADING","VERIFY_RETURN_START")
 
 
+VOTE_STATES = ("WAIT_VOTE","VOTE_STAGE")
+ALL_STATES = STATES+VOTE_STATES+("SELECT_MISSION",)
+
+
+def mission_states(config):
+    states = STATES
+    if "vote" in config:
+        # Replace the desert HUD/camera gate with this stage's visual evidence.
+        first = STATES.index("WAIT_STAGE_LOADING")
+        mission = STATES.index("PLAY_MISSION")
+        states = STATES[:first]+VOTE_STATES+STATES[mission:]
+    if "mission_selection" in config:
+        create = states.index("CREATE_ROOM")
+        states = states[:create]+("SELECT_MISSION",)+states[create:]
+    return states
+
+
 TALK_RECOVERY_DEFAULTS = {"max_attempts":2,"hold_seconds":0.25,"confirm_wait":0.5,"settle_seconds":0.5}
 
 
@@ -31,8 +48,18 @@ def validate_mission_config(config):
     if not config["window_title"].strip():
         raise ValueError("Empty window title")
     point(config["reference_client_origin"])
-    for name in STATES:
+    for name in mission_states(config):
         number(config["timeouts"][name],True)
+    if "vote" in config:
+        vote = config["vote"]
+        for key in ("first_wait","poll","after_click_wait"):
+            number(vote[key],key == "poll")
+        if "vote" not in config["targets"]:
+            raise ValueError("Vote entry requires a vote target")
+    if "mission_selection" in config:
+        point(config["mission_selection"]["point_client"])
+        if not {"mission_list","mission_selected"}.issubset(config["targets"]):
+            raise ValueError("Mission selection requires list and selected-title targets")
     for section,keys in {"talk":["first_wait","fallback_wait"],
                          "ui":["settle","retry_delay","click_hold"],
                          "stage":["min_entry_wait","loading_poll","time_poll"],
@@ -90,13 +117,19 @@ def validate_mission_config(config):
             raise ValueError("Invalid camera HSV bounds")
     for value in config["reward"]["slots_client"]:
         point(value)
-    if len(config["reward"]["slots_client"]) != 7:
-        raise ValueError("Exactly seven reward slots required")
+    if not 1 <= len(config["reward"]["slots_client"]) <= 7:
+        raise ValueError("One to seven reward slots required")
     point(config["reward"]["pointer_rest_client"])
     point(config["talk"]["point_client"])
     if not 0 < config["reward"]["change_fraction"] <= 1:
         raise ValueError("Invalid reward change fraction")
-    for name in ("talk","room_list","create","start","result","camp"):
+    targets = ("talk","room_list","create","start","result","camp")
+    if "vote" in config:
+        targets += ("vote",)
+    if "mission_selection" in config:
+        targets += ("mission_list","mission_selected")
+    for name in targets:
+        number(config["targets"][name]["threshold"],True)
         if not 0 < config["targets"][name]["threshold"] <= 1:
             raise ValueError("Invalid template threshold")
     talk = config["targets"]["talk"]

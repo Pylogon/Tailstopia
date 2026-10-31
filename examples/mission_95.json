@@ -1,0 +1,326 @@
+{
+  "window_title": "TailsTopiaOnline",
+  "reference_client_origin": [
+    43,
+    95
+  ],
+  "start_detector": "step1.json",
+  "start_recording": "../recordings/95/start.json",
+  "mission_recording": "../recordings/95/mission.json",
+  "output": "../workflow_runs/mission_95",
+  "max_loops": 1,
+  "targets": {
+    "talk": {
+      "image": "../resource/95/talk.png",
+      "template_box_client": [
+        596,
+        300,
+        635,
+        316
+      ],
+      "search_roi_client": [
+        540,
+        250,
+        710,
+        360
+      ],
+      "threshold": 0.82,
+      "glyph_hsv_lower": [
+        40,
+        15,
+        140
+      ],
+      "glyph_hsv_upper": [
+        100,
+        255,
+        255
+      ],
+      "template_scales": [
+        1.0,
+        0.9,
+        1.1
+      ],
+      "variants": [
+        {
+          "image": "../resource/red panda2.png",
+          "template_box_client": [
+            497,
+            306,
+            532,
+            319
+          ]
+        },
+        {
+          "template_image": "../resource/templates/talk_new_start.png"
+        },
+        {
+          "template_image": "../resource/templates/talk_live_small.png"
+        }
+      ]
+    },
+    "room_list": {
+      "image": "../resource/mission.png",
+      "template_box_client": [
+        1090,
+        379,
+        1150,
+        393
+      ],
+      "search_roi_client": [
+        1067,
+        360,
+        1167,
+        415
+      ],
+      "threshold": 0.88
+    },
+    "create": {
+      "image": "../resource/95/create.png",
+      "template_box_client": [
+        1179,
+        380,
+        1211,
+        391
+      ],
+      "search_roi_client": [
+        1150,
+        360,
+        1250,
+        415
+      ],
+      "threshold": 0.88
+    },
+    "start": {
+      "image": "../resource/startmission.png",
+      "template_box_client": [
+        1110,
+        379,
+        1158,
+        392
+      ],
+      "search_roi_client": [
+        1087,
+        360,
+        1177,
+        415
+      ],
+      "threshold": 0.88
+    },
+    "result": {
+      "image": "../resource/reward1.png",
+      "template_box_client": [
+        549,
+        78,
+        728,
+        100
+      ],
+      "search_roi_client": [
+        507,
+        55,
+        767,
+        125
+      ],
+      "threshold": 0.9
+    },
+    "camp": {
+      "image": "../resource/reward1.png",
+      "template_box_client": [
+        819,
+        451,
+        888,
+        464
+      ],
+      "search_roi_client": [
+        792,
+        430,
+        907,
+        485
+      ],
+      "threshold": 0.88
+    },
+    "vote": {
+      "image": "../resource/95/vote.png",
+      "template_box_client": [
+        1218,
+        20,
+        1245,
+        32
+      ],
+      "search_roi_client": [
+        1195,
+        8,
+        1270,
+        48
+      ],
+      "threshold": 0.88
+    },
+    "mission_list": {
+      "image": "../resource/95/create.png",
+      "template_box_client": [
+        777,
+        77,
+        880,
+        93
+      ],
+      "search_roi_client": [
+        760,
+        60,
+        900,
+        110
+      ],
+      "threshold": 0.88
+    },
+    "mission_selected": {
+      "image": "../resource/95/create.png",
+      "template_box_client": [
+        1107,
+        37,
+        1238,
+        55
+      ],
+      "search_roi_client": [
+        1080,
+        24,
+        1260,
+        70
+      ],
+      "threshold": 0.9
+    }
+  },
+  "talk": {
+    "point_client": [
+      615,
+      308
+    ],
+    "first_wait": 5,
+    "poll_timeout": 5,
+    "poll_interval": 0.5,
+    "fallback_wait": 5.5,
+    "recovery": {
+      "max_attempts": 0,
+      "hold_seconds": 0.25,
+      "confirm_wait": 0.5,
+      "settle_seconds": 0.5
+    }
+  },
+  "ui": {
+    "settle": 1,
+    "retry_delay": 1,
+    "additional_retries": 2,
+    "click_hold": 0.05
+  },
+  "stage": {
+    "min_entry_wait": 10,
+    "loading_poll": 0.5,
+    "time_poll": 1.5,
+    "confirmations": 2
+  },
+  "camera": {
+    "search_roi_client": [
+      700,
+      35,
+      850,
+      130
+    ],
+    "direction_roi_client": [
+      160,
+      35,
+      1280,
+      130
+    ],
+    "blue_hsv_lower": [
+      105,
+      110,
+      25
+    ],
+    "blue_hsv_upper": [
+      125,
+      255,
+      180
+    ],
+    "min_blue_blob_pixels": 300,
+    "rotation_key": "c",
+    "left_rotation_key": "c",
+    "rotation_seconds": 0.2,
+    "settle_seconds": 0.5,
+    "max_rotations": 72,
+    "confirmations": 2
+  },
+  "result": {
+    "after_mission_start": 0,
+    "poll": 1,
+    "confirmations": 2
+  },
+  "reward": {
+    "settle": 4.5,
+    "slots_client": [
+      [
+        416,
+        290
+      ],
+      [
+        446,
+        290
+      ],
+      [
+        476,
+        290
+      ]
+    ],
+    "received_box_client": [
+      405,
+      391,
+      426,
+      411
+    ],
+    "empty_image": "../resource/reward1.png",
+    "change_pixel_delta": 18,
+    "change_fraction": 0.15,
+    "empty_max_mean_error": 10,
+    "retry_delay": 1,
+    "additional_retries": 5,
+    "verify_wait": 0.3,
+    "confirmations": 2,
+    "between_slots": 1.0,
+    "pointer_rest_client": [
+      900,
+      500
+    ]
+  },
+  "return": {
+    "loading_poll": 0.5,
+    "time_poll": 3,
+    "confirmations": 2
+  },
+  "timeouts": {
+    "VERIFY_START": 120,
+    "PLAY_START": 30,
+    "OPEN_MISSION": 35,
+    "OPEN_ROOM_LIST": 20,
+    "CREATE_ROOM": 20,
+    "START_STAGE": 10,
+    "WAIT_STAGE_LOADING": 60,
+    "VERIFY_STAGE": 120,
+    "CALIBRATE_CAMERA": 60,
+    "PLAY_MISSION": 90,
+    "WAIT_RESULT": 240,
+    "COLLECT_REWARDS": 60,
+    "RETURN_CAMP": 15,
+    "WAIT_RETURN_LOADING": 120,
+    "VERIFY_RETURN_START": 120,
+    "WAIT_VOTE": 60,
+    "VOTE_STAGE": 20,
+    "SELECT_MISSION": 20
+  },
+  "vote": {
+    "first_wait": 11,
+    "poll": 1,
+    "after_click_wait": 5
+  },
+  "mission_selection": {
+    "point_client": [
+      850,
+      249
+    ]
+  }
+}

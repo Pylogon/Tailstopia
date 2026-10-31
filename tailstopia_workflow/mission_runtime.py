@@ -284,6 +284,12 @@ class FixtureSession(Session):
                   "PLAY_MISSION":"startinagme .png","WAIT_RESULT":"reward1.png",
                   "COLLECT_REWARDS":"reward1.png","RETURN_CAMP":"reward1.png",
                   "WAIT_RETURN_LOADING":"loading.png","VERIFY_RETURN_START":"intiate.png"}
+        if "vote" in self.config:
+            frames.update({"VERIFY_START":"95/talk.png","OPEN_MISSION":"95/talk.png",
+                           "WAIT_VOTE":"95/vote.png","VOTE_STAGE":"95/vote.png",
+                           "PLAY_MISSION":"95/vote.png","VERIFY_RETURN_START":"95/talk.png"})
+        if "mission_selection" in self.config:
+            frames.update({"SELECT_MISSION":"95/create.png","CREATE_ROOM":"95/create.png"})
         if state in frames:
             self.frame = frames[state]
         self.click_counts = {}
@@ -292,8 +298,11 @@ class FixtureSession(Session):
 
     def click_effect(self,label):
         self.click_counts[label] = self.click_counts.get(label,0)+1
-        self.frame = {"talk":"mission.png","room_list":"room list.png","create":"startmission.png",
-                      "start":"loading.png","camp":"loading.png"}.get(label,self.frame)
+        transitions = {"talk":"mission.png","room_list":"room list.png","create":"startmission.png",
+                       "start":"loading.png","camp":"loading.png"}
+        if "mission_selection" in self.config:
+            transitions.update({"room_list":"95/create.png","mission_selection":"95/create.png"})
+        self.frame = transitions.get(label,self.frame)
         if label == "reward_1":
             self.received = True
 

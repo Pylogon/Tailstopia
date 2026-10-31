@@ -1,0 +1,100 @@
+{
+  "created_at": "2026-10-31T22:57:33",
+  "active_duration_seconds": 4.6614,
+  "event_count": 15,
+  "events": [
+    {
+      "t": 0.9441,
+      "type": "mouse_down",
+      "button": "right",
+      "x": 692,
+      "y": 486
+    },
+    {
+      "t": 1.0301,
+      "type": "key_down",
+      "key": "a"
+    },
+    {
+      "t": 2.3037,
+      "type": "key_down",
+      "key": "w"
+    },
+    {
+      "t": 2.436,
+      "type": "key_up",
+      "key": "w"
+    },
+    {
+      "t": 2.436,
+      "type": "key_hold",
+      "key": "w",
+      "duration": 0.1323,
+      "ended_by": "release"
+    },
+    {
+      "t": 2.6439,
+      "type": "key_down",
+      "key": "w"
+    },
+    {
+      "t": 2.7474,
+      "type": "key_up",
+      "key": "w"
+    },
+    {
+      "t": 2.7474,
+      "type": "key_hold",
+      "key": "w",
+      "duration": 0.1035,
+      "ended_by": "release"
+    },
+    {
+      "t": 3.0471,
+      "type": "key_down",
+      "key": "w"
+    },
+    {
+      "t": 3.3098,
+      "type": "mouse_up",
+      "button": "right",
+      "x": 682,
+      "y": 394
+    },
+    {
+      "t": 3.3098,
+      "type": "mouse_hold",
+      "button": "right",
+      "x": 692,
+      "y": 486,
+      "end_x": 682,
+      "end_y": 394,
+      "duration": 2.3657,
+      "ended_by": "release"
+    },
+    {
+      "t": 3.3382,
+      "type": "key_up",
+      "key": "a"
+    },
+    {
+      "t": 3.3382,
+      "type": "key_hold",
+      "key": "a",
+      "duration": 2.3082,
+      "ended_by": "release"
+    },
+    {
+      "t": 3.353,
+      "type": "key_up",
+      "key": "w"
+    },
+    {
+      "t": 3.353,
+      "type": "key_hold",
+      "key": "w",
+      "duration": 0.3059,
+      "ended_by": "release"
+    }
+  ]
+}

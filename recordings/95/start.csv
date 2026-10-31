@@ -1,0 +1,16 @@
+﻿t,type,key,button,x,y,end_x,end_y,duration,dx,dy,ended_by
+0.9441,mouse_down,,right,692,486,,,,,,
+1.0301,key_down,a,,,,,,,,,
+2.3037,key_down,w,,,,,,,,,
+2.436,key_up,w,,,,,,,,,
+2.436,key_hold,w,,,,,,0.1323,,,release
+2.6439,key_down,w,,,,,,,,,
+2.7474,key_up,w,,,,,,,,,
+2.7474,key_hold,w,,,,,,0.1035,,,release
+3.0471,key_down,w,,,,,,,,,
+3.3098,mouse_up,,right,682,394,,,,,,
+3.3098,mouse_hold,,right,692,486,682,394,2.3657,,,release
+3.3382,key_up,a,,,,,,,,,
+3.3382,key_hold,a,,,,,,2.3082,,,release
+3.353,key_up,w,,,,,,,,,
+3.353,key_hold,w,,,,,,0.3059,,,release

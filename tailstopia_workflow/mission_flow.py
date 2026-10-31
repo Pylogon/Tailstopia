@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import time
 
 from tailstopia_macro_replay import recording, replay, validate_inputs, StopRequested
-from .mission_config import STATES, TALK_RECOVERY_DEFAULTS, validate_mission_config
+from .mission_config import mission_states, TALK_RECOVERY_DEFAULTS, validate_mission_config
 
 
 @dataclass(frozen=True)
@@ -338,7 +338,7 @@ class MissionFlow:
         if not self.match("room_list").found:
             raise RuntimeError("Talk fallback did not open Room List")
 
-    def advance(self,source,target):
+    def advance(self,source,target,point=None,label=None):
         policy = self.config["ui"]
         last_source = last_target = None
         for attempt in range(policy["additional_retries"]+1):
@@ -355,7 +355,7 @@ class MissionFlow:
                                    reason=f"{source} and {target} unconfirmed; no click sent",
                                    source_score=last_source.score,target_score=last_target.score)
                 continue
-            self.click(last_source.point,source)
+            self.click(last_source.point if point is None else point,label or source)
             self.wait(policy["settle"])
             last_target = self.match(target)
             if last_target.found:
@@ -365,6 +365,18 @@ class MissionFlow:
                                source_score=last_source.score,target_score=last_target.score)
         raise RuntimeError(f"{source} -> {target}: UI retry budget exhausted; "
                            f"source_score={last_source.score:.6f}, target_score={last_target.score:.6f}")
+
+    def wait_vote(self):
+        if self.stage_clicked is None:
+            raise RuntimeError("Vote polling requires a completed Start click")
+        policy = self.config["vote"]
+        self.wait(policy["first_wait"]-(self.session.now()-self.stage_clicked))
+        while True:
+            match = self.match("vote")
+            if match.found:
+                return match
+            self.session.event("retry",status="RETRY",reason="Waiting for stage Vote button; no action repeated")
+            self.wait(policy["poll"])
 
     def wait_result(self):
         # 80s includes the time already spent executing the mission recording.
@@ -428,10 +440,10 @@ class MissionFlow:
         for index,point in enumerate(policy["slots_client"][1:],start=2):
             self.wait(policy["between_slots"])
             if not self.match("result").found:
-                raise RuntimeError("Mission Result disappeared before all seven slots were clicked")
+                raise RuntimeError("Mission Result disappeared before all configured slots were clicked")
             self.click(point,f"reward_{index}")
         self.wait(policy["between_slots"])
-        self.session.event("reward_row_clicked",slots=7,verified_slots=[1])
+        self.session.event("reward_row_clicked",slots=len(policy["slots_client"]),verified_slots=[1])
 
     def execute_state(self):
         c,s = self.config,self.state
@@ -446,12 +458,23 @@ class MissionFlow:
         elif s == "OPEN_MISSION":
             self.open_mission()
         elif s == "OPEN_ROOM_LIST":
-            self.advance("room_list","create")
+            target = "mission_list" if "mission_selection" in c else "create"
+            self.advance("room_list",target)
+        elif s == "SELECT_MISSION":
+            self.advance("mission_list","mission_selected",point=c["mission_selection"]["point_client"],label="mission_selection")
         elif s == "CREATE_ROOM":
             self.advance("create","start")
         elif s == "START_STAGE":
             self.click_matched("start")
             self.stage_clicked = self.session.now()
+        elif s == "WAIT_VOTE":
+            self.wait_vote()
+        elif s == "VOTE_STAGE":
+            # Reconfirm the button in this state. A missing button polls safely;
+            # a successful click is sent once, then only the settle wait runs.
+            match = self.wait_vote()
+            self.click(match.point,"vote")
+            self.wait(c["vote"]["after_click_wait"])
         elif s == "WAIT_STAGE_LOADING":
             self.wait_loading(c["stage"]["loading_poll"])
         elif s == "VERIFY_STAGE":
@@ -489,13 +512,14 @@ class MissionFlow:
         self.check()
 
     def run(self,through=None):
-        if through is not None and through not in STATES:
-            raise ValueError("Unknown stopping state")
+        states = mission_states(self.config)
+        if through is not None and through not in states:
+            raise ValueError("Stopping state is not enabled by this mission config")
         result = None
         self.reset_return_verification()
         try:
             for loop in range(1,self.config["max_loops"]+1):
-                for self.state in STATES:
+                for self.state in states:
                     self.session.enter(self.state,loop)
                     self.timings = {}
                     self.session.log.reset_timing()
@@ -511,7 +535,7 @@ class MissionFlow:
                         raise
                     self.session.event("state_result",status="SUCCESS",reason="Expected state result satisfied",
                                        elapsed=self.session.now()-started,wall_elapsed=time.perf_counter()-wall,timing=self.timing_summary())
-                    if through == self.state and self.state != STATES[-1]:
+                    if through == self.state and self.state != states[-1]:
                         result = FlowResult("SUCCESS",f"Stopped after requested step: {through}",self.state,self.completed)
                         break
                 if result is not None:
