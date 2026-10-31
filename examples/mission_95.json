@@ -169,6 +169,22 @@
         70
       ],
       "threshold": 0.9
+    },
+    "mission_failed": {
+      "image": "../resource/95/fail.png",
+      "template_box_client": [
+        558,
+        147,
+        585,
+        177
+      ],
+      "search_roi_client": [
+        553,
+        142,
+        590,
+        182
+      ],
+      "threshold": 0.9
     }
   },
   "talk": {
@@ -234,7 +250,8 @@
   "result": {
     "after_mission_start": 0,
     "poll": 1,
-    "confirmations": 2
+    "confirmations": 2,
+    "failure_target": "mission_failed"
   },
   "reward": {
     "settle": 4,

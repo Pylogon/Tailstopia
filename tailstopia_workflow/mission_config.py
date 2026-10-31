@@ -135,6 +135,11 @@ def validate_mission_config(config):
         targets += ("vote",)
     if "mission_selection" in config:
         targets += ("mission_list","mission_selected")
+    if "failure_target" in config["result"]:
+        target = config["result"]["failure_target"]
+        if not isinstance(target,str) or target not in config["targets"] or target == "result":
+            raise ValueError("Result failure_target must name a separate configured target")
+        targets += (target,)
     for name in targets:
         number(config["targets"][name]["threshold"],True)
         if not 0 < config["targets"][name]["threshold"] <= 1:

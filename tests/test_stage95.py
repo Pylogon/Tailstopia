@@ -21,6 +21,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class Stage95Tests(unittest.TestCase):
     def setUp(self):
         self.config,self.base=load_mission_config(ROOT/'examples/mission_95.json')
+        self.config['max_loops']=1
         self.vision=MissionVision(self.config,self.base)
         self.temp=tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)

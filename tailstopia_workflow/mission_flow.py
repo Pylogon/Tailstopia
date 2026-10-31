@@ -25,6 +25,7 @@ class MissionFlow:
         self.mission_started,self.stage_clicked = None,None
         self.timings = {}
         self.verbose_actions = verbose_actions
+        self.reset_mission_counts()
         self.reset_return_verification()
         # Both recordings and all keys are validated before dispatching input.
         self.macros = {}
@@ -396,6 +397,46 @@ class MissionFlow:
             self.session.event("retry",status="RETRY",reason="Waiting for stable Mission Result")
             self.wait(self.config["result"]["poll"])
 
+    def reset_mission_counts(self):
+        self.mission_counts = {"pass_with_reward":0,"mission_fail":0}
+        self._counted_outcome_loop = None
+        self._mission_outcome = None
+
+    def record_mission_outcome(self,outcome,reason):
+        if self._counted_outcome_loop == self.session.loop:
+            if self._mission_outcome != outcome:
+                raise RuntimeError("Conflicting mission outcomes in one loop")
+            return
+        key = {"PASS_WITH_REWARD":"pass_with_reward","FAIL":"mission_fail"}[outcome]
+        self.mission_counts[key] += 1
+        self._counted_outcome_loop,self._mission_outcome = self.session.loop,outcome
+        self.session.event("mission_outcome",outcome=outcome,reason=reason,**self.mission_counts)
+
+    def confirm_result_failure(self):
+        policy = self.config["result"]
+        previous,count = None,0
+        names = {"result":"result","fail":policy["failure_target"]}
+        while True:
+            self.check()
+            matches = self.measure("vision",self.vision.observe_result,self.capture)
+            self.check()
+            for role,name in names.items():
+                match = matches[role]
+                self.session.event("recognition",target=name,found=match.found,score=match.score,point=match.point,
+                                   threshold=self.config["targets"][name]["threshold"])
+            outcome = None
+            if matches["result"].found:
+                # A missing '-' keeps the existing pickup verification path;
+                # it does not prove a win or require a particular letter grade.
+                outcome = "FAIL" if matches["fail"].found else "CHECK_REWARDS"
+            count = count+1 if outcome is not None and outcome == previous else (1 if outcome else 0)
+            if count >= policy["confirmations"]:
+                return outcome == "FAIL"
+            previous = outcome
+            self.session.event("retry",status="RETRY",reason="Waiting for stable Total Result",
+                               outcome=outcome or "UNKNOWN",confirmations=count)
+            self.wait(policy["poll"])
+
     def received(self,baseline):
         policy = self.config["reward"]
         for index in range(policy["confirmations"]):
@@ -413,7 +454,12 @@ class MissionFlow:
     def collect(self):
         policy = self.config["reward"]
         self.wait(policy["settle"])
-        if not self.match("result").found:
+        if "failure_target" in self.config["result"]:
+            if self.confirm_result_failure():
+                self.record_mission_outcome("FAIL","Total Result '-' confirmed; skip rewards and return to Mission Camp")
+                self.session.event("reward_skipped",reason="Mission defeated; no reward clicks sent")
+                return
+        elif not self.match("result").found:
             raise RuntimeError("Mission Result disappeared before reward collection")
         self.session.rest_pointer()
         self.wait(policy["verify_wait"])
@@ -440,6 +486,7 @@ class MissionFlow:
         finally:
             baseline.close()
         self.session.event("reward_verified",slot=1,verification="Your Items image changed in consecutive checks")
+        self.record_mission_outcome("PASS_WITH_REWARD","First reward pickup verified in consecutive checks")
         for index,point in enumerate(policy["slots_client"][1:],start=2):
             self.wait(policy["between_slots"])
             if not self.match("result").found:
@@ -520,8 +567,10 @@ class MissionFlow:
             raise ValueError("Stopping state is not enabled by this mission config")
         result = None
         self.reset_return_verification()
+        self.reset_mission_counts()
         try:
             for loop in range(1,self.config["max_loops"]+1):
+                self._mission_outcome = None
                 for self.state in states:
                     self.session.enter(self.state,loop)
                     self.timings = {}
@@ -536,7 +585,9 @@ class MissionFlow:
                         self.session.event("state_result",status="FAIL",reason=f"{type(exc).__name__}: {exc}",
                                            elapsed=self.session.now()-started,wall_elapsed=time.perf_counter()-wall,timing=self.timing_summary())
                         raise
-                    self.session.event("state_result",status="SUCCESS",reason="Expected state result satisfied",
+                    reason = ("Mission defeated; rewards skipped" if self.state == "COLLECT_REWARDS" and
+                              self._mission_outcome == "FAIL" else "Expected state result satisfied")
+                    self.session.event("state_result",status="SUCCESS",reason=reason,
                                        elapsed=self.session.now()-started,wall_elapsed=time.perf_counter()-wall,timing=self.timing_summary())
                     if through == self.state and self.state != states[-1]:
                         result = FlowResult("SUCCESS",f"Stopped after requested step: {through}",self.state,self.completed)
@@ -564,5 +615,6 @@ class MissionFlow:
                     self.session.debug("stopped" if result.stopped else "failure")
                 except Exception as exc:
                     self.session.event("debug_error",reason=str(exc))
-        self.session.event("run_result",status=result.status,reason=result.reason,loops_completed=result.loops_completed)
+        self.session.event("run_result",status=result.status,reason=result.reason,loops_completed=result.loops_completed,
+                           **self.mission_counts)
         return result

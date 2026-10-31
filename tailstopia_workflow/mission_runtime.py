@@ -93,7 +93,7 @@ class Session:
 
     def event(self,kind,**fields):
         self.log.emit(kind,state=self.state,loop=self.loop,active_at=self.now(),**fields)
-        if kind in {"state_entry","state_result","retry","pause","resume","reward_verified","camera_calibrated","run_result"}:
+        if kind in {"state_entry","state_result","retry","pause","resume","reward_verified","camera_calibrated","mission_outcome","run_result"}:
             print(f"[{self.loop}:{self.state}] {kind} {fields}",flush=True)
 
     def prepare_macro(self,name):

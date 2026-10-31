@@ -78,6 +78,10 @@ class MissionVision:
         templates,roi,threshold = self.targets[name]
         with capture(roi) as image:
             gray = np.array(image.convert("L"))
+        return self._match_gray(name,gray)
+
+    def _match_gray(self,name,gray):
+        templates,roi,threshold = self.targets[name]
         if gray.shape != (roi[3]-roi[1],roi[2]-roi[0]):
             raise ValueError("Capture dimensions differ from ROI")
         best = (-1,None,None)
@@ -97,6 +101,22 @@ class MissionVision:
         found = bool(np.isfinite(score) and score >= threshold)
         center = (roi[0]+point[0]+template.shape[1]//2,roi[1]+point[1]+template.shape[0]//2)
         return Match(found,float(score),center if found else None)
+
+    def observe_result(self,capture):
+        names = {"result":"result","fail":self.config["result"]["failure_target"]}
+        rois = [self.targets[name][1] for name in names.values()]
+        box = (min(r[0] for r in rois),min(r[1] for r in rois),
+               max(r[2] for r in rois),max(r[3] for r in rois))
+        # Header and grade come from one stationary frame, with one conversion.
+        with capture(box) as image:
+            gray = np.array(image.convert("L"))
+        if gray.shape != (box[3]-box[1],box[2]-box[0]):
+            raise ValueError("Result capture dimensions differ from ROI")
+        matches = {}
+        for role,name in names.items():
+            x1,y1,x2,y2 = self.targets[name][1]
+            matches[role] = self._match_gray(name,gray[y1-box[1]:y2-box[1],x1-box[0]:x2-box[0]])
+        return matches
 
     def hud(self,capture):
         with capture(self.start.roi) as image:
