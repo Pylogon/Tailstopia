@@ -144,7 +144,7 @@ class Talk95Tests(unittest.TestCase):
 
     def test_w_a_burst_then_real_talk_opens_mission_list(self):
         self.assertEqual(self.config['talk']['recovery']['keys'],['w','a'])
-        self.assertEqual(self.config['talk']['recovery']['max_attempts'],15)
+        self.assertEqual(self.config['talk']['recovery']['max_attempts'],2)
         result,rows,flow,_=self.run_case(NeedsWalk,through='OPEN_MISSION')
         self.assertEqual(result.status,'SUCCESS')
         self.assertAlmostEqual(flow.session.movement_holds,.25)
@@ -157,7 +157,6 @@ class Talk95Tests(unittest.TestCase):
         self.assertEqual(sum(r['kind']=='recording_start' for r in rows),1)
 
     def test_two_w_a_bursts_then_safe_stop_without_mission_macro(self):
-        self.config['talk']['recovery']['max_attempts']=2
         class NoTalk(NeedsWalk):
             def capture(session,box):
                 if session.state=='OPEN_MISSION':
