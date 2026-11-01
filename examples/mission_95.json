@@ -203,7 +203,7 @@
     "poll_interval": 0.5,
     "fallback_wait": 5.5,
     "recovery": {
-      "max_attempts": 2,
+      "max_attempts": 15,
       "hold_seconds": 0.25,
       "confirm_wait": 0.5,
       "settle_seconds": 0.5,
@@ -308,7 +308,7 @@
   "timeouts": {
     "VERIFY_START": 120,
     "PLAY_START": 30,
-    "OPEN_MISSION": 35,
+    "OPEN_MISSION": 120,
     "OPEN_ROOM_LIST": 20,
     "CREATE_ROOM": 20,
     "START_STAGE": 10,
