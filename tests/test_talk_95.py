@@ -11,8 +11,10 @@ from tailstopia_workflow.mission_runtime import FixtureSession
 from tailstopia_workflow.mission_vision import MissionVision
 
 ROOT=outcomes.ROOT
-ROI=(420,210,860,410)
+ROI=(280,170,1000,470)
+LOOP16_ROI=(420,210,860,410)
 FIXTURE=ROOT/'tests/fixtures/talk_95_loop16_roi.png'
+LOOP81_FIXTURE=ROOT/'tests/fixtures/talk_95_loop81_roi.png'
 
 
 class MissedFixedClick(FixtureSession):
@@ -26,7 +28,7 @@ class MissedFixedClick(FixtureSession):
         if self.state=='OPEN_MISSION' and self.frame!='95/create.png' and tuple(box)==ROI:
             if self.api.held_keys or self.api.held_buttons:
                 raise AssertionError('Recognition during movement')
-            return recorded_talk_capture(FIXTURE,box,ROI)
+            return recorded_talk_capture(FIXTURE,box,LOOP16_ROI)
         return super().capture(box)
 
 
@@ -70,7 +72,7 @@ class Talk95Tests(unittest.TestCase):
                     if v.get('template_image')!='../resource/templates/talk_95_live.png']
             vision=MissionVision(cfg,self.base)
             with self.subTest(wide=wide,variant=variant):
-                match=vision.match('talk',lambda box:recorded_talk_capture(FIXTURE,box,ROI))
+                match=vision.match('talk',lambda box:recorded_talk_capture(FIXTURE,box,LOOP16_ROI))
                 self.assertEqual(match.found,wide and variant)
                 if wide and variant:
                     self.assertGreater(match.score,.99)
@@ -78,6 +80,36 @@ class Talk95Tests(unittest.TestCase):
                 if wide and not variant:self.assertAlmostEqual(match.score,.728119,places=5)
         self.assertEqual(self.config['targets']['talk']['threshold'],.82)
         self.assertEqual(self.config['talk']['point_client'],[615,308])
+
+    def test_loop81_requires_large_glyph_variant_even_inside_previous_roi(self):
+        for wide,variant in [(False,False),(True,False),(False,True),(True,True)]:
+            cfg=copy.deepcopy(self.config)
+            if not wide:cfg['targets']['talk']['search_roi_client']=[420,210,860,410]
+            if not variant:
+                cfg['targets']['talk']['variants']=[v for v in cfg['targets']['talk']['variants']
+                    if v.get('template_image')!='../resource/templates/talk_95_live_large.png']
+            vision=MissionVision(cfg,self.base)
+            with self.subTest(wide=wide,variant=variant):
+                match=vision.match('talk',lambda box:recorded_talk_capture(LOOP81_FIXTURE,box,ROI))
+                self.assertEqual(match.found,variant)
+                if variant:
+                    self.assertGreater(match.score,.99)
+                    self.assertEqual(match.point,(469,361))
+        self.assertEqual(self.config['targets']['talk']['threshold'],.82)
+
+    def test_loop81_fallback_clicks_actual_talk_before_any_recovery_movement(self):
+        class Loop81(MissedFixedClick):
+            def capture(session,box):
+                if session.state=='OPEN_MISSION' and session.frame!='95/create.png' and tuple(box)==ROI:
+                    if session.api.held_keys or session.api.held_buttons:raise AssertionError('Capture during movement')
+                    return recorded_talk_capture(LOOP81_FIXTURE,box,ROI)
+                return super().capture(box)
+        result,rows,_,_=self.run_case(Loop81,through='OPEN_MISSION')
+        self.assertEqual(result.status,'SUCCESS')
+        clicks=[r for r in rows if r['kind']=='click' and r['label']=='talk']
+        self.assertEqual([r['client_point'] for r in clicks],[[615,308],[469,361]])
+        self.assertFalse(any(r['kind']=='talk_recovery_move' for r in rows))
+        self.assertEqual(sum(r['kind']=='recognition' and r['target']=='talk' for r in rows),1)
 
     def test_wider_roi_rejects_non_talk_reference_scenes(self):
         paths=[p for p in (ROOT/'resource').glob('*.png')
@@ -95,7 +127,7 @@ class Talk95Tests(unittest.TestCase):
         calls=[]
         def capture(box):
             calls.append(tuple(box))
-            return recorded_talk_capture(FIXTURE,box,ROI)
+            return recorded_talk_capture(FIXTURE,box,LOOP16_ROI)
         with patch('tailstopia_workflow.mission_vision.cv2.resize',side_effect=AssertionError('Runtime resize')), \
              patch('tailstopia_workflow.mission_vision.cv2.inRange',side_effect=AssertionError('Runtime mask')):
             self.assertTrue(self.vision.match('talk',capture).found)
