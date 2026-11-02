@@ -50,6 +50,7 @@ class CampVisionTests(unittest.TestCase):
 
     def test_opt_out_does_not_load_template(self):
         config,base = load_mission_config(ROOT/'examples/mission_95.json')
+        config['return']['camp_checkpoint']['enabled'] = False
         with patch('tailstopia_workflow.mission_vision.CampDetector',side_effect=AssertionError('Loaded while disabled')):
             self.assertIsNone(MissionVision(config,base).camp)
 

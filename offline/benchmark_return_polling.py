@@ -97,6 +97,8 @@ class ScenarioSession:
 
 def simulate(config,case,adaptive,signal=None):
     cfg=copy.deepcopy(config)
+    # Historical traces contain Time HUD only, never Camp identity evidence.
+    cfg['return'].pop('camp_checkpoint',None)
     if not adaptive:cfg['return'].pop('not_ready_poll',None)
     session=ScenarioSession(case,signal)
     flow=MissionFlow.__new__(MissionFlow)
@@ -135,7 +137,7 @@ def scenario(samples,early):
 
 def run(logs,cutoff=CUTOFF):
     config,_=load_mission_config(ROOT/'examples/mission_95.json')
-    assert config['return']==dict(loading_poll=.5,not_ready_poll=1,time_poll=3,confirmations=2)
+    assert {k:v for k,v in config['return'].items() if k != 'camp_checkpoint'}==dict(loading_poll=.5,not_ready_poll=1,time_poll=3,confirmations=2)
     cases=list(read_cases(logs,cutoff))
     if not cases:raise ValueError('No complete live transitions available')
     rows=[]

@@ -22,6 +22,7 @@ ROOT=Path(__file__).resolve().parents[1]
 class AdaptiveReturnTests(unittest.TestCase):
     def setUp(self):
         self.config,self.base=load_mission_config(ROOT/'examples/mission_95.json')
+        self.config['return']['camp_checkpoint']['enabled']=False  # Test the legacy Time-only policy.
         self.session=reuse.FakeSession()
         self.flow=MissionFlow.__new__(MissionFlow)
         self.flow.config,self.flow.session=self.config,self.session
@@ -143,6 +144,8 @@ class AdaptiveReturnTests(unittest.TestCase):
             with self.subTest(value=value),self.assertRaises(ValueError):validate_mission_config(cfg)
         cfg,_=load_mission_config(ROOT/'examples/mission_flow.json')
         self.assertNotIn('not_ready_poll',cfg['return'])
+        profile,_=load_mission_config(ROOT/'examples/mission_95.json')
+        self.assertTrue(profile['return']['camp_checkpoint']['enabled'])
         self.assertFalse(self.config['return']['camp_checkpoint']['enabled'])
         self.assertEqual({k:v for k,v in self.config['return'].items() if k != 'camp_checkpoint'},
                          dict(loading_poll=.5,not_ready_poll=1,time_poll=3,confirmations=2))
@@ -176,6 +179,7 @@ class TimedCampSession(FixtureSession):
 class AdaptiveReturnIntegrationTests(unittest.TestCase):
     def run_case(self,adaptive=True,kind=TimedCampSession,timeout=120):
         config,base=load_mission_config(ROOT/'examples/mission_95.json')
+        config['return']['camp_checkpoint']['enabled']=False  # Isolate adaptive polling from Camp verification.
         config['max_loops']=2;config['timeouts']['VERIFY_RETURN_START']=timeout
         if not adaptive:config['return'].pop('not_ready_poll')
         with tempfile.TemporaryDirectory() as directory:

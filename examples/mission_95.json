@@ -305,7 +305,7 @@
   },
   "return": {
     "camp_checkpoint": {
-      "enabled": false,
+      "enabled": true,
       "template_image": "../resource/templates/camp_house_95.png",
       "search_roi_client": [4, 115, 54, 225],
       "threshold": 0.90,

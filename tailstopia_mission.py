@@ -16,7 +16,7 @@ def main():
     parser.add_argument("--config",type=Path,default=ROOT/"examples/mission_flow.json")
     parser.add_argument("--loops",type=int,help="Number of full loops, default from config")
     parser.add_argument("--dry-run",action="store_true",help="Fast simulated input/time; real reference-image recognition")
-    parser.add_argument("--camp-checkpoint",action="store_true",help="Opt in to mission_95 Camp house + Time return trial")
+    parser.add_argument("--camp-checkpoint",action="store_true",help="Enable mission_95 Camp house + Time verification (overrides config)")
     parser.add_argument("--through",choices=ALL_STATES,help="Run initial steps through this state, then stop")
     parser.add_argument("--verbose-actions",action="store_true",help="Also print every macro action; JSONL always keeps all actions")
     args = parser.parse_args()
@@ -46,7 +46,7 @@ def main():
     # Load and validate templates before any game interaction.
     vision = MissionVision(config,base)
     if config["return"].get("camp_checkpoint",{}).get("enabled"):
-        print("Camp checkpoint trial ON: observed return Loading + house/Time; legacy fallback enabled.",flush=True)
+        print("Camp checkpoint ON: observed return Loading + house/Time; legacy fallback enabled.",flush=True)
     def directory(mode):
         stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
         return (base/config["output"]).resolve()/f"{stamp}_{mode}"
