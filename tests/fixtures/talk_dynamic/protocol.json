@@ -1,0 +1,10 @@
+{
+  "algorithm_sha256": "607ba9d92fe2df66ff38906c96438e8753315bb250fa5cd98259d4239322d355",
+  "manifest_sha256": "36f958c65dc98dda496d13582c4967ceba23a7e641c88fe97cca7a6df925df27",
+  "frozen_before_holdout": true,
+  "note": "Detector algorithm frozen unchanged. Corpus audit reclassified known large image as challenge_regression (ROI had used its position), and removed a duplicate reference file. First pilot timings overlap tests and are discarded. Final benchmark runs without concurrent tests.",
+  "holdout_positive_count": 1,
+  "holdout_negative_count": 10,
+  "challenge_is_not_generalization": "Known large image informed ROI before this task; exclude from holdout.",
+  "corpus_audit": "Duplicate full screenshot reward3==reward1 removed before final benchmark. No duplicate source or cropped image hashes remain."
+}
