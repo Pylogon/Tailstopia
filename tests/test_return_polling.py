@@ -143,7 +143,9 @@ class AdaptiveReturnTests(unittest.TestCase):
             with self.subTest(value=value),self.assertRaises(ValueError):validate_mission_config(cfg)
         cfg,_=load_mission_config(ROOT/'examples/mission_flow.json')
         self.assertNotIn('not_ready_poll',cfg['return'])
-        self.assertEqual(self.config['return'],dict(loading_poll=.5,not_ready_poll=1,time_poll=3,confirmations=2))
+        self.assertFalse(self.config['return']['camp_checkpoint']['enabled'])
+        self.assertEqual({k:v for k,v in self.config['return'].items() if k != 'camp_checkpoint'},
+                         dict(loading_poll=.5,not_ready_poll=1,time_poll=3,confirmations=2))
 
 
 class AdaptiveReuseGuardTests(reuse.ReturnReuseTests):

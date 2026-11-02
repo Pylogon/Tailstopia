@@ -16,10 +16,16 @@ def main():
     parser.add_argument("--config",type=Path,default=ROOT/"examples/mission_flow.json")
     parser.add_argument("--loops",type=int,help="Number of full loops, default from config")
     parser.add_argument("--dry-run",action="store_true",help="Fast simulated input/time; real reference-image recognition")
+    parser.add_argument("--camp-checkpoint",action="store_true",help="Opt in to mission_95 Camp house + Time return trial")
     parser.add_argument("--through",choices=ALL_STATES,help="Run initial steps through this state, then stop")
     parser.add_argument("--verbose-actions",action="store_true",help="Also print every macro action; JSONL always keeps all actions")
     args = parser.parse_args()
     config,base = load_mission_config(args.config)
+    if args.camp_checkpoint:
+        if "camp_checkpoint" not in config["return"]:
+            parser.error("--camp-checkpoint requires the mission_95 checkpoint profile")
+        config["return"]["camp_checkpoint"]["enabled"] = True
+        validate_mission_config(config)
     if args.loops is not None:
         config["max_loops"] = args.loops
         validate_mission_config(config)
@@ -39,6 +45,8 @@ def main():
         ) from None
     # Load and validate templates before any game interaction.
     vision = MissionVision(config,base)
+    if config["return"].get("camp_checkpoint",{}).get("enabled"):
+        print("Camp checkpoint trial ON: observed return Loading + house/Time; legacy fallback enabled.",flush=True)
     def directory(mode):
         stamp = datetime.now().strftime("%Y%m%d_%H%M%S_%f")
         return (base/config["output"]).resolve()/f"{stamp}_{mode}"
@@ -67,7 +75,7 @@ def main():
                     log_path = (session.log.directory/"execution.jsonl").resolve()
                     print("Log:",log_path,flush=True)
                     with session.log:
-                        session.event("run_start",log_path=str(log_path))
+                        session.event("run_start",log_path=str(log_path),camp_checkpoint=config["return"].get("camp_checkpoint"))
                         result = MissionFlow(config,base,session,vision,verbose_actions=args.verbose_actions).run(args.through)
                     print(result)
                     print("Log:",session.log.directory)

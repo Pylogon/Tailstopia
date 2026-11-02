@@ -42,6 +42,11 @@ class MissionFlow:
     def pause_marker(self):
         return (getattr(self.session,"paused_total",0),getattr(self.session,"pause_requested",False))
 
+    def camp_policy_signature(self):
+        policy = self.config["return"]["camp_checkpoint"]
+        return (policy["template_image"],tuple(policy["search_roi_client"]),policy["threshold"],
+                policy["poll"],policy["confirmation_interval"],policy["timeout"])
+
     def return_confirmation_reason(self,proof,poll,confirmations):
         loop = getattr(self.session,"loop",None)
         if loop is None or loop <= 1 or proof["loop"] != loop-1:
@@ -53,10 +58,21 @@ class MissionFlow:
             return "Pause state changed"
         if getattr(self.session,"capture_context",None) != proof["context"]:
             return "Game window or capture geometry changed"
-        if proof["confirmations"] < max(2,confirmations) or proof["poll"] < poll:
-            return "Previous confirmation policy is weaker"
         if self.session.api.held_keys or self.session.api.held_buttons:
             return "Inputs are still held"
+        if proof.get("kind") == "camp_checkpoint":
+            policy = self.config["return"].get("camp_checkpoint",{})
+            if not policy.get("enabled") or proof["policy"] != self.camp_policy_signature():
+                return "Camp checkpoint policy changed or disabled"
+            if proof["start_policy"] != (poll,confirmations):
+                return "Start confirmation policy changed"
+            if (self._return_clicked_loop != proof["loop"] or self._return_loading_loop != proof["loop"] or
+                    self._return_loading_context != proof["context"]):
+                return "Verified return click/loading evidence changed"
+            if proof["confirmations"] < max(2,confirmations) or proof["poll"] < policy["confirmation_interval"]:
+                return "Camp checkpoint confirmation policy is weaker"
+        elif proof["confirmations"] < max(2,confirmations) or proof["poll"] < poll:
+            return "Previous confirmation policy is weaker"
         return None
 
     def measure(self,category,operation,*args,**kwargs):
@@ -123,6 +139,10 @@ class MissionFlow:
         self._last_hud_at = time.perf_counter()
         observation = self.measure("vision",self.vision.hud,self.capture)
         self.check()
+        self.record_hud(observation)
+        return observation
+
+    def record_hud(self,observation):
         loop = getattr(self.session,"loop",None)
         if (self.state in ("WAIT_RETURN_LOADING","VERIFY_RETURN_START") and
                 loop is not None and getattr(self,"_return_clicked_loop",None) == loop and
@@ -131,7 +151,89 @@ class MissionFlow:
             self._return_loading_context = getattr(self.session,"capture_context",None)
         self.session.event("hud",status=observation.status,score=observation.score,
                            white_fraction=observation.white_fraction)
+
+    def camp_hud(self):
+        self.check()
+        self._last_hud_at = time.perf_counter()
+        observation = self.measure("vision",self.vision.camp_hud,self.capture)
+        self.check()
+        self.record_hud(observation.hud)
+        self.session.event("camp_checkpoint",detector=self.vision.camp.VERSION,
+                           found=observation.found,score=observation.score,center=observation.center,
+                           threshold=self.config["return"]["camp_checkpoint"]["threshold"],
+                           hud_status=observation.hud.status,hud_score=observation.hud.score)
         return observation
+
+    def try_camp_return(self):
+        """Bounded experiment; only a verified click + observed LOADING can opt in."""
+        policy = self.config["return"]["camp_checkpoint"]
+        loop,pause = self.session.loop,self.pause_marker()
+        context = getattr(self.session,"capture_context",None)
+        if (context is None or self._return_clicked_loop != loop or self._return_loading_loop != loop or
+                self._return_loading_context != context or pause[1] or
+                self.session.api.held_keys or self.session.api.held_buttons):
+            self.session.event("camp_return_fallback",reason="No eligible return click/loading/context proof")
+            return None,None
+        signature = self.camp_policy_signature()
+        count,first,last = 0,None,None
+        started = self.session.now()
+        budget = started+policy["timeout"]
+        required = max(2,self.config["return"]["confirmations"],self.vision.start.config["ready_confirmations"])
+        self.session.event("camp_return_trial",detector=self.vision.camp.VERSION,
+                           poll=policy["poll"],confirmation_interval=policy["confirmation_interval"],
+                           threshold=policy["threshold"],timeout=policy["timeout"],confirmations=required)
+        reason = "Camp checkpoint trial budget exhausted"
+        while self.session.now() < budget:
+            self.check()
+            if self.pause_marker() != pause or self.session.capture_context != context:
+                reason = "Pause or capture context changed during Camp trial"
+                break
+            sample = self.camp_hud()
+            last = sample.hud
+            if (self.pause_marker() != pause or self.session.capture_context != context or
+                    self.session.api.held_keys or self.session.api.held_buttons or
+                    signature != self.camp_policy_signature()):
+                reason = "Camp evidence interrupted or policy changed"
+                break
+            if self.session.now() >= budget:
+                break
+            if sample.found and last.status == "READY":
+                count += 1
+                if first is None:
+                    first = self._last_hud_at
+                if count >= required and self._last_hud_at-first >= policy["confirmation_interval"]*(required-1):
+                    proof = dict(kind="camp_checkpoint",loop=loop,at=self._last_hud_at,pause=pause,context=context,
+                                 confirmations=count,poll=policy["confirmation_interval"],policy=signature,
+                                 start_policy=(self.vision.start.config["poll_seconds"],self.vision.start.config["ready_confirmations"]))
+                    self.session.event("camp_return_verified",proof_kind=proof["kind"],confirmations=count,
+                                       elapsed=self.session.now()-started,score=sample.score,hud_score=last.score,
+                                       confirmation_span=self._last_hud_at-first)
+                    return proof,None
+            else:
+                count,first = 0,None
+            self.wait(min(policy["confirmation_interval"] if count else policy["poll"],budget-self.session.now()))
+        self.check()
+        self.session.event("camp_return_fallback",reason=reason,elapsed=self.session.now()-started,
+                           last_hud=last.status if last is not None else None)
+        # The joint frame already contains Time; don't immediately capture it twice.
+        if self.pause_marker() != pause or self.session.capture_context != context:
+            last = None  # An interrupted frame cannot seed fresh legacy confirmation.
+        return None,last
+
+    def reuse_camp_return(self,proof,poll,confirmations):
+        reason = self.return_confirmation_reason(proof,poll,confirmations)
+        first = None
+        if reason is None:
+            sample = self.camp_hud()
+            first = sample.hud
+            reason = self.return_confirmation_reason(proof,poll,confirmations)
+            if reason is None and sample.found and first.status == "READY":
+                self.session.event("return_verification_reused",proof_kind="camp_checkpoint",source_loop=proof["loop"],
+                                   age_seconds=time.perf_counter()-proof["at"],score=first.score,camp_score=sample.score)
+                return
+            reason = reason or f"Fresh Camp={sample.found}; HUD={first.status}"
+        self.session.event("return_verification_fallback",proof_kind="camp_checkpoint",source_loop=proof["loop"],reason=reason)
+        self.wait_hud(poll,confirmations,first_observation=first)
 
     def click(self,point,label):
         self.check()
@@ -145,10 +247,14 @@ class MissionFlow:
             raise RuntimeError(f"Cannot find {name}; no click sent")
         self.click(match.point,name)
 
-    def wait_hud(self,poll,confirmations,return_proof=None,not_ready_poll=None):
+    def wait_hud(self,poll,confirmations,return_proof=None,not_ready_poll=None,first_observation=None):
         count = 0
         while True:
-            observation = self.hud()
+            if first_observation is None:
+                observation = self.hud()
+            else:
+                self.check()
+                observation,first_observation = first_observation,None
             count = count+1 if observation.status == "READY" else 0
             if return_proof is not None:
                 reason = self.return_confirmation_reason(return_proof,poll,confirmations)
@@ -524,7 +630,11 @@ class MissionFlow:
         if s == "VERIFY_START":
             proof = getattr(self,"_return_confirmation",None)
             self._return_confirmation = None  # Single use, even on failure or interruption.
-            self.wait_hud(self.vision.start.config["poll_seconds"],self.vision.start.config["ready_confirmations"],proof)
+            poll,confirmations = self.vision.start.config["poll_seconds"],self.vision.start.config["ready_confirmations"]
+            if proof is not None and proof.get("kind") == "camp_checkpoint":
+                self.reuse_camp_return(proof,poll,confirmations)
+            else:
+                self.wait_hud(poll,confirmations,proof)
         elif s == "PLAY_START":
             self.play("start")
         elif s == "OPEN_MISSION":
@@ -569,11 +679,15 @@ class MissionFlow:
         elif s == "VERIFY_RETURN_START":
             self._return_confirmation = None
             pause = self.pause_marker()
-            self.wait_hud(c["return"]["time_poll"],c["return"]["confirmations"],
-                          not_ready_poll=c["return"].get("not_ready_poll"))
+            proof,first = (self.try_camp_return() if c["return"].get("camp_checkpoint",{}).get("enabled") else (None,None))
+            if proof is not None:
+                self._return_confirmation = proof
+            else:
+                self.wait_hud(c["return"]["time_poll"],c["return"]["confirmations"],
+                              not_ready_poll=c["return"].get("not_ready_poll"),first_observation=first)
             loop = self.session.loop
             context = getattr(self.session,"capture_context",None)
-            if (self._return_clicked_loop == loop and self._return_loading_loop == loop and
+            if (proof is None and self._return_clicked_loop == loop and self._return_loading_loop == loop and
                     self._return_loading_context == context and pause == self.pause_marker() and
                     not pause[1] and c["return"]["confirmations"] >= 2 and
                     not (self.session.api.held_keys or self.session.api.held_buttons)):

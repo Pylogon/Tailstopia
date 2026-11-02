@@ -304,6 +304,15 @@
     "return_if_missing": true
   },
   "return": {
+    "camp_checkpoint": {
+      "enabled": false,
+      "template_image": "../resource/templates/camp_house_95.png",
+      "search_roi_client": [4, 115, 54, 225],
+      "threshold": 0.90,
+      "poll": 0.5,
+      "confirmation_interval": 0.5,
+      "timeout": 5
+    },
     "loading_poll": 0.5,
     "not_ready_poll": 1,
     "time_poll": 3,

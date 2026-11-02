@@ -9,6 +9,7 @@ from PIL import Image
 from .start_detection import StartDetector
 from .camera_detection import CameraDetector
 from .talk_normalization import TalkNormalizer
+from .camp_detection import CampDetector
 
 
 @dataclass(frozen=True)
@@ -28,6 +29,8 @@ class MissionVision:
         self.config = config
         self.base = Path(base)
         self.start = StartDetector(self.base / config["start_detector"])
+        camp = config["return"].get("camp_checkpoint")
+        self.camp = CampDetector(camp,self.base,self.start) if camp and camp["enabled"] else None
         self.camera = CameraDetector(config["camera"],self.base)
         self.targets = {}
         self.target_masks = {}
@@ -145,6 +148,9 @@ class MissionVision:
     def hud(self,capture):
         with capture(self.start.roi) as image:
             return self.start.inspect(image)
+
+    def camp_hud(self,capture):
+        return self.camp.observe(capture)
 
     def change(self,before,after):
         a,b = np.array(before.convert("RGB"),dtype=np.int16),np.array(after.convert("RGB"),dtype=np.int16)

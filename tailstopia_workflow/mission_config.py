@@ -78,6 +78,24 @@ def validate_mission_config(config):
             number(config[section][key],key in {"poll","loading_poll","time_poll","verify_wait"})
     if "not_ready_poll" in config["return"]:
         number(config["return"]["not_ready_poll"],True)
+    if "camp_checkpoint" in config["return"]:
+        camp = config["return"]["camp_checkpoint"]
+        if not isinstance(camp,dict) or not isinstance(camp.get("enabled"),bool):
+            raise ValueError("Camp checkpoint needs a boolean enabled flag")
+        if "vote" not in config or "mission_selection" not in config:
+            raise ValueError("Camp checkpoint trial is only supported by the mission_95 profile")
+        for key in ("poll","confirmation_interval","timeout","threshold"):
+            number(camp[key],True)
+        if camp["poll"] < .5 or camp["confirmation_interval"] < .5 or camp["threshold"] < .90 or camp["threshold"] > 1:
+            raise ValueError("Camp trial requires poll/confirmation >= 0.5s and threshold >= 0.90")
+        if not isinstance(camp["template_image"],str) or not camp["template_image"].strip():
+            raise ValueError("Camp checkpoint needs a template image")
+        box = camp["search_roi_client"]
+        if not isinstance(box,list) or len(box) != 4:
+            raise ValueError("Invalid Camp checkpoint ROI")
+        point(box[:2]);point(box[2:])
+        if not (box[2]-box[0] >= 33 and box[3]-box[1] >= 34 and box[2] <= 1280 and box[3] <= 600):
+            raise ValueError("Camp checkpoint ROI must fit the reference within the client")
     # Polling has its own window after first_wait; the state deadline still applies.
     number(config["talk"].get("poll_timeout",5),True)
     number(config["talk"].get("poll_interval",0.5),True)
