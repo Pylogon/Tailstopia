@@ -1,0 +1,782 @@
+{
+  "reference_source": "resource/95/initiate.png",
+  "reference_client_origin": [
+    43,
+    95
+  ],
+  "template_box_client": [
+    11,
+    129,
+    44,
+    163
+  ],
+  "house_roi_client": [
+    4,
+    115,
+    54,
+    225
+  ],
+  "time_roi_client": [
+    346,
+    0,
+    389,
+    25
+  ],
+  "threshold": 0.9,
+  "mask_radius": 14,
+  "split_policy": "Resources = reference/development; Nov 1 recordings = development; Nov 2 recordings through 091855 = frozen evaluation. Scene labels from visual full-frame review, not state names. Exclude exact development ROI duplicates from independent metrics. Nov 2 positives are few and near-identical; this is not a new-scene generalization claim.",
+  "samples": [
+    {
+      "file": "000_camp_open.png",
+      "source": "resource/intiate.png",
+      "source_sha256": "6d392be0a38f37f7c78d268415ee9b15a874351c9f2026e2cd1e003263295b2d",
+      "roi_sha256": "1a36920277d5afdff6e95345b4504615b9aaa5bb090021b5f3eba45f5a51ff8e",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "a08061ec805f11aef2ed41f69434bfaaf743abf40fc217c6d9ed14ecbd249334"
+    },
+    {
+      "file": "001_loading.png",
+      "source": "resource/loading.png",
+      "source_sha256": "80853ef842f50919fcf4ae060077ec90ec84e976fba2ce7d82bc9f4fb2c0e254",
+      "roi_sha256": "802f8fc5e3deba0367be11effef6c38c6cb31529bd393dd9e2f1ca33521f484c",
+      "scene": "loading",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "864112d75e16dae370e3ba8de8aa9d4c7d00234cbfea97c5c2082611c1a157a5"
+    },
+    {
+      "file": "002_camp_menu.png",
+      "source": "resource/mission.png",
+      "source_sha256": "5251897f4b72ab874ab7dd5c1750b48057f501e3adc637bf4397920294ac2203",
+      "roi_sha256": "2f60a9b66420a75a4e37df968df77474185c495da7a163352a0a424591c4c7b6",
+      "scene": "camp_menu",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "10268b89119de38a7b9e7933520a8cf78c69d15ef6a98d08353501f146f42b8a"
+    },
+    {
+      "file": "003_camp_open.png",
+      "source": "resource/new redpanda.png",
+      "source_sha256": "c8317548520df9dcc557b0b3dec120651ca970f9b3f4ddca1bbc074180338c42",
+      "roi_sha256": "a7cdc6738ac445a08b6890e5ea1340f87b324f1f1597650d216a1fbac5a356ea",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "638f4331aec177a00ccaa392594db002b4a5ea1be090e2179a1dd13560e6c6c8"
+    },
+    {
+      "file": "004_camp_open.png",
+      "source": "resource/red panda1.png",
+      "source_sha256": "73c40f1a6c4404f77db2d14ac531d806502c1ef7cc500dca802a99f1a95b08f6",
+      "roi_sha256": "15f84d473957b234133e674fad40470642a967395de5c4d048a9d1c9bd5b6945",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "45d87ff385a71ec8eb3d19c851f2a47dbaec142495536f98b4366ae5bfd08ee7"
+    },
+    {
+      "file": "005_camp_open.png",
+      "source": "resource/red panda2.png",
+      "source_sha256": "9f9eff8bd4fedfb3cda7bf772f2e3e4a35d214c5e3d76cee5957b52cf997aa94",
+      "roi_sha256": "cf45985409393b67540973eb78687ff6ded998875483011dccc35cb2086dba03",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "70ca517fb13f152b0c4d95ae19c6cf4b3aa8db42d2d3e07c0f68d53dedeeab89"
+    },
+    {
+      "file": "006_result.png",
+      "source": "resource/reward1.png",
+      "source_sha256": "27ba1eff38b231de5559777ee3c4c94ed1d9cad4086301535def1d90dcb24eeb",
+      "roi_sha256": "2177938e04953743b460112ca72d0e66a33ad593b7fa60d949f7954e0a8d6ed7",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "86b403e8dc16ce2375ab56114b811207bc234496a444bd277d6b8a53499bd186"
+    },
+    {
+      "file": "007_result.png",
+      "source": "resource/reward2.png",
+      "source_sha256": "fae1c8c7ea7e32de691d0a229eb7358a1cd9cd6265e40f2207f7fa25d0f58c19",
+      "roi_sha256": "e96b627eb6c7ad35fabf2d230f876b14f07700f71527241aedea3502cd40f71c",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "6bf274199fb0de0b01d3cfb5a4a4dd30f21beb7e29f58d4ec19535788ceb4dd4"
+    },
+    {
+      "file": "008_result.png",
+      "source": "resource/reward3.png",
+      "source_sha256": "27ba1eff38b231de5559777ee3c4c94ed1d9cad4086301535def1d90dcb24eeb",
+      "roi_sha256": "2177938e04953743b460112ca72d0e66a33ad593b7fa60d949f7954e0a8d6ed7",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "86b403e8dc16ce2375ab56114b811207bc234496a444bd277d6b8a53499bd186"
+    },
+    {
+      "file": "009_result.png",
+      "source": "resource/reward4.png",
+      "source_sha256": "7bc375dc6e9a33471fd82cfd9b83b96dbbd77df4bb2808c00ce11fcb1a7a9272",
+      "roi_sha256": "568146a03594b0b7bf21874703336c04cfb63fe744774591fd439d8f1c46a085",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "7f637d2fdab04c6da122e416ee4846e66eab5535927bbb2d720e61f35a5fc060"
+    },
+    {
+      "file": "010_camp_menu.png",
+      "source": "resource/room list.png",
+      "source_sha256": "d02c797725cb6333375c6f4f0e65bc8188b5dbe51604a16d511aefd89630002a",
+      "roi_sha256": "9dfb0704c51a6b22692cc8b1c3104d9de3ed0132b90d24d3485b37f391b8002a",
+      "scene": "camp_menu",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "b575b5c877d6f714c17d5dd6edc36fe67e9293c41f174c4b39584a44d55aa929"
+    },
+    {
+      "file": "011_mission.png",
+      "source": "resource/screenshot_16.png",
+      "source_sha256": "0a050a51ed2be633181306658778c50f7153dca6d86784fd749c79e5215ffbc5",
+      "roi_sha256": "2fe32c55b143c9e091006075a0e9c74cb884d802aaa4f4a17e008fa583028d65",
+      "scene": "mission",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "8fa641b4e15e357fd38e687bf0b2c38fc9533a36662df5def8532b31567a6c91"
+    },
+    {
+      "file": "012_mission.png",
+      "source": "resource/screenshot_17.png",
+      "source_sha256": "9a02e2825c6210333b14ffab3c5fda8062b6ed014be22256fc42e80aa1629ae5",
+      "roi_sha256": "874e2ad6da29df16cb9cb9578eb4ef981cbaba1e426758da0b79fa98cee0a74e",
+      "scene": "mission",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "2f1f73f86daf86a464b5ed71e99477dc77596b74f6c1391a1e3702b0474cf3a0"
+    },
+    {
+      "file": "013_mission.png",
+      "source": "resource/screenshot_18.png",
+      "source_sha256": "1dca379627afffda482aaffb0372f8564c25288b418bf43c3a33f848e4d1790f",
+      "roi_sha256": "24c941ce924cc1ba5cf53a71e28b1dad8301c20c15dc74fc0342623957507c78",
+      "scene": "mission",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "68ae4f6c8d1e17cbd16e88b351efd36b5bd4f454e4243cc14e4bbcbe993019ca"
+    },
+    {
+      "file": "014_mission.png",
+      "source": "resource/startinagme .png",
+      "source_sha256": "079274c17675b7e36576be42a5e621c7b1c57b286071091083f12405866f8f13",
+      "roi_sha256": "aa2df53ad5d24045dec67fac8e2aebe6447b7d44c8a133bbc5e70d70693fc3ba",
+      "scene": "mission",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "e39ce36ce6934c425ef8295ac757b757e0f838298875d926fef6c06809a9497b"
+    },
+    {
+      "file": "015_camp_menu.png",
+      "source": "resource/startmission.png",
+      "source_sha256": "7a7520f78c8c09ba92b503cb588a34a86663254c12e09289c97f2a368ccdc019",
+      "roi_sha256": "9dfb0704c51a6b22692cc8b1c3104d9de3ed0132b90d24d3485b37f391b8002a",
+      "scene": "camp_menu",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "b575b5c877d6f714c17d5dd6edc36fe67e9293c41f174c4b39584a44d55aa929"
+    },
+    {
+      "file": "016_camp_menu.png",
+      "source": "resource/95/create.png",
+      "source_sha256": "208485af98143237c3169bc3d24865d14142c4da0512ece1bff088b00712ebfd",
+      "roi_sha256": "f68458b5f47b4c8c203a414d41c3cb0d67b87638bda18a4ee2bf49a952980213",
+      "scene": "camp_menu",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "af3d1bf729b2b08fb2e0957693cb17ea6239a51dd3e748ec275cc0f845c432a4"
+    },
+    {
+      "file": "017_result.png",
+      "source": "resource/95/fail.png",
+      "source_sha256": "80873fdead679f9fd50738347a0b9658363d65d108467ee6e487f33c8205a3f2",
+      "roi_sha256": "b0d9626ba9800185477b1ab807ab38a2d2fbf18ad4290c10b738adb4311144f9",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "f83518f411b6abf64c1949f5a747e79ec9fbfba427ed0e90364fef932aad5133"
+    },
+    {
+      "file": "018_camp_open.png",
+      "source": "resource/95/initiate.png",
+      "source_sha256": "8d5e935e735787306058ab0542670099079d15898d2cf98765c877873f9c476b",
+      "roi_sha256": "b90b5dfaa41a300b43e8c29bf742f5b8827ad33b67f2ad3bc234d8411804a337",
+      "scene": "camp_open",
+      "split": "reference",
+      "development_duplicate": false,
+      "fixture_file_sha256": "fb9e01b6b2175efdb6064dd8db11bd91f084955cb03e91945aedf3625327ac4f"
+    },
+    {
+      "file": "019_result.png",
+      "source": "resource/95/reward.png",
+      "source_sha256": "44bf8ae354e31bafa0eca4b4e156deffa3701c20c3ec72c20c7cb86296860338",
+      "roi_sha256": "ba05a6c26d00af198d835d7e817acdd4b6e505151a55fffff0c56aa0261d8b44",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "33ab3ea58732080d3320c0d96b55b7fa61097819f82cab8521c54ce4c242d17f"
+    },
+    {
+      "file": "020_camp_open.png",
+      "source": "resource/95/talk.png",
+      "source_sha256": "b4758fa1b3f8b99779ec0dbf54dd56f39ed22a033526ef47e2f52b8cc96e09d3",
+      "roi_sha256": "12c37069db6fd31c6823adad2519eed8e96cfb324673c584bf005592d7fb0ac5",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "995068e91b369ecb0d2b9619f68633064ce35de9f67b01ebd9909705febc2958"
+    },
+    {
+      "file": "021_mission.png",
+      "source": "resource/95/vote.png",
+      "source_sha256": "11a4cc03cfa2e925bf7de42a14f6e5508c5b60195f7ebfe6acc325e92e63b599",
+      "roi_sha256": "8981bb027bbb1b4026bef0a58af2d72e26f87e08f721d95baf3ab580147fb44b",
+      "scene": "mission",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "fc03f5e4a064ce3be120070878a1e9c2b75172a938e9076aa7aaaeed4af52a9f"
+    },
+    {
+      "file": "022_camp_open.png",
+      "source": "workflow_runs/mission_95/20261031_235516_256875_live/1_WAIT_RESULT_stopped_client.png",
+      "source_sha256": "b86c3cc19eb4a244844d320b0f2b33f630e0bdc50510b04cdf782bb2b6981ac9",
+      "roi_sha256": "1b6748b3979d28ceddf470b035be1b97fe083d95c2f7d319bc4ae6e5595b89af",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "652c331d5fcd3b2d4e756663b12f9b2c4f87e67031a48b32d4b4f585776238f6"
+    },
+    {
+      "file": "023_mission.png",
+      "source": "workflow_runs/mission_95/20261031_235623_846486_live/1_WAIT_RESULT_stopped_client.png",
+      "source_sha256": "e58a5b85861627d1b1f1274077dd2252cf46a20ca4507be85ce20cfbbe9458ac",
+      "roi_sha256": "9510432be7b0a2e53a7231313642ac3b8a27e5b9d4c891c0adc546768940ad04",
+      "scene": "mission",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "3e67854b31fd2264c3929335b96810b492e01c0849274998c7e657d948caf8d8"
+    },
+    {
+      "file": "024_mission.png",
+      "source": "workflow_runs/mission_95/20261031_235824_813216_live/2_WAIT_RESULT_stopped_client.png",
+      "source_sha256": "5e2f8c395b142ff70749ab0dc099eb701e0ff3deb27fd5f154a53d92fe19fe98",
+      "roi_sha256": "1cf1c5c2dd2602df8e55bae1a2fe7c9532fa06e2f71270bebea5ce7e89e644d4",
+      "scene": "mission",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "5af7a99dd0c71878c9da262f9acf0e7a3208cfe14f44d1cfae61fe05961c1225"
+    },
+    {
+      "file": "025_result.png",
+      "source": "workflow_runs/mission_95/20261101_000417_472476_live/4_COLLECT_REWARDS_failure_client.png",
+      "source_sha256": "c381c77c1ad2fb87ae4fcba1c3410b4b262b3917f0a8b65ce8eecca7ddeabe3a",
+      "roi_sha256": "ea43f22f58d593e4e6e6311ff98d8e86d84ac440ab4791d4284a9c0eec321a55",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "546a3f1078390493253376cb0a03cbad263efb7848047f31e6485b8aae3c0c55"
+    },
+    {
+      "file": "026_result.png",
+      "source": "workflow_runs/mission_95/20261101_000929_271991_live/1_COLLECT_REWARDS_failure_client.png",
+      "source_sha256": "9edf336d0e3e8a124e837aded8a761bbdb84967a6a743e7fb66a866d5f1a9317",
+      "roi_sha256": "90ebb2095a8c77b8ad307569dfc69fb99aa209124019963f8402b9212423b3a0",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "23dd81b9ffe0bd86bca8a46115905b9978448e414ff53c64363a90cba57ec428"
+    },
+    {
+      "file": "027_result.png",
+      "source": "workflow_runs/mission_95/20261101_001031_210543_live/5_COLLECT_REWARDS_failure_client.png",
+      "source_sha256": "ce04e78c67ea21c6c732610b9c7faaef6c9f69530e6b64e9a9fee39afd2bc785",
+      "roi_sha256": "b33e7de78d0c8bb4ea7b240366c3d5c1a70786b055e0bdce4861fbd5a17fad02",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "f4364d17ef1d59000091bc581f21527e03edc5dda1edb16efc308852e8d92246"
+    },
+    {
+      "file": "028_result.png",
+      "source": "workflow_runs/mission_95/20261101_001551_729870_live/4_COLLECT_REWARDS_failure_client.png",
+      "source_sha256": "5a1ecad670a9672fd9db111e27d74693d1ddedae26ccdfe4c7fe25602b9cdac2",
+      "roi_sha256": "f9202f9152da507979efde1ad1028b5b5e17f687ad4be111c0819cdebc9c1333",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "68407bace333ba9c017e36c3a2db6149f63f1f474a6c95b2ef426814b61164b6"
+    },
+    {
+      "file": "029_camp_open.png",
+      "source": "workflow_runs/mission_95/20261101_002100_481686_live/2_VERIFY_RETURN_START_stopped_client.png",
+      "source_sha256": "43038d5d441d7c8920fd17927ae0e2b5d353b59724877615a20c15689b607634",
+      "roi_sha256": "95d0190785df99aeb3c94893007e3e343c729ca8ffe1ea33fdeb9d7b235cad17",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "bc30930cf867f22c4171652457deb751e0fce74fe2d5360d647bb086296abdba"
+    },
+    {
+      "file": "030_loading.png",
+      "source": "workflow_runs/mission_95/20261101_002312_739877_live/6_VERIFY_RETURN_START_stopped_client.png",
+      "source_sha256": "d3c9e2467886ce1a28a36ada7273b15cf184fc38b813cc03f2dc57135fb8601b",
+      "roi_sha256": "ca99ec5fc34af1344868184ac7fc68efb87d57109b4de2e8ad9ec27bcaff92d7",
+      "scene": "loading",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "a9d20bc8f2b64d6537c7732fe458a0d51247235108d2176cc9635c028eb94336"
+    },
+    {
+      "file": "031_camp_open.png",
+      "source": "workflow_runs/mission_95/20261101_003232_637511_live/1_VERIFY_START_stopped_client.png",
+      "source_sha256": "67c014660e021fa826b34741b54850fcd5dd5e6d9c8c77f8273275afda6b72fc",
+      "roi_sha256": "e916f560236d3ce61a1a464be527a2667100b15edcaf590842e9363bcd94b70d",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "ff2acac12d41ea9c4485ef37a7267cd07febc8588e299b4c6ae9ab983c29aaad"
+    },
+    {
+      "file": "032_result.png",
+      "source": "workflow_runs/mission_95/20261101_003248_184976_live/7_COLLECT_REWARDS_stopped_client.png",
+      "source_sha256": "0622e19b1211b2e7344fae09d4b0e123d9ae206f0d0cce5f491e66e492d45908",
+      "roi_sha256": "0b2fd284971247da69da122a96d5dc7fc9a45cf8cc54e5fccfaf7fff7b1aa513",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "08c728095313189862a9f5a0a7a7f4e297bc14261a7ea4be9150a803f2652dc2"
+    },
+    {
+      "file": "033_result.png",
+      "source": "workflow_runs/mission_95/20261101_004000_373156_live/5_COLLECT_REWARDS_stopped_client.png",
+      "source_sha256": "c9a642ec5be435f6de7cb3fb0e719ab0f12aa1f4deb53917544b14344f88eb40",
+      "roi_sha256": "2960cd58a8c8a865c3bfecf736bad57b96a27ded8b7396b1f7c6dfff0ce5a547",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "d63fe4b7b328281c6038ed49eb25e8771c8000b36306a31dc1d51d4d263f7903"
+    },
+    {
+      "file": "034_camp_open.png",
+      "source": "workflow_runs/mission_95/20261101_004457_866056_live/3_PLAY_START_stopped_client.png",
+      "source_sha256": "4e252f26e6cd7296f261f17b27ce157593d1b00e76988fec21c6a451d4eaf3d7",
+      "roi_sha256": "356b5269addc81e19d28fbc60b3de494dd57c1ef67bfa28f8b3e6522e1b545d2",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "6bc3092ac2b451daf148726130faf6f506a76aaca81aca0c48f4f7b43aac3958"
+    },
+    {
+      "file": "035_mission.png",
+      "source": "workflow_runs/mission_95/20261101_004738_809427_live/3_WAIT_RESULT_stopped_client.png",
+      "source_sha256": "a977d34cd0a78f8791649ebb478b27924c5132a4c9a692a1741e0c6c37aab584",
+      "roi_sha256": "a80d9283813cd069467a00e5d4b2881f0cb1df316c342d89edf4436609ce46a8",
+      "scene": "mission",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "ebcd15d4c477350afc111287258a7587c35b52da9e0526bf184da4363817e1c6"
+    },
+    {
+      "file": "036_result.png",
+      "source": "workflow_runs/mission_95/20261101_005032_411525_live/3_COLLECT_REWARDS_stopped_client.png",
+      "source_sha256": "c4639bf0da879d68f74afb8d9002ca6f02dea616a6165323118cd34387d3d75f",
+      "roi_sha256": "d6220e58e8451038e9de07d30b80f2888757b963efb766227c4479569e2378c3",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "41aa22d888292be5a54df42feaca553b2d1835559d0ca736629d960794550490"
+    },
+    {
+      "file": "037_camp_open.png",
+      "source": "workflow_runs/mission_95/20261101_005407_813380_live/16_OPEN_MISSION_failure_client.png",
+      "source_sha256": "312311061e411c0179c53b3f599fd53a62e18cc3c8a6e9023fa0aefb9fdd50cc",
+      "roi_sha256": "f6e03e5708a87eadae60e9837097e7a9f14de3f91dfb39f400325b375a59a8d1",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "a36ce3d0958e4caf1392a172b2852ab940ccaea5c1dc2832a1ed55146e7af3f6"
+    },
+    {
+      "file": "038_result.png",
+      "source": "workflow_runs/mission_95/20261101_014719_421779_live/3_WAIT_RESULT_stopped_client.png",
+      "source_sha256": "6c0ff372dbfe6e4b249310203d7ba5451d969c57096037386982dc71080ad858",
+      "roi_sha256": "72cb875d156a12d2e2c005ab7826591c656c4895552370ff8660fd94c6b79a59",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "27127752bbe7069aecaa0bed459260b76184502b9f6daf2d09f03aa4b1db84ad"
+    },
+    {
+      "file": "039_camp_menu.png",
+      "source": "workflow_runs/mission_95/20261101_021757_954249_live/7_WAIT_VOTE_stopped_client.png",
+      "source_sha256": "ee6248cc3dcd5fefe5f4a595a2bc7803f3db9459b4d327505119d08e090b9be1",
+      "roi_sha256": "c810d7103414cc8a97f4789d7be685581d2c19d72a05a21467db0e8814c1c35b",
+      "scene": "camp_menu",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "4222e32bad5d878b1cc1f427c6a366100440c799e3bf88c58e4ad82457d59937"
+    },
+    {
+      "file": "040_result.png",
+      "source": "workflow_runs/mission_95/20261101_022651_851264_live/25_WAIT_RESULT_stopped_client.png",
+      "source_sha256": "be4c72894ac15f6ad999d4568c9f67ce8e019934b5b994537b98141e4fd1d8c8",
+      "roi_sha256": "a60c9ab283498f02c309088c19f08051034c5d1eeea35a5dcb84a302c8cccde3",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "3510e871586910534ef104ddb3099b797a67d153415404fb6d402b4e0aa7a7d1"
+    },
+    {
+      "file": "041_camp_menu.png",
+      "source": "workflow_runs/mission_95/20261101_073334_875571_live/1_CREATE_ROOM_failure_client.png",
+      "source_sha256": "1e19f99bdfff73df9f12e2a1597962b750fb0b66fea98d2531afaeb5dc11cc75",
+      "roi_sha256": "4d8ba07555606ef1fe6556c63f7f3801bc09bfe7592052a142d8b8e1114a4d72",
+      "scene": "camp_menu",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "8ad0c8d0dd83c0b5bc7da674389cec76df70f03599810860a51d30f40a2bfeb7"
+    },
+    {
+      "file": "042_camp_open.png",
+      "source": "workflow_runs/mission_95/20261101_073415_558597_live/1_OPEN_MISSION_stopped_client.png",
+      "source_sha256": "59dfe253b99f84705c18d89c77f7ef8fd2dd13ebec6cc0f666b6324c333ba6ee",
+      "roi_sha256": "5e916a0bf7dcff614f5679beb9233da6e1871293552fcaf891f5c4eaf55a2681",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "5b879c8774f0ec2bdc157faa36110841cc994a4ecbfba84bc274cf70cc0a5ce3"
+    },
+    {
+      "file": "043_camp_open.png",
+      "source": "workflow_runs/mission_95/20261101_073549_179109_live/8_PLAY_START_stopped_client.png",
+      "source_sha256": "578537f4a209a43fc76f2afd88fb92b8edb35d766fdaed7d979beb15b14e145c",
+      "roi_sha256": "5b773219d9e6b9373bde75a0504ffe637ab521a0a49742fd082736978f688309",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "c9321111f9467e1d23eee5708b41ba9a332717b43963f4276841cf4f48499ae1"
+    },
+    {
+      "file": "044_result.png",
+      "source": "workflow_runs/mission_95/20261101_074328_132927_live/56_COLLECT_REWARDS_stopped_client.png",
+      "source_sha256": "8d151838de49494130bdd115d20b1c0767d1f5ffc3eaa2bcdaaf2e8756d4f84b",
+      "roi_sha256": "3e98e03b56dc2e51c139b945730cea5f24dd4e1e1621b5e62b27628a68572c93",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "38d822f9634019856e561975cb48e832a81cd75e1df8f79db2ae297804f5a260"
+    },
+    {
+      "file": "045_camp_open.png",
+      "source": "workflow_runs/mission_95/20261101_083256_869397_live/90_PLAY_START_stopped_client.png",
+      "source_sha256": "1015a05d23ff228bee3aad676fcfd3e0ee8417f8745abb46c46eaa73c1befeee",
+      "roi_sha256": "43d9d6f458bba83bc5886c7e947518f48b69c7a930f79816ef4abfbd5932c53e",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "adb8863c6f38407871efba1789560f15374c47aeac42e1a1f7ef98ce219d65b7"
+    },
+    {
+      "file": "046_result.png",
+      "source": "workflow_runs/mission_95/20261101_095159_369456_live/27_COLLECT_REWARDS_stopped_client.png",
+      "source_sha256": "a7845ad4a1c9d140dd5c64975e1ae434b475330c3742b4fb5bcfe9a51e87d492",
+      "roi_sha256": "a7a2c44c9b9c8ece1d41ec6b7f5b0aeac60740c355611c3ec5cdaa3828e2162d",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "d89cd1b44a938f8998760c1f90092772adb405a6220d6624c808463ac34cec8d"
+    },
+    {
+      "file": "047_mission.png",
+      "source": "workflow_runs/mission_95/20261101_102028_051062_live/90_PLAY_MISSION_stopped_client.png",
+      "source_sha256": "0eefa8e41e47f1a709cabcb026a4b6611c70449cd62e2023d1eab7d1ed981741",
+      "roi_sha256": "0fcf68051ae195669ce7b9b1c47a9dcbeef8bcb2d0a55bb3890bb0f0f78f15e0",
+      "scene": "mission",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "f627d684ec2d4feadf90cb9739da8f6fc0d619a9be3fc53069482a675d0ce631"
+    },
+    {
+      "file": "048_camp_open.png",
+      "source": "workflow_runs/mission_95/20261101_113915_831652_live/2_VERIFY_RETURN_START_stopped_client.png",
+      "source_sha256": "e671c521581a65a32e1491f8c9ee0916d690d8b78bdbde976c5ae5282cf8d191",
+      "roi_sha256": "cc494b3f70bc9c23024fb0496473800f5f10737bb411c45ba7c6e1216f366548",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "dbc3417b773f43a5529cf98d569e5b6e2c6d011ce5a55d2e8af13c0e93dae9f1"
+    },
+    {
+      "file": "049_camp_menu.png",
+      "source": "workflow_runs/mission_95/20261101_115825_612350_live/1_SELECT_MISSION_failure_client.png",
+      "source_sha256": "f6894d77d0fe6af96b0b69d2270d4efa509a66edb083035deef568064ee03a3e",
+      "roi_sha256": "4f6510f0520f437e28b7f35d4cb5927c235691aefbf5c313e69f036c82db41f9",
+      "scene": "camp_menu",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "fa0947c081f7f612de14768910508fc70ad04f8db328b0eacd08e0af6b83998a"
+    },
+    {
+      "file": "050_camp_menu.png",
+      "source": "workflow_runs/mission_95/20261101_115908_753714_live/1_SELECT_MISSION_failure_client.png",
+      "source_sha256": "6783a53eb3bdcb819382951d0e2fc39448a3e32c9d7aba0a612d13dd08e7f107",
+      "roi_sha256": "42a14a7905c45fe68867d4d7b3fe4714d8b09886e978b24872c6b765a4b0441d",
+      "scene": "camp_menu",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "549b924c5735b9536c1c9c7239e4cec6b04db2bef029a37e336b8325bebcb4c2"
+    },
+    {
+      "file": "051_camp_open.png",
+      "source": "workflow_runs/mission_95/20261101_120010_117813_live/81_OPEN_MISSION_failure_client.png",
+      "source_sha256": "f5d8ac246d0ee6c9e0eec1c1ad130e69167ac4a28608302c8f11956ee39d1a63",
+      "roi_sha256": "306683d6a6862ab8fb748fedbf0dccd4a2d8f2a307ba16f7f2918a1fb0beb5f5",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "5a5998d7b430c1a8e870694edcaadcc530e2f696b8c401d01e9a6ec05d681d2e"
+    },
+    {
+      "file": "052_camp_menu.png",
+      "source": "workflow_runs/mission_95/20261101_144928_408028_live/44_WAIT_VOTE_stopped_client.png",
+      "source_sha256": "bdba517e54a7f8a30afbc844fe18f205c13e31601238f218a0a33a7dda341005",
+      "roi_sha256": "8abe4362c05d03fd58077bd16f442191d89a47908681faeb503e20ab0f99fe74",
+      "scene": "camp_menu",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "85557d14a5ddbe228b4b5fe3a18b386905b82cc6374c429507f6977a3501a3cd"
+    },
+    {
+      "file": "053_result.png",
+      "source": "workflow_runs/mission_95/20261101_173751_247082_live/129_COLLECT_REWARDS_failure_client.png",
+      "source_sha256": "15aa95d469c675a147c2b0b7bac93c6b865ed8464443b622271ff8367fb24376",
+      "roi_sha256": "fe239e7a5e0368450fb819b3cdf3c6735726d7cb65564122836bc1b3465a306e",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "ed9b327219b78d7744881a1997149f16acf9f876a8ec640b1c64204d113314af"
+    },
+    {
+      "file": "054_result.png",
+      "source": "workflow_runs/mission_95/20261101_204530_222560_live/36_COLLECT_REWARDS_stopped_client.png",
+      "source_sha256": "96453f75abfbc15fa1b4182e611be6846fedb6ed1664c955af0665f4f05c4368",
+      "roi_sha256": "20f495c2bcf06fa1f2a3ccf0980e805d70a17b9858f442829348b48de4eba0df",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "7a00544df11630c06e466488246727e82ad39b3d207bd60f4ce7d2228e3a8d72"
+    },
+    {
+      "file": "055_camp_open.png",
+      "source": "workflow_runs/mission_95/20261101_211936_224469_live/1_VERIFY_START_stopped_client.png",
+      "source_sha256": "8846460dfa3de6b3c8d783ac433c6a8de2006d6b0a0b6a5ad6e6dba14cb7f976",
+      "roi_sha256": "624da6641192195925032e232231893b9e42f85966158c0fe82787e2a90cae09",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "34bc1fef5dd7833b1cf7672b375d51a12a73b13f6eaadc8f127e1cdfa74f78d9"
+    },
+    {
+      "file": "056_camp_open.png",
+      "source": "workflow_runs/mission_95/20261101_212030_557724_live/5_VERIFY_RETURN_START_stopped_client.png",
+      "source_sha256": "f1e45fdb73397ffcc83f939beaa2118e9d39552cc397ed42cf1b22a5acaed31b",
+      "roi_sha256": "69ded6632f27f2f5ce183951e9f1c2569efe9fbc42564a2719e60456cd396a45",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "f25dadcae2c1df8c9fa0fbf12f2a52db16ca433f1299568bcb28ca6cabaec9fe"
+    },
+    {
+      "file": "057_camp_open.png",
+      "source": "workflow_runs/mission_95/20261101_212534_049985_live/6_OPEN_MISSION_failure_client.png",
+      "source_sha256": "4a0b4668ad3f9536c6b2cc8912ff036c679288813cd6483f20acbd26ea431bb8",
+      "roi_sha256": "a94176c27fe276904ad5196b451d8badbbbda0634ea8864206f32cf3d9e438b8",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "c1ce867a5cbc24abb169ec93a1b4b7b34829f3f53a2ddf79024314e16a573db2"
+    },
+    {
+      "file": "058_result.png",
+      "source": "workflow_runs/mission_95/20261101_215810_789123_live/5_COLLECT_REWARDS_stopped_client.png",
+      "source_sha256": "1483eb83a49e2c1785f9cdc17bf93aa628877f792486a47d0f0f0807f58f0e6a",
+      "roi_sha256": "00aee209e780dfdff874eab3a1375b82f4ed513dba6abcad791c71ab7b7a8815",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "0d66c7068e7fb93531096b85646846ebea97c8aa8977f8958f747ce26b3c5248"
+    },
+    {
+      "file": "059_result.png",
+      "source": "workflow_runs/mission_95/20261101_220349_475121_live/11_COLLECT_REWARDS_stopped_client.png",
+      "source_sha256": "4a452afbf16a9e8480300bbbe33f15c6a53313e7ffe3ab20a9a204ea34be9662",
+      "roi_sha256": "e0d702f4e5ac5db32d210d1c3907208575671742ee70ca554fe895a9a1e94d82",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "5d6cf602ef5277e0d01e01dd130e643e3d722cc1f09071435b1111c377113877"
+    },
+    {
+      "file": "060_camp_open.png",
+      "source": "workflow_runs/mission_95/20261101_221359_108210_live/1_OPEN_MISSION_stopped_client.png",
+      "source_sha256": "2c34268694c3db2699b57a5108ecfdc26e6ce7502a42a6fec545b16b5af1e704",
+      "roi_sha256": "41b363a42286cbc1facafa81723b25673d31234792a1b5d951f14a786bed3916",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "5234ba2e15d6b04286cc1f43bcb5315fa548222a6d68f76e774810ba3ad5bb59"
+    },
+    {
+      "file": "061_camp_open.png",
+      "source": "workflow_runs/mission_95/20261101_221710_038017_live/1_PLAY_START_failure_client.png",
+      "source_sha256": "9eed6937b56fec7dc2cb2ee93bb887cde8809da9c24227ddfa94c46bf84030bb",
+      "roi_sha256": "9bb5eb828554266d1076ad7c19ea89b3196e7493faab2951307c3a5ac92bf540",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "0d8f5ce3dcfeeb3ce6f5faa8aadb04ab50f29d9e161de8f8db7224e46e4cc652"
+    },
+    {
+      "file": "062_result.png",
+      "source": "workflow_runs/mission_95/20261101_221738_812801_live/10_COLLECT_REWARDS_stopped_client.png",
+      "source_sha256": "aed246aa8b0ddf922920adca268315cf779441675e7b93cb055383a5dbcd2be5",
+      "roi_sha256": "eea74e5eafeadcbbdc63b2aa195921e8241ffe87f75df37a3321b7645b69593f",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "f81c08d3bac9da3c890f976e7b731b66a0f1fd6673ead4b02927ffa11206953c"
+    },
+    {
+      "file": "063_camp_open.png",
+      "source": "workflow_runs/mission_95/20261101_222701_670888_live/30_OPEN_MISSION_failure_client.png",
+      "source_sha256": "d6f5478a63c22f9fef82468e04942c7417cb2174f6c61b8c17f4bcc645a0228f",
+      "roi_sha256": "52d5c51b90ccb1c238441269e5fce180b094a6ed043b7efb9434a4fc5aa3e6d9",
+      "scene": "camp_open",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "8f1d8cfbbbfbf641b1da13ed9e6d4543801320b44e80a56176762280cf208196"
+    },
+    {
+      "file": "064_result.png",
+      "source": "workflow_runs/mission_95/20261101_225628_357507_live/7_COLLECT_REWARDS_stopped_client.png",
+      "source_sha256": "c2127eda86a638136ba26ca9ded9d345e9ea8bf2c69731e8a73460cd6e14c2bb",
+      "roi_sha256": "ab30a4d20b31788c14800b69557c344b95c8ca20b58972b1f31f20fcc3e9b0b2",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "d18e4c44c3b1ecdf39441e46ff83944018efe659294b2daf3c75b48a59357fb8"
+    },
+    {
+      "file": "065_result.png",
+      "source": "workflow_runs/mission_95/20261101_230326_551225_live/46_COLLECT_REWARDS_stopped_client.png",
+      "source_sha256": "ed0e2be572427efac3b3ed3472d20966f7316e1d478e5b1c671e249f215844ce",
+      "roi_sha256": "c7bd75d2d5e5b62a9cdf684c9e027005e27759203bc8fc5ec9d818660a5b6590",
+      "scene": "result",
+      "split": "development",
+      "development_duplicate": false,
+      "fixture_file_sha256": "a2987ef83e96100ff7f62f6922f7f2661c8c0eba6da341594899c909cace36b8"
+    },
+    {
+      "file": "066_mission.png",
+      "source": "workflow_runs/mission_95/20261102_071457_088941_live/21_PLAY_MISSION_stopped_client.png",
+      "source_sha256": "81c496ccb69652b371b78993b92cf74815f7d7add96bba934a4b37cfa76f5422",
+      "roi_sha256": "3948fecd584c8b99064c899a31794043899d5b1620da85f54c91d7000a205bd5",
+      "scene": "mission",
+      "split": "evaluation",
+      "development_duplicate": false,
+      "fixture_file_sha256": "aac1ee440d8da08980b45b6821f66d1ba513127f1594cd066ebe499b330e7f9f"
+    },
+    {
+      "file": "067_result.png",
+      "source": "workflow_runs/mission_95/20261102_073505_774914_live/3_WAIT_RESULT_stopped_client.png",
+      "source_sha256": "9a27f24e3f457f1d1b9578093a086d91cf2a9b3202cd4dc97fb337b1a82651ae",
+      "roi_sha256": "385efca453b45979a57362fcff4046234dd92679cedf158412a4ed5984954e2a",
+      "scene": "result",
+      "split": "evaluation",
+      "development_duplicate": false,
+      "fixture_file_sha256": "3e3af3e89544182489e1e56b7c3490e612331216e1c9b05f929b1f0ad80756e5"
+    },
+    {
+      "file": "068_transition.png",
+      "source": "workflow_runs/mission_95/20261102_074806_228831_live/17_WAIT_RETURN_LOADING_stopped_client.png",
+      "source_sha256": "f1a33dc831a07585a949bd9bc17e7c582d971c4d0187ecb6a7478806731d2bfc",
+      "roi_sha256": "d5968d48eba4979a337080754ba9fd980fbdf858c9e459b8a20ea29c3e8bb698",
+      "scene": "transition",
+      "split": "evaluation",
+      "development_duplicate": false,
+      "fixture_file_sha256": "bb01e528a688ee63669a3cc884b3f4930fe596ee13f085ddeaff55f646fe0440"
+    },
+    {
+      "file": "069_mission.png",
+      "source": "workflow_runs/mission_95/20261102_080358_570353_live/44_WAIT_RESULT_stopped_client.png",
+      "source_sha256": "e00f43fb4d3929e4716d91f452165c53702b14ad498aaadd5ede642cec3c8a3b",
+      "roi_sha256": "c123c933266d8b51ed084e07e0cb1059e3eb75f7e711a48c52d3881759a80a2c",
+      "scene": "mission",
+      "split": "evaluation",
+      "development_duplicate": false,
+      "fixture_file_sha256": "85b2fc330a131f776f8a3a13c720e2ef2e4cb003be70d61f6e910acc79d11a73"
+    },
+    {
+      "file": "070_camp_open.png",
+      "source": "workflow_runs/mission_95/20261102_084447_976897_live/1_PLAY_START_failure_client.png",
+      "source_sha256": "28bfea0dfa0c2bae737c2dca38443602fa81a58940cba3fa4efbabca24a0b4e0",
+      "roi_sha256": "75feb3f61835db13d10ee5936f8b709c7b07cc3f64cc21f9631415960514005a",
+      "scene": "camp_open",
+      "split": "evaluation",
+      "development_duplicate": false,
+      "fixture_file_sha256": "505ae7486af6db3f38cf2d7f041514325785981fd9c8e13128580ab9cba2be9f"
+    },
+    {
+      "file": "071_camp_open.png",
+      "source": "workflow_runs/mission_95/20261102_084504_301857_live/1_PLAY_START_failure_client.png",
+      "source_sha256": "5f3453ce402e28b24970189734079e89542decbc879c8a3572212dfcf5b09e61",
+      "roi_sha256": "807826b0d3cd4155e0b89e83d673de66fac595c0d068c7a29564645f5c931dff",
+      "scene": "camp_open",
+      "split": "evaluation",
+      "development_duplicate": false,
+      "fixture_file_sha256": "6fb904db8aa6029cbe61869a5d705113ef99d4e88737807826d10e8f0fa44826"
+    },
+    {
+      "file": "072_mission.png",
+      "source": "workflow_runs/mission_95/20261102_084517_710909_live/32_VOTE_STAGE_stopped_client.png",
+      "source_sha256": "c7c946265045ae9777878131e5864620a47220c97935494df2192724d825c446",
+      "roi_sha256": "4d39babe3d03096dabdaeb571871a6599d8a587f396acbcd25da067359709249",
+      "scene": "mission",
+      "split": "evaluation",
+      "development_duplicate": false,
+      "fixture_file_sha256": "5207f9bac90aab4fa8ce629f377aa583c10d19f73637bec438a95a8942921ae0"
+    },
+    {
+      "file": "073_result.png",
+      "source": "workflow_runs/mission_95/20261102_091417_878791_live/4_COLLECT_REWARDS_stopped_client.png",
+      "source_sha256": "14b5b88284179907e51df7e8a9e084618a4eef28e613de1f024c09f09555a694",
+      "roi_sha256": "c9c7cc604c0ad3e770640f6213bed8f886e57cb389a8abc5fdb139ba02888f87",
+      "scene": "result",
+      "split": "evaluation",
+      "development_duplicate": false,
+      "fixture_file_sha256": "95aa8e94b496f6914bdc51f918c8fafdc5b6cb7d94f76d84e94de0abe37358f6"
+    },
+    {
+      "file": "074_result.png",
+      "source": "workflow_runs/mission_95/20261102_091855_262515_live/7_COLLECT_REWARDS_stopped_client.png",
+      "source_sha256": "d10f687ef4c323929c8d8f7b0c79e4360c17d3a7b02b9765e91311299759b16b",
+      "roi_sha256": "d8b2d4d9d32da1052b26963e665a6e57c24b7c4142d387517b9c2de95ff5aa19",
+      "scene": "result",
+      "split": "evaluation",
+      "development_duplicate": false,
+      "fixture_file_sha256": "9cc9d7089e1887d7451155d3f85fde54efc3949b7e756dcc8d51400e812316b0"
+    }
+  ],
+  "parameters_frozen": "Threshold .90, inner disk radius 14 and fixed scale/ROIs unchanged after evaluation scores. Reference + Nov 1 only for development. Initial contact sheets used for visual scene labeling; no score-driven tuning on Nov 2.",
+  "reference_source_sha256": "8d5e935e735787306058ab0542670099079d15898d2cf98765c877873f9c476b"
+}
