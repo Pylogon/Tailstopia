@@ -145,7 +145,7 @@ class MissionFlow:
             raise RuntimeError(f"Cannot find {name}; no click sent")
         self.click(match.point,name)
 
-    def wait_hud(self,poll,confirmations,return_proof=None):
+    def wait_hud(self,poll,confirmations,return_proof=None,not_ready_poll=None):
         count = 0
         while True:
             observation = self.hud()
@@ -163,7 +163,9 @@ class MissionFlow:
             if count >= confirmations:
                 return
             self.session.event("retry",status="RETRY",reason=f"HUD={observation.status}; confirmations={count}/{confirmations}")
-            self.wait(poll)
+            # Only return verification opts in. READY always keeps the original
+            # confirmation interval; any non-READY resets the count above.
+            self.wait(not_ready_poll if observation.status != "READY" and not_ready_poll is not None else poll)
 
     def wait_loading(self,poll):
         destination = "Stage" if self.state == "WAIT_STAGE_LOADING" else "Camp"
@@ -567,7 +569,8 @@ class MissionFlow:
         elif s == "VERIFY_RETURN_START":
             self._return_confirmation = None
             pause = self.pause_marker()
-            self.wait_hud(c["return"]["time_poll"],c["return"]["confirmations"])
+            self.wait_hud(c["return"]["time_poll"],c["return"]["confirmations"],
+                          not_ready_poll=c["return"].get("not_ready_poll"))
             loop = self.session.loop
             context = getattr(self.session,"capture_context",None)
             if (self._return_clicked_loop == loop and self._return_loading_loop == loop and

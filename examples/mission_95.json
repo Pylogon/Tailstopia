@@ -305,6 +305,7 @@
   },
   "return": {
     "loading_poll": 0.5,
+    "not_ready_poll": 1,
     "time_poll": 3,
     "confirmations": 2
   },

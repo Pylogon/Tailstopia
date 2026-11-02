@@ -76,6 +76,8 @@ def validate_mission_config(config):
                          "return":["loading_poll","time_poll"]}.items():
         for key in keys:
             number(config[section][key],key in {"poll","loading_poll","time_poll","verify_wait"})
+    if "not_ready_poll" in config["return"]:
+        number(config["return"]["not_ready_poll"],True)
     # Polling has its own window after first_wait; the state deadline still applies.
     number(config["talk"].get("poll_timeout",5),True)
     number(config["talk"].get("poll_interval",0.5),True)
