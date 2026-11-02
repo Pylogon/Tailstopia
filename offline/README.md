@@ -12,6 +12,9 @@ The benchmark writes `workflow_runs/talk_offline/benchmark.json` (ignored by Git
 Use `--split holdout` for the independent recordings alone. It reads only saved
 ROI fixtures and reference templates. It cannot capture a screen, send inputs,
 or start the mission runner. Production code never imports this package.
+The live stage-95 config now enables the promoted normalization fallback in
+`tailstopia_workflow/talk_normalization.py`. This benchmark explicitly disables
+that option in its baseline; the frozen offline algorithm is unchanged.
 
 Four comparison arms:
 

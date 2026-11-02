@@ -25,6 +25,9 @@
         470
       ],
       "threshold": 0.82,
+      "normalized_fallback": {
+        "search_roi_client": [280, 170, 1000, 520]
+      },
       "glyph_hsv_lower": [
         40,
         15,

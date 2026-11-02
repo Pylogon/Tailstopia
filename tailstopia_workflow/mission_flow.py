@@ -107,8 +107,14 @@ class MissionFlow:
         self.check()
         match = self.measure("vision",self.vision.match,name,self.capture)
         self.check()
+        details = {}
+        if getattr(match,"method","template") == "normalize":
+            details = dict(detector="normalize",fast_score=match.fast_score,
+                           reason=match.reason,candidates=match.candidates)
         self.session.event("recognition",target=name,found=match.found,score=match.score,point=match.point,
-                           threshold=self.config["targets"][name]["threshold"])
+                           threshold=self.config["targets"][name]["threshold"],**details)
+        if details and not match.found and ("ambiguous" in match.reason or "budget" in match.reason):
+            raise RuntimeError(f"Talk normalization uncertain: {match.reason}; no click sent")
         return match
 
     def hud(self):

@@ -60,7 +60,11 @@ class NeedsWalk(FixtureSession):
 
 
 class Talk95Tests(unittest.TestCase):
-    setUp=outcomes.MissionOutcomeTests.setUp
+    def setUp(self):
+        outcomes.MissionOutcomeTests.setUp(self)
+        # These tests isolate the original template matcher and recovery policy.
+        self.config['targets']['talk'].pop('normalized_fallback',None)
+        self.vision=MissionVision(self.config,self.base)
     run_case=outcomes.MissionOutcomeTests.run_case
 
     def test_loop16_requires_complete_roi_and_measured_glyph_variant(self):

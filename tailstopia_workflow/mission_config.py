@@ -164,4 +164,19 @@ def validate_mission_config(config):
             count(high)
             if not low <= high <= limit:
                 raise ValueError("Invalid Talk glyph HSV bounds")
+    if "normalized_fallback" in talk:
+        policy = talk["normalized_fallback"]
+        if not isinstance(policy,dict) or set(policy) != {"search_roi_client"}:
+            raise ValueError("Talk normalized_fallback needs only search_roi_client")
+        box = policy["search_roi_client"]
+        if not isinstance(box,list) or len(box) != 4:
+            raise ValueError("Invalid Talk fallback ROI")
+        for value in box:
+            count(value)
+        old = talk["search_roi_client"]
+        if not (0 <= box[0] <= old[0] < old[2] <= box[2] <= 1280 and
+                0 <= box[1] <= old[1] < old[3] <= box[3] <= 600):
+            raise ValueError("Talk fallback ROI must contain the template ROI within the client")
+        if "glyph_hsv_lower" not in talk or "glyph_hsv_upper" not in talk or 1.0 not in talk.get("template_scales",[1.0]):
+            raise ValueError("Talk normalization requires glyph masks and a scale=1 reference")
     return config

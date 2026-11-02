@@ -281,7 +281,8 @@ class Stage95Tests(unittest.TestCase):
             def capture(session,box):
                 if session.state=='OPEN_MISSION' and session.talked is not None:
                     if session.now()-session.talked>=10.4:session.frame='95/create.png'
-                    if tuple(box)==tuple(session.config['targets']['talk']['search_roi_client']):
+                    talk=session.config['targets']['talk']
+                    if tuple(box)==tuple(talk.get('normalized_fallback',talk)['search_roi_client']):
                         return Image.new('RGB',(box[2]-box[0],box[3]-box[1]))
                 return super().capture(box)
         result,rows,_=self.run_case(DuringConfirmation,'OPEN_MISSION')

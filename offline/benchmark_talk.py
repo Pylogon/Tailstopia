@@ -104,6 +104,8 @@ def run(repeats, split=None):
     if repeats<1:raise ValueError('repeats must be positive')
     manifest=json.loads((CORPUS/'manifest.json').read_text(encoding='utf-8'))
     config,base=load_mission_config(ROOT/'examples/mission_95.json')
+    # Freeze the lab baseline even when the live stage-95 config opts in.
+    config['targets']['talk'].pop('normalized_fallback',None)
     detector=TalkExperiment(config,base,manifest['roi'])
     if detector.threshold!=manifest['threshold']:raise ValueError('Threshold changed; benchmark invalid')
     # Warm up on development only. Timer excludes file IO and constructor.

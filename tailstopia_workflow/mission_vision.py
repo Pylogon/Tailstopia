@@ -8,6 +8,7 @@ from PIL import Image
 
 from .start_detection import StartDetector
 from .camera_detection import CameraDetector
+from .talk_normalization import TalkNormalizer
 
 
 @dataclass(frozen=True)
@@ -15,6 +16,10 @@ class Match:
     found: bool
     score: float
     point: tuple | None
+    method: str = "template"
+    reason: str = ""
+    fast_score: float | None = None
+    candidates: int = 0
 
 
 class MissionVision:
@@ -63,6 +68,9 @@ class MissionVision:
                     masks.append(mask)
             self.targets[name] = (arrays,roi,spec["threshold"])
             self.target_masks[name] = masks
+        talk = config["targets"]["talk"]
+        self.talk_normalizer = (TalkNormalizer(self.targets["talk"][0],self.target_masks["talk"],talk)
+                                if "normalized_fallback" in talk else None)
         self.reward_box = StartDetector._box(config["reward"]["received_box_client"])
         with Image.open(self.base / config["reward"]["empty_image"]) as image:
             self.empty = self.crop_reference(image,self.reward_box,origin).convert("RGB")
@@ -76,6 +84,22 @@ class MissionVision:
 
     def match(self,name,capture):
         templates,roi,threshold = self.targets[name]
+        normalizer = self.talk_normalizer if name == "talk" else None
+        if normalizer is not None:
+            # One expanded capture. Preserve the exact old matcher/ROI as fast
+            # path; normalize the same stationary frame only after a miss.
+            box = normalizer.roi
+            with capture(box) as image:
+                if image.size != (box[2]-box[0],box[3]-box[1]):
+                    raise ValueError("Capture dimensions differ from Talk fallback ROI")
+                gray = np.array(image.convert("L"))
+                fast = self._match_gray(name,gray[roi[1]-box[1]:roi[3]-box[1],
+                                                 roi[0]-box[0]:roi[2]-box[0]])
+                if fast.found:
+                    return fast
+                result = normalizer.normalize(np.array(image.convert("RGB")))
+            return Match(result.found,result.score,result.point,"normalize",result.reason,
+                         fast.score,result.candidates)
         with capture(roi) as image:
             gray = np.array(image.convert("L"))
         return self._match_gray(name,gray)

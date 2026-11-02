@@ -20,6 +20,7 @@ class DynamicTalkOfflineTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.config,base=load_mission_config(ROOT/'examples/mission_95.json')
+        cls.config['targets']['talk'].pop('normalized_fallback',None)
         cls.detector=TalkExperiment(cls.config,base)
         cls.manifest=json.loads((CORPUS/'manifest.json').read_text(encoding='utf-8'))
         cls.cases={c['id']:c for c in cls.manifest['cases']}
