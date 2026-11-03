@@ -147,7 +147,7 @@ class AdaptiveReturnTests(unittest.TestCase):
         profile,_=load_mission_config(ROOT/'examples/mission_95.json')
         self.assertTrue(profile['return']['camp_checkpoint']['enabled'])
         self.assertFalse(self.config['return']['camp_checkpoint']['enabled'])
-        self.assertEqual({k:v for k,v in self.config['return'].items() if k != 'camp_checkpoint'},
+        self.assertEqual({k:self.config['return'][k] for k in ('loading_poll','not_ready_poll','time_poll','confirmations')},
                          dict(loading_poll=.5,not_ready_poll=1,time_poll=3,confirmations=2))
 
 

@@ -137,7 +137,9 @@ class MissionFlow:
         self.check()
         # Timestamp before capture/logging so slow work cannot make an old frame fresh.
         self._last_hud_at = time.perf_counter()
-        observation = self.measure("vision",self.vision.hud,self.capture)
+        operation = (getattr(self.vision,"transition_hud",self.vision.hud)
+                     if self.state in ("WAIT_RETURN_LOADING","WAIT_STAGE_LOADING") else self.vision.hud)
+        observation = self.measure("vision",operation,self.capture)
         self.check()
         self.record_hud(observation)
         return observation
@@ -149,8 +151,12 @@ class MissionFlow:
                 observation.status == "LOADING"):
             self._return_loading_loop = loop
             self._return_loading_context = getattr(self.session,"capture_context",None)
+        details = {}
+        if getattr(observation,"loading_source",None):
+            details = dict(loading_source=observation.loading_source,loading_score=observation.loading_score,
+                           loading_parts=observation.loading_parts)
         self.session.event("hud",status=observation.status,score=observation.score,
-                           white_fraction=observation.white_fraction)
+                           white_fraction=observation.white_fraction,**details)
 
     def camp_hud(self):
         self.check()

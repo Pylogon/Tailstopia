@@ -133,7 +133,7 @@ class TalkSettlingTests(unittest.TestCase):
 
     def test_grace_validation_and_legacy_opt_out(self):
         config,_ = load_mission_config(ROOT/'examples/mission_95.json')
-        for value in (-1,True,float('nan'),float('inf'),45):
+        for value in (-1,True,float('nan'),float('inf'),config['timeouts']['OPEN_MISSION']):
             with self.subTest(value=value),self.assertRaises(ValueError):
                 cfg=copy.deepcopy(config);cfg['talk']['recovery']['stationary_grace_seconds']=value
                 validate_mission_config(cfg)

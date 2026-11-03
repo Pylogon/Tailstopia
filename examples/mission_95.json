@@ -305,6 +305,11 @@
     "return_if_missing": true
   },
   "return": {
+    "loading_screen": {
+      "template_image": "../resource/templates/loading_95.png",
+      "search_roi_client": [474, 521, 554, 580],
+      "threshold": 0.95
+    },
     "camp_checkpoint": {
       "enabled": true,
       "template_image": "../resource/templates/camp_house_95.png",

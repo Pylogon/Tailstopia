@@ -10,6 +10,7 @@ from .start_detection import StartDetector
 from .camera_detection import CameraDetector
 from .talk_normalization import TalkNormalizer
 from .camp_detection import CampDetector
+from .loading_detection import LoadingDetector,LoadingObservation
 
 
 @dataclass(frozen=True)
@@ -31,6 +32,8 @@ class MissionVision:
         self.start = StartDetector(self.base / config["start_detector"])
         camp = config["return"].get("camp_checkpoint")
         self.camp = CampDetector(camp,self.base,self.start) if camp and camp["enabled"] else None
+        loading = config["return"].get("loading_screen")
+        self.loading = LoadingDetector(loading,self.base,self.start.roi) if loading else None
         self.camera = CameraDetector(config["camera"],self.base)
         self.targets = {}
         self.target_masks = {}
@@ -148,6 +151,27 @@ class MissionVision:
     def hud(self,capture):
         with capture(self.start.roi) as image:
             return self.start.inspect(image)
+
+    def transition_hud(self,capture):
+        if self.loading is None:
+            return self.hud(capture)
+        box = self.loading.capture_box
+        def relative(roi):
+            return (roi[0]-box[0],roi[1]-box[1],roi[2]-box[0],roi[3]-box[1])
+        # One capture keeps loading UI and the original Time ROI coherent.
+        with capture(box) as image:
+            if image.size != (box[2]-box[0],box[3]-box[1]):
+                raise ValueError("Transition capture dimensions differ from ROI")
+            with image.crop(relative(self.start.roi)) as time_roi:
+                hud = self.start.inspect(time_roi)
+            if hud.status == "LOADING":
+                return hud  # Keep support for the original white loading screen.
+            with image.crop(relative(self.loading.roi)) as loading_roi:
+                found,score,parts = self.loading.inspect(loading_roi)
+        if found:
+            return LoadingObservation("LOADING",hud.score,hud.white_fraction,None,
+                                      loading_score=score,loading_parts=parts)
+        return hud
 
     def camp_hud(self,capture):
         return self.camp.observe(capture)

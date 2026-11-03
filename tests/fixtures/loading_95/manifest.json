@@ -1,0 +1,21 @@
+{
+  "source": "resource/95/new loading.png",
+  "source_sha256": "017477354018b0f429a0068ccb736c613f3d437738ba3d1023946bf5dbabcf89",
+  "reference_client_origin": [
+    43,
+    95
+  ],
+  "loading_roi_client": [
+    474,
+    521,
+    554,
+    580
+  ],
+  "time_roi_client": [
+    346,
+    0,
+    389,
+    25
+  ],
+  "purpose": "Known reference regression only; one new-style Loading image, not an independent accuracy dataset."
+}

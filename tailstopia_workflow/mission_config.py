@@ -78,6 +78,21 @@ def validate_mission_config(config):
             number(config[section][key],key in {"poll","loading_poll","time_poll","verify_wait"})
     if "not_ready_poll" in config["return"]:
         number(config["return"]["not_ready_poll"],True)
+    if "loading_screen" in config["return"]:
+        loading = config["return"]["loading_screen"]
+        if not isinstance(loading,dict) or not {"threshold","template_image","search_roi_client"}.issubset(loading):
+            raise ValueError("Invalid loading screen configuration")
+        number(loading["threshold"],True)
+        if not .95 <= loading["threshold"] <= 1:
+            raise ValueError("Loading UI threshold must be between 0.95 and 1")
+        if not isinstance(loading["template_image"],str) or not loading["template_image"].strip():
+            raise ValueError("Loading UI requires a template image")
+        box = loading["search_roi_client"]
+        if not isinstance(box,list) or len(box) != 4:
+            raise ValueError("Invalid loading UI ROI")
+        point(box[:2]);point(box[2:])
+        if box[2]-box[0] != 80 or box[3]-box[1] != 59 or box[2] > 1280 or box[3] > 600:
+            raise ValueError("Loading UI ROI must be 80x59 within the client")
     if "camp_checkpoint" in config["return"]:
         camp = config["return"]["camp_checkpoint"]
         if not isinstance(camp,dict) or not isinstance(camp.get("enabled"),bool):
