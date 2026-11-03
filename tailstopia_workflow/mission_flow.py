@@ -420,6 +420,17 @@ class MissionFlow:
             if attempts >= policy["max_attempts"]:
                 raise RuntimeError(f"Talk recovery retry budget exhausted; attempts={attempts}; "
                                    f"talk_score={confirmed.score:.6f}; no fallback click sent")
+            grace = policy.get("stationary_grace_seconds",0)
+            if (grace and self.deadline is not None and
+                    self.session.now()+policy["hold_seconds"] > self.deadline-grace):
+                # The extended deadline buys stationary observations, never
+                # additional walking. The existing target-first/F9 guards and
+                # state deadline remain in force on every iteration.
+                self.session.event("retry",status="RETRY",reason="Talk recovery movement budget ended; stationary checks only",
+                                   attempts=attempts,score=confirmed.score,
+                                   remaining=max(0,self.deadline-self.session.now()))
+                missing = confirmed
+                continue
             direction = " + ".join(key.upper() for key in policy["keys"])
             self.session.event("retry",status="RETRY",reason=f"Talk absent in two checks; short right-mouse + {direction} recovery",
                                attempt=attempts+1,max_attempts=policy["max_attempts"],
@@ -453,6 +464,10 @@ class MissionFlow:
             talk = self.recover_talk(talk)
         if talk is None:  # The configured destination appeared during recovery.
             return
+        if (self.config["talk"].get("recovery",{}).get("stationary_grace_seconds",0) and
+                self.deadline is not None and
+                self.deadline-self.session.now() <= spec["fallback_wait"]+self.config["ui"]["click_hold"]):
+            raise TimeoutError("OPEN_MISSION: insufficient time to verify a Talk click; no fallback click sent")
         self.click(talk.point,"talk")
         # Preserve the verified-text fallback and its existing settle time.
         self.wait(spec["fallback_wait"])

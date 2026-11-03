@@ -22,6 +22,7 @@ class NormalizedTalkTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.config,cls.base=load_mission_config(ROOT/'examples/mission_95.json')
+        cls.config['talk']['recovery']['max_attempts']=2  # Frozen movement-policy baseline.
         cls.vision=MissionVision(cls.config,cls.base)
         legacy=copy.deepcopy(cls.config)
         legacy['targets']['talk'].pop('normalized_fallback')
@@ -133,7 +134,9 @@ class RecordedTalk(FixtureSession):
 
 
 class NormalizedTalkFlowTests(unittest.TestCase):
-    setUp=outcomes.MissionOutcomeTests.setUp
+    def setUp(self):
+        outcomes.MissionOutcomeTests.setUp(self)
+        self.config['talk']['recovery']['max_attempts']=2  # Test the original two-move limit explicitly.
     run_case=outcomes.MissionOutcomeTests.run_case
 
     def test_verified_normalized_talk_clicks_detected_point_without_walking(self):

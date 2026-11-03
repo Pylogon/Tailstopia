@@ -1,0 +1,23 @@
+{
+  "purpose": "Known failure regression only; detector and threshold are unchanged. These crops do not establish generalization.",
+  "client_word_context_box": [
+    310,
+    350,
+    420,
+    415
+  ],
+  "sources": [
+    {
+      "image": "last_roi_word.png",
+      "source": "workflow_runs/mission_95/20261103_121347_376055_live/23_OPEN_MISSION_failure.png",
+      "source_sha256": "41c5823599f62b2017630b7fa9e27e4914c983ffba467f7cc74eec82f2cd40b8",
+      "image_sha256": "ffbda1a00a1a8e2351e3ac4ab53e1cd8254a2bc609dc17432c47fabf3e90a9b2"
+    },
+    {
+      "image": "settled_word.png",
+      "source": "workflow_runs/mission_95/20261103_121347_376055_live/23_OPEN_MISSION_failure_client.png",
+      "source_sha256": "8c390a0f8d9d7a79c1cdd3fdb8af1cd18a0b59da38e2286dad7fd91bdf6ecc67",
+      "image_sha256": "6b2dee2e5a45acbb04e34c7a41ec1d7b9199dea15f59623e61a41daf187dbea5"
+    }
+  ]
+}

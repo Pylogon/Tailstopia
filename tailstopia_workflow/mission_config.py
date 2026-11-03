@@ -105,6 +105,10 @@ def validate_mission_config(config):
         raise ValueError("Talk recovery keys must be ['s', 'a'] or ['w', 'a']")
     for key in ("hold_seconds","confirm_wait","settle_seconds"):
         number(recovery[key],True)
+    grace = recovery.get("stationary_grace_seconds",0)
+    number(grace)
+    if grace >= config["timeouts"]["OPEN_MISSION"]:
+        raise ValueError("Talk stationary grace must be shorter than OPEN_MISSION timeout")
     if recovery["hold_seconds"] > 0.3:
         raise ValueError("Talk recovery hold_seconds must not exceed 0.3 seconds")
     for section in ("stage","result","reward","return"):
