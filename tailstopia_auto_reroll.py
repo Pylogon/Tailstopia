@@ -141,23 +141,53 @@ def capture_stats(sct, left, top):
     return crops, panel
 
 
-def prepared_ocr_image(crop, threshold):
-    """Preprocess digit crop. Tested on the provided 11 and 12 screenshots."""
+def prepared_ocr_image(crop, threshold, *, normalize=False):
+    """Keep the original path; trim grayscale ink only for OCR recovery."""
     gray = ImageOps.grayscale(crop)
+    if normalize:
+        # Threshold locates the ink, but preserve antialiased stroke details.
+        ink = gray.point(lambda p: 255 if p <= threshold else 0)
+        box = ink.getbbox()
+        if box is not None:
+            gray = gray.crop(box)
+        large = gray.resize((gray.width * 8, gray.height * 8), Image.Resampling.LANCZOS)
+        return ImageOps.expand(large, border=10, fill=255)
     large = gray.resize((gray.width * 8, gray.height * 8), Image.Resampling.LANCZOS)
     bw = large.point(lambda p: 255 if p > threshold else 0)
     return ImageOps.expand(bw, border=35, fill=255)
 
 
-def read_digit(crop, threshold, psm):
+def read_digit(crop, threshold, psm, *, normalize=False):
     raw = pytesseract.image_to_string(
-        prepared_ocr_image(crop, threshold),
+        prepared_ocr_image(crop, threshold, normalize=normalize),
         config=f"--psm {psm} -c tessedit_char_whitelist=0123456789"
     ).strip()
     if not re.fullmatch(r"\d{1,2}", raw):
         return None
     value = int(raw)
     return value if 0 <= value <= 30 else None
+
+
+def ocr_number_fallback(crop, *, robust=False):
+    """Recover only after a miss, requiring agreement across two image styles.
+
+    Tight grayscale preserves thin '11' strokes; higher-contrast binary is
+    an independent check measured on the recorded failure and older digits.
+    The thorough path keeps the existing four-vote/conflict rule.
+    """
+    if not robust:
+        normalized = read_digit(crop, 140, 7, normalize=True)
+        contrast = read_digit(crop, 180, 7)
+        return normalized if normalized is not None and normalized == contrast else None
+    values = [read_digit(crop, threshold, 7, normalize=True)
+              for threshold in (135, 140, 145)]
+    values += [read_digit(crop, threshold, 7) for threshold in (175, 180, 185)]
+    counts = Counter(value for value in values if value is not None)
+    if counts:
+        value, votes = counts.most_common(1)[0]
+        if votes >= 4 and all(count <= 1 for other, count in counts.items() if other != value):
+            return value
+    return None
 
 
 def ocr_number_fast(crop):
@@ -178,7 +208,7 @@ def ocr_number_fast(crop):
         return a
     if b is not None and c == b:
         return b
-    return None
+    return ocr_number_fallback(crop)
 
 
 def ocr_number_robust(crop):
@@ -191,11 +221,11 @@ def ocr_number_robust(crop):
                 results.append(value)
     counts = Counter(results)
     if not counts:
-        return None
+        return ocr_number_fallback(crop, robust=True)
     value, votes = counts.most_common(1)[0]
     if votes >= 4 and all(count <= 1 for other, count in counts.items() if other != value):
         return value
-    return None
+    return ocr_number_fallback(crop, robust=True)
 
 
 def screenshot_stable(first_crops, second_crops):

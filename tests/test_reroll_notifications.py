@@ -3,6 +3,7 @@ import ast
 import ctypes
 from ctypes import wintypes
 from pathlib import Path
+import re
 import threading
 from types import SimpleNamespace
 import unittest
@@ -95,12 +96,18 @@ class RerollNotificationTests(unittest.TestCase):
         self.assertIn("CREATE has not been clicked", detail)
 
     def test_exact_targets_and_sum_boundary_are_preserved(self):
-        values = {"CHA": 10, "AGI": 9, "INT": 6, "TAL": 6, "VIT": 6}
+        # Match the active policy advertised in the popup, including user edits.
+        details = self.ns["success_details"](dict.fromkeys(("CHA", "AGI", "INT", "TAL", "VIT"), 0))
+        policy = re.search(r"CHA = (\d+), AGI = (\d+), TOTAL >= (\d+)", details)
+        self.assertIsNotNone(policy)
+        cha, agi, total = map(int, policy.groups())
+        values = {"CHA": cha, "AGI": agi, "INT": 0, "TAL": 0, "VIT": total-cha-agi}
         target = self.ns["target_met"]
         self.assertTrue(target(values))
-        for changed in ({"VIT": 5}, {"CHA": 11}, {"CHA": 9}, {"AGI": 10}, {"AGI": 8}):
+        for changed in ({"VIT": values["VIT"]-1}, {"CHA": cha+1}, {"CHA": cha-1},
+                        {"AGI": agi+1}, {"AGI": agi-1}):
             self.assertFalse(target({**values, **changed}))
-        self.assertTrue(target({**values, "VIT": 8}))
+        self.assertTrue(target({**values, "VIT": values["VIT"]+2}))
 
     def test_tk_unavailable_falls_back_to_topmost_native_popup(self):
         self.ns["user32"] = SimpleNamespace(MessageBoxW=Mock())
