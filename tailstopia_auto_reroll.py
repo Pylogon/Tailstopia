@@ -1,6 +1,6 @@
 """TailsTopia fast stat reroller using ONLY screen reading and normal mouse clicks.
 
-Targets: INT >= 11, TAL >= 12, VIT + AGI >= 10.
+Targets: CHA == 10, AGI == 9, AGI + INT + TAL + CHA + VIT >= 37.
 Reference: 1280x600 game client, as in the user's 1366x768 screenshot.
 
 Safety: F9 stops, move mouse to top-left stops (PyAutoGUI failsafe),
@@ -33,6 +33,7 @@ REFERENCE_CLIENT_SIZE = (1280, 600)    # Screenshot: game content from (43,95) t
 # Centers RELATIVE TO GAME CLIENT, not the desktop.
 STAT_CENTERS = {
     "INT": (1176, 410),   # image approx (1219,505)
+    "CHA": (1176, 430),   # image approx (1219,525)
     "TAL": (1176, 450),   # image approx (1219,545)
     "VIT": (1088, 470),   # image approx (1131,565)
     "AGI": (1088, 450),   # image approx (1131,545)
@@ -228,7 +229,7 @@ def robust_stats_from_crops(crops):
 
 
 def capture_and_read_fast(sct, left, top):
-    """Fast loop: two SCREEN captures, only 8 OCR calls total."""
+    """Fast loop: two SCREEN captures, normally 2 OCR calls per stat."""
     first, _ = capture_stats(sct, left, top)
     time.sleep(SCREEN_STABILITY_SECONDS)
     crops, panel = capture_stats(sct, left, top)
@@ -288,12 +289,12 @@ def stable_stats(sct, left, top, *, verify_candidate=True):
 
 def format_stats(stats):
     return (f"INT={stats['INT']} TAL={stats['TAL']} "
-            f"VIT={stats['VIT']} AGI={stats['AGI']}")
+            f"VIT={stats['VIT']} AGI={stats['AGI']} CHA={stats['CHA']}")
 
 
 def target_met(stats):
-    return (stats["INT"] >= 11 and stats["TAL"] >= 12
-            and stats["VIT"] + stats["AGI"] >= 10)
+    return (stats["CHA"] == 10 and stats["AGI"] == 9
+            and sum(stats[name] for name in ("AGI", "INT", "TAL", "CHA", "VIT")) >= 37)
 
 
 def beep_success():
@@ -306,8 +307,73 @@ def beep_success():
         print("\a", flush=True)
 
 
+def show_status_popup(status, message):
+    """Create a large notification only after automation has finished."""
+    root = None
+    title, color = {
+        "SUCCESS": ("SUCCESS - Target found", "#16733c"),
+        "ERROR": ("ERROR - Safe stop", "#b42318"),
+        "STOPPED": ("STOPPED", "#935c00"),
+    }[status]
+    try:
+        import tkinter as tk
+        from tkinter.scrolledtext import ScrolledText
+
+        root = tk.Tk()
+        root.title("TailsTopia Reroll - " + status)
+        width = min(800, root.winfo_screenwidth() - 60)
+        height = min(500, root.winfo_screenheight() - 80)
+        x = max(0, (root.winfo_screenwidth() - width) // 2)
+        y = max(0, (root.winfo_screenheight() - height) // 2)
+        root.geometry(f"{width}x{height}+{x}+{y}")
+        root.minsize(min(640, width), min(380, height))
+        root.attributes("-topmost", True)
+        tk.Label(root, text=title, font=("Segoe UI", 28, "bold"),
+                 fg=color, anchor="w").pack(fill="x", padx=24, pady=(20, 8))
+        tk.Label(root, text="Automation stopped. No further rerolls will be sent.",
+                 font=("Segoe UI", 12), anchor="w").pack(fill="x", padx=24)
+        body = ScrolledText(root, font=("Segoe UI", 16), wrap="word", height=8)
+        body.pack(fill="both", expand=True, padx=24, pady=16)
+        body.insert("1.0", message)
+        body.configure(state="disabled")
+        close = tk.Button(root, text="OK / Close", font=("Segoe UI", 16, "bold"),
+                          width=16, command=root.destroy)
+        close.pack(pady=(0, 20))
+        close.focus_set()
+        root.bind("<Return>", lambda event: root.destroy())
+        root.bind("<Escape>", lambda event: root.destroy())
+        root.lift()
+        if status == "ERROR":
+            root.bell()
+        root.mainloop()
+    except Exception as exc:
+        print(f"Large popup unavailable: {exc}. Trying Windows notification.")
+        if root is not None:
+            try:
+                root.destroy()
+            except Exception:
+                pass
+        try:
+            # Standard-library fallback for Python installations without Tk.
+            user32.MessageBoxW.argtypes = [wintypes.HWND, wintypes.LPCWSTR,
+                                           wintypes.LPCWSTR, wintypes.UINT]
+            user32.MessageBoxW.restype = ctypes.c_int
+            icon = 0x10 if status == "ERROR" else 0x40
+            user32.MessageBoxW(None, message, "TailsTopia - " + title,
+                              0x00040000 | 0x00010000 | icon)
+        except Exception as fallback_exc:
+            print(f"Popup unavailable: {fallback_exc}\n{title}\n{message}", flush=True)
+
+
+def success_details(stats):
+    total = sum(stats[name] for name in ("AGI", "INT", "TAL", "CHA", "VIT"))
+    return (f"{format_stats(stats)}\nTOTAL = {total}\n\n"
+            "CHA = 10, AGI = 9, TOTAL >= 37\n"
+            "Verify the values in game manually. CREATE has not been clicked.")
+
+
 def main():
-    print("TailsTopia auto reroll | INT>=11 TAL>=12 VIT+AGI>=10")
+    print("TailsTopia auto reroll | CHA=10 AGI=9 AGI+INT+TAL+CHA+VIT>=37")
     print("F9 = STOP. Mouse at TOP-LEFT corner = PyAutoGUI emergency stop.")
     if not Path(TESSERACT_EXE).is_file():
         print(f"Note: default Tesseract path not found: {TESSERACT_EXE}")
@@ -320,21 +386,21 @@ def main():
         initial = stable_stats(sct, left, top)
         print("Initial OCR result:", format_stats(initial))
         print("COMPARE with real values in game. If incorrect, do not start.")
-        ans = input("Are ALL FOUR values correct? Type YES to start, anything else to exit: ")
+        ans = input("Are ALL FIVE values correct? Type YES to start, anything else to exit: ")
         if ans.strip().upper() != "YES":
             print("Stopped without clicking.")
             return
         if target_met(initial):
             print("ALREADY MATCHED! No click necessary.")
             beep_success()
-            return
+            return "SUCCESS", success_details(initial)
 
         print("Starting in 5 seconds. Click GAME WINDOW now to make it active.")
         threading.Thread(target=stop_key_monitor, daemon=True).start()
         for n in range(5, 0, -1):
             if stop_requested.is_set():
                 print("Stop requested before starting.")
-                return
+                return "STOPPED", "F9 pressed before starting."
             print(n, end=" ", flush=True)
             time.sleep(1)
         print("\nRunning...")
@@ -343,27 +409,27 @@ def main():
         for iteration in range(1, MAX_ROLLS + 1):
             if stop_requested.is_set():
                 print("F9 pressed. Stopped.")
-                return
+                return "STOPPED", "F9 pressed."
             hwnd, left, top = window_geometry()
             if user32.GetForegroundWindow() != hwnd:
                 print("Game is not the active window. PAUSED to prevent clicking another app.")
-                return
+                return "ERROR", "Game lost focus. Stopped to prevent clicking another app."
             if pyautogui.position().x <= 3 and pyautogui.position().y <= 3:
                 print("Mouse failsafe position. Stopped.")
-                return
+                return "STOPPED", "Emergency stop: mouse reached upper-left corner."
             x, y = REROLL_BUTTON
             roll_start = time.perf_counter()
             pyautogui.click(left + x, top + y)
             time.sleep(ROLL_SETTLE_SECONDS)
             if stop_requested.is_set():
                 print("F9 pressed. Stopped.")
-                return
+                return "STOPPED", "F9 pressed."
             read_start = time.perf_counter()
             current = stable_stats(sct, left, top)
             read_elapsed = time.perf_counter() - read_start
             ok = target_met(current)
             print(f"Reroll {iteration:4d}: {format_stats(current)} "
-                  f"VIT+AGI={current['VIT'] + current['AGI']} => "
+                  f"TOTAL={sum(current[name] for name in ('AGI', 'INT', 'TAL', 'CHA', 'VIT'))} => "
                   f"{'FOUND!' if ok else 'NO'}", flush=True)
             if ok:
                 crops, panel = capture_stats(sct, left, top)
@@ -371,27 +437,40 @@ def main():
                 print("\nSUCCESS: stopped rerolling. VERIFY values in game manually.")
                 print("The script will NOT click the CREATE button.")
                 beep_success()
-                return
+                return "SUCCESS", success_details(current)
             repeated = repeated + 1 if current == prev else 0
             if repeated >= 2:
                 print("Stats unchanged twice after clicking. PAUSED: button/window may not work.")
-                return
+                return "ERROR", "Stats unchanged twice after clicking. Check the reroll button/window."
             prev = current
             if BENCHMARK_EVERY_ROLL:
                 print(f"  Timing: OCR+capture={read_elapsed:.2f}s | "
                       f"round={time.perf_counter()-roll_start:.2f}s", flush=True)
             time.sleep(BETWEEN_ROLLS_SECONDS)
         print(f"Stopped after {MAX_ROLLS} attempts (safety limit). Change MAX_ROLLS if needed.")
+        return "STOPPED", f"Safety limit reached: {MAX_ROLLS} rerolls. No target found."
+
+
+def run_cli():
+    outcome = None
+    try:
+        outcome = main()
+    except KeyboardInterrupt:
+        print("\nStopped by Ctrl+C")
+        outcome = "STOPPED", "Stopped by Ctrl+C."
+    except pyautogui.FailSafeException:
+        print("\nEmergency stop: mouse reached upper-left corner.")
+        outcome = "STOPPED", "Emergency stop: mouse reached upper-left corner."
+    except Exception as exc:
+        reason = f"{type(exc).__name__}: {exc}"
+        print(f"\nSAFE STOP: {reason}")
+        status = "STOPPED" if stop_requested.is_set() else "ERROR"
+        outcome = status, f"{reason}\n\nDebug screenshots (when available):\n{DEBUG_DIR.resolve()}"
+    finally:
+        stop_requested.set()
+    if outcome is not None:
+        show_status_popup(*outcome)
 
 
 if __name__ == "__main__":
-    try:
-        main()
-    except KeyboardInterrupt:
-        print("\nStopped by Ctrl+C")
-    except pyautogui.FailSafeException:
-        print("\nEmergency stop: mouse reached upper-left corner.")
-    except Exception as exc:
-        print(f"\nSAFE STOP: {type(exc).__name__}: {exc}")
-    finally:
-        stop_requested.set()
+    run_cli()
