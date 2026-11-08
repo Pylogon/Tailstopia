@@ -5,6 +5,7 @@ import time
 
 from PIL import Image, ImageGrab
 
+from tailstopia_macro_replay import StopRequested
 from .logger import ExecutionLog
 
 
@@ -26,38 +27,53 @@ class InputTrace:
         self.backend.FAILSAFE = value
 
     def failSafeCheck(self):
-        self.backend.failSafeCheck()
+        self._call("failSafeCheck")
+
+    def _call(self,method,*args,**kwargs):
+        try:
+            return getattr(self.backend,method)(*args,**kwargs)
+        except getattr(self.backend,"FailSafeException",()) as exc:
+            # Query the pointer only after an actual emergency, never per poll.
+            position = None
+            try:
+                position = list(self.backend.position())
+            except Exception:
+                pass
+            reason = ("Mouse corner emergency stop (PyAutoGUI fail-safe). "
+                      "Move the pointer away from screen corners before restarting.")
+            self.event("emergency_stop",reason=reason,operation=method,mouse_position=position)
+            raise StopRequested(reason) from exc
 
     def keyDown(self,key,**kwargs):
         self.held_keys.add(key)
-        self.backend.keyDown(key,**kwargs)
+        self._call("keyDown",key,**kwargs)
         self.event("action",method="keyDown",key=key)
 
     def keyUp(self,key,**kwargs):
-        self.backend.keyUp(key,**kwargs)
+        self._call("keyUp",key,**kwargs)
         self.held_keys.discard(key)
         self.event("action",method="keyUp",key=key)
 
     def mouseDown(self,**kwargs):
         self.held_buttons.add(kwargs.get("button","left"))
-        self.backend.mouseDown(**kwargs)
+        self._call("mouseDown",**kwargs)
         self.event("action",method="mouseDown",params=kwargs)
 
     def mouseUp(self,**kwargs):
-        self.backend.mouseUp(**kwargs)
+        self._call("mouseUp",**kwargs)
         self.held_buttons.discard(kwargs.get("button","left"))
         self.event("action",method="mouseUp",params=kwargs)
 
     def moveTo(self,*args,**kwargs):
-        self.backend.moveTo(*args,**kwargs)
+        self._call("moveTo",*args,**kwargs)
         self.event("action",method="moveTo",args=args)
 
     def scroll(self,*args,**kwargs):
-        self.backend.scroll(*args,**kwargs)
+        self._call("scroll",*args,**kwargs)
         self.event("action",method="scroll",args=args)
 
     def hscroll(self,*args,**kwargs):
-        self.backend.hscroll(*args,**kwargs)
+        self._call("hscroll",*args,**kwargs)
         self.event("action",method="hscroll",args=args)
 
     def release_all(self):
@@ -94,7 +110,7 @@ class Session:
     def event(self,kind,**fields):
         self.log.emit(kind,state=self.state,loop=self.loop,active_at=self.now(),**fields)
         if kind in {"state_entry","state_result","retry","pause","resume","reward_verified","camera_calibrated","mission_outcome","run_result",
-                    "camp_return_verified","camp_return_fallback"}:
+                    "camp_return_verified","camp_return_fallback","emergency_stop"}:
             print(f"[{self.loop}:{self.state}] {kind} {fields}",flush=True)
 
     def prepare_macro(self,name):

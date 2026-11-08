@@ -777,5 +777,5 @@ class MissionFlow:
                 except Exception as exc:
                     self.session.event("debug_error",reason=str(exc))
         self.session.event("run_result",status=result.status,reason=result.reason,loops_completed=result.loops_completed,
-                           **self.mission_counts)
+                           stopped=result.stopped,**self.mission_counts)
         return result
