@@ -145,7 +145,8 @@ class LiveSession(Session):
     def __init__(self,config,directory,window):
         # GameWindow configures DPI awareness before PyAutoGUI is imported.
         import pyautogui
-        pyautogui.FAILSAFE,pyautogui.PAUSE = True,0
+        # Mission runs stop through F9/focus guard, not mouse screen corners.
+        pyautogui.FAILSAFE,pyautogui.PAUSE = False,0
         self.window = window
         self.paused_total = 0.0
         self.pause_started = None
