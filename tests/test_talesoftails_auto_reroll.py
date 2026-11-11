@@ -15,8 +15,8 @@ from tailstopia_macro_replay import StopRequested
 
 
 ROOT = Path(__file__).resolve().parents[1]
-GOOD = {"AGI": 8, "CHA": 10, "VIT": 6, "INT": 7, "TAL": 7}
-BAD = {"AGI": 10, "CHA": 5, "VIT": 6, "INT": 4, "TAL": 7}
+GOOD = {"AGI": 8, "CHA": 10}
+BAD = {"AGI": 10, "CHA": 5}
 
 
 class FakeIO:
@@ -69,25 +69,31 @@ class RerollTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             select_game_window([dict(hwnd=1, title="TalesofTails", size=(1920, 1080))], 1)
 
-    def test_all_three_boundaries_required(self):
+    def test_both_boundaries_required(self):
         for values in (GOOD, dict(AGI=9, CHA=11, VIT=6, INT=6, TAL=6),
                        dict(AGI=12, CHA=10, VIT=6, INT=5, TAL=5)):
             self.assertTrue(target_met(values))
         for values in (dict(AGI=7, CHA=10, VIT=7, INT=7, TAL=7),
                        dict(AGI=9, CHA=9, VIT=7, INT=7, TAL=7),
-                       dict(GOOD, INT=6), dict(GOOD, AGI=None), dict(GOOD, AGI=True)):
+                       dict(GOOD, AGI=None), dict(GOOD, AGI=True)):
             self.assertFalse(target_met(values))
 
     def test_old_agi_exact_and_lck_constraints_removed(self):
         self.assertTrue(target_met(dict(GOOD, LCK=None)))
         self.assertNotEqual(GOOD["AGI"], 12)
 
-    def test_unknown_new_required_stats_never_allow_next_roll(self):
-        for name in ("VIT", "INT", "CHA"):
+    def test_unknown_required_stats_never_allow_next_roll(self):
+        for name in ("AGI", "CHA"):
             io = FakeIO()
             with self.subTest(stat=name), self.assertRaisesRegex(RuntimeError, "UNKNOWN"):
                 run(io, fake_reader([dict(GOOD, **{name: None})] * 4), Mock())
             self.assertEqual(io.clicks, 1)
+
+    def test_total_condition_removed_and_other_stats_not_required(self):
+        self.assertEqual(set(STAT_BOXES), {"AGI", "CHA"})
+        self.assertTrue(target_met(GOOD))
+        self.assertTrue(target_met(dict(GOOD, VIT=None, INT=None, TAL=None)))
+        self.assertTrue(target_met(dict(GOOD, VIT=1, INT=1, TAL=1)))
 
     def test_success_requires_two_fresh_reads_and_no_extra_click(self):
         io = FakeIO()
@@ -187,9 +193,7 @@ class NativeReaderTests(unittest.TestCase):
         # Test composition only: real glyphs at the documented client offsets.
         image = Image.new("RGB", (155, 180), "white")
         fixtures = ROOT / "tests/fixtures/stat_new"
-        for name, file in {"AGI": "1_AGI_10.png", "TAL": "1_TAL_7.png",
-                           "VIT": "1_VIT_6.png", "INT": "1_INT_4.png",
-                           "CHA": "1_CHA_5.png"}.items():
+        for name, file in {"AGI": "1_AGI_10.png", "CHA": "1_CHA_5.png"}.items():
             with Image.open(fixtures / file) as crop:
                 image.paste(crop, STAT_BOXES[name][:2])
         with Image.open(fixtures / "random_stats_normal.png") as button:

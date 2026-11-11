@@ -34,15 +34,12 @@ class Settings:
     match_margin: float = 0.12
     agi_cha_min: int = 18
     cha_min: int = 10
-    total_min: int = 38
     max_rolls: int = 0  # 0 = until success or F9.
 
 
 SETTINGS = Settings()
 PANEL_BOX = (590, 200, 745, 380)
-STAT_BOXES = {"AGI": (5, 47, 29, 65), "VIT": (5, 67, 29, 85),
-              "INT": (5, 87, 29, 105), "CHA": (5, 107, 29, 125),
-              "TAL": (5, 127, 29, 145)}
+STAT_BOXES = {"AGI": (5, 47, 29, 65), "CHA": (5, 107, 29, 125)}
 BUTTON_BOX = (67, 162, 143, 172)
 
 
@@ -50,8 +47,7 @@ def target_met(values, settings=SETTINGS):
     if any(type(values.get(k)) is not int for k in STAT_BOXES):
         return False
     pair = values["AGI"] + values["CHA"]
-    return (pair >= settings.agi_cha_min and values["CHA"] >= settings.cha_min
-            and sum(values[k] for k in STAT_BOXES) >= settings.total_min)
+    return pair >= settings.agi_cha_min and values["CHA"] >= settings.cha_min
 
 
 def select_game_window(candidates, foreground, settings=SETTINGS):
@@ -164,7 +160,7 @@ def run(io, reader, log, settings=SETTINGS):
             if known and values == previous:
                 pair = values["AGI"] + values["CHA"]
                 log("verified", roll=roll, values=values, agi_cha=pair,
-                    total=sum(values[k] for k in STAT_BOXES), matched=target_met(values, settings))
+                    matched=target_met(values, settings))
                 if target_met(values, settings):
                     return values
                 break
@@ -245,7 +241,6 @@ def main():
         print(f"Log: {folder.resolve()}")
         print("F8 = focus TalesofTails and start | F9 = EXIT")
         print(f"AGI + CHA >= {SETTINGS.agi_cha_min} AND CHA >= {SETTINGS.cha_min} "
-              f"AND AGI + VIT + TAL + INT + CHA >= {SETTINGS.total_min}; "
               f"wait {SETTINGS.result_wait}s after click")
         log("settings", settings=asdict(SETTINGS))
         while not window.pressed(0x77):
