@@ -15,8 +15,8 @@ from tailstopia_macro_replay import StopRequested
 
 
 ROOT = Path(__file__).resolve().parents[1]
-GOOD = {"AGI": 12, "LCK": 10, "TAL": 8}
-BAD = {"AGI": 10, "LCK": 9, "TAL": 7}
+GOOD = {"AGI": 8, "CHA": 10, "VIT": 6, "INT": 7, "TAL": 7}
+BAD = {"AGI": 10, "CHA": 5, "VIT": 6, "INT": 4, "TAL": 7}
 
 
 class FakeIO:
@@ -69,16 +69,25 @@ class RerollTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             select_game_window([dict(hwnd=1, title="TalesofTails", size=(1920, 1080))], 1)
 
-    def test_both_boundaries_required(self):
-        for values in (GOOD, dict(AGI=12, LCK=9, TAL=9), dict(AGI=12, LCK=9, TAL=10)):
+    def test_all_three_boundaries_required(self):
+        for values in (GOOD, dict(AGI=9, CHA=11, VIT=6, INT=6, TAL=6),
+                       dict(AGI=12, CHA=10, VIT=6, INT=5, TAL=5)):
             self.assertTrue(target_met(values))
-        for values in (dict(AGI=12, LCK=12, TAL=7), dict(AGI=12, LCK=9, TAL=8),
-                       dict(AGI=None, LCK=12, TAL=7), dict(AGI=True, LCK=22, TAL=7)):
+        for values in (dict(AGI=7, CHA=10, VIT=7, INT=7, TAL=7),
+                       dict(AGI=9, CHA=9, VIT=7, INT=7, TAL=7),
+                       dict(GOOD, INT=6), dict(GOOD, AGI=None), dict(GOOD, AGI=True)):
             self.assertFalse(target_met(values))
 
-    def test_agi_must_equal_twelve_even_if_both_sums_pass(self):
-        for agi in (11, 13):
-            self.assertFalse(target_met(dict(AGI=agi, TAL=10, LCK=10)))
+    def test_old_agi_exact_and_lck_constraints_removed(self):
+        self.assertTrue(target_met(dict(GOOD, LCK=None)))
+        self.assertNotEqual(GOOD["AGI"], 12)
+
+    def test_unknown_new_required_stats_never_allow_next_roll(self):
+        for name in ("VIT", "INT", "CHA"):
+            io = FakeIO()
+            with self.subTest(stat=name), self.assertRaisesRegex(RuntimeError, "UNKNOWN"):
+                run(io, fake_reader([dict(GOOD, **{name: None})] * 4), Mock())
+            self.assertEqual(io.clicks, 1)
 
     def test_success_requires_two_fresh_reads_and_no_extra_click(self):
         io = FakeIO()
@@ -174,12 +183,13 @@ class NativeReaderTests(unittest.TestCase):
     def setUpClass(cls):
         cls.reader = Reader(ROOT)
 
-    def panel(self, source="1", lck="9"):
+    def panel(self):
         # Test composition only: real glyphs at the documented client offsets.
         image = Image.new("RGB", (155, 180), "white")
         fixtures = ROOT / "tests/fixtures/stat_new"
         for name, file in {"AGI": "1_AGI_10.png", "TAL": "1_TAL_7.png",
-                           "LCK": f"{source}_LCK_{lck}.png"}.items():
+                           "VIT": "1_VIT_6.png", "INT": "1_INT_4.png",
+                           "CHA": "1_CHA_5.png"}.items():
             with Image.open(fixtures / file) as crop:
                 image.paste(crop, STAT_BOXES[name][:2])
         with Image.open(fixtures / "random_stats_normal.png") as button:
@@ -192,8 +202,8 @@ class NativeReaderTests(unittest.TestCase):
         self.assertGreaterEqual(detail["AGI"]["score"], .97)
 
     def test_previous_holdout_eight_accepted_by_live_profile(self):
-        values, _ = self.reader.read(self.panel("4", "8"))
-        self.assertEqual(values["LCK"], 8)
+        with Image.open(ROOT / "tests/fixtures/stat_new/4_LCK_8.png") as image:
+            self.assertEqual(self.reader.model.read(image).value, 8)
 
     def test_live_failure_eight_is_training_regression_not_holdout(self):
         sample, = load_samples(ROOT / "tests/fixtures/stat_new_live")

@@ -32,25 +32,26 @@ class Settings:
     read_attempts: int = 4  # Re-read only; UNKNOWN never triggers another click.
     match_threshold: float = 0.96  # Live profile; frozen offline benchmark stays 0.97.
     match_margin: float = 0.12
-    agi_exact: int = 12
-    tal_agi_min: int = 20
-    tal_agi_lck_min: int = 30
+    agi_cha_min: int = 18
+    cha_min: int = 10
+    total_min: int = 38
     max_rolls: int = 0  # 0 = until success or F9.
 
 
 SETTINGS = Settings()
 PANEL_BOX = (590, 200, 745, 380)
-STAT_BOXES = {"AGI": (5, 47, 29, 65), "TAL": (5, 127, 29, 145),
-              "LCK": (5, 147, 29, 165)}
+STAT_BOXES = {"AGI": (5, 47, 29, 65), "VIT": (5, 67, 29, 85),
+              "INT": (5, 87, 29, 105), "CHA": (5, 107, 29, 125),
+              "TAL": (5, 127, 29, 145)}
 BUTTON_BOX = (67, 162, 143, 172)
 
 
 def target_met(values, settings=SETTINGS):
     if any(type(values.get(k)) is not int for k in STAT_BOXES):
         return False
-    pair = values["TAL"] + values["AGI"]
-    return (values["AGI"] == settings.agi_exact and pair >= settings.tal_agi_min
-            and pair + values["LCK"] >= settings.tal_agi_lck_min)
+    pair = values["AGI"] + values["CHA"]
+    return (pair >= settings.agi_cha_min and values["CHA"] >= settings.cha_min
+            and sum(values[k] for k in STAT_BOXES) >= settings.total_min)
 
 
 def select_game_window(candidates, foreground, settings=SETTINGS):
@@ -161,9 +162,9 @@ def run(io, reader, log, settings=SETTINGS):
             log("read", roll=roll, attempt=attempt, values=values, predictions=predictions)
             known = all(type(values.get(k)) is int for k in STAT_BOXES)
             if known and values == previous:
-                pair = values["TAL"] + values["AGI"]
-                log("verified", roll=roll, values=values, tal_agi=pair,
-                    tal_agi_lck=pair + values["LCK"], matched=target_met(values, settings))
+                pair = values["AGI"] + values["CHA"]
+                log("verified", roll=roll, values=values, agi_cha=pair,
+                    total=sum(values[k] for k in STAT_BOXES), matched=target_met(values, settings))
                 if target_met(values, settings):
                     return values
                 break
@@ -243,7 +244,9 @@ def main():
 
         print(f"Log: {folder.resolve()}")
         print("F8 = focus TalesofTails and start | F9 = EXIT")
-        print(f"AGI = {SETTINGS.agi_exact} AND TAL + AGI >= {SETTINGS.tal_agi_min} AND TAL + AGI + LCK >= {SETTINGS.tal_agi_lck_min}; wait {SETTINGS.result_wait}s after click")
+        print(f"AGI + CHA >= {SETTINGS.agi_cha_min} AND CHA >= {SETTINGS.cha_min} "
+              f"AND AGI + VIT + TAL + INT + CHA >= {SETTINGS.total_min}; "
+              f"wait {SETTINGS.result_wait}s after click")
         log("settings", settings=asdict(SETTINGS))
         while not window.pressed(0x77):
             if window.pressed(0x78):
