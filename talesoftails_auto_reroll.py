@@ -30,8 +30,8 @@ class Settings:
     result_wait: float = 2.75
     confirmation_wait: float = 0.20
     read_attempts: int = 4  # Re-read only; UNKNOWN never triggers another click.
-    agi_lck_min: int = 23
-    agi_lck_tal_min: int = 30
+    tal_agi_min: int = 20
+    tal_agi_lck_min: int = 30
     max_rolls: int = 0  # 0 = until success or F9.
 
 
@@ -45,8 +45,8 @@ BUTTON_BOX = (67, 162, 143, 172)
 def target_met(values, settings=SETTINGS):
     if any(type(values.get(k)) is not int for k in STAT_BOXES):
         return False
-    pair = values["AGI"] + values["LCK"]
-    return pair >= settings.agi_lck_min and pair + values["TAL"] >= settings.agi_lck_tal_min
+    pair = values["TAL"] + values["AGI"]
+    return pair >= settings.tal_agi_min and pair + values["LCK"] >= settings.tal_agi_lck_min
 
 
 def select_game_window(candidates, foreground, settings=SETTINGS):
@@ -157,9 +157,9 @@ def run(io, reader, log, settings=SETTINGS):
             log("read", roll=roll, attempt=attempt, values=values, predictions=predictions)
             known = all(type(values.get(k)) is int for k in STAT_BOXES)
             if known and values == previous:
-                pair = values["AGI"] + values["LCK"]
-                log("verified", roll=roll, values=values, agi_lck=pair,
-                    agi_lck_tal=pair + values["TAL"], matched=target_met(values, settings))
+                pair = values["TAL"] + values["AGI"]
+                log("verified", roll=roll, values=values, tal_agi=pair,
+                    tal_agi_lck=pair + values["LCK"], matched=target_met(values, settings))
                 if target_met(values, settings):
                     return values
                 break
@@ -239,7 +239,7 @@ def main():
 
         print(f"Log: {folder.resolve()}")
         print("F8 = focus TalesofTails and start | F9 = EXIT")
-        print("AGI + LCK >= 23 AND AGI + LCK + TAL >= 30; wait 2.75s after click")
+        print(f"TAL + AGI >= {SETTINGS.tal_agi_min} AND TAL + AGI + LCK >= {SETTINGS.tal_agi_lck_min}; wait {SETTINGS.result_wait}s after click")
         log("settings", settings=asdict(SETTINGS))
         while not window.pressed(0x77):
             if window.pressed(0x78):

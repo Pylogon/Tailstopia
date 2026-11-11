@@ -12,7 +12,7 @@ from tailstopia_macro_replay import StopRequested
 
 
 ROOT = Path(__file__).resolve().parents[1]
-GOOD = {"AGI": 12, "LCK": 11, "TAL": 7}
+GOOD = {"AGI": 12, "LCK": 10, "TAL": 8}
 BAD = {"AGI": 10, "LCK": 9, "TAL": 7}
 
 
@@ -67,9 +67,9 @@ class RerollTests(unittest.TestCase):
             select_game_window([dict(hwnd=1, title="TalesofTails", size=(1920, 1080))], 1)
 
     def test_both_boundaries_required(self):
-        for values in (GOOD, dict(AGI=11, LCK=12, TAL=7), dict(AGI=12, LCK=12, TAL=6)):
+        for values in (GOOD, dict(AGI=11, LCK=10, TAL=9), dict(AGI=10, LCK=11, TAL=10)):
             self.assertTrue(target_met(values))
-        for values in (dict(AGI=11, LCK=11, TAL=12), dict(AGI=12, LCK=11, TAL=6),
+        for values in (dict(AGI=12, LCK=12, TAL=7), dict(AGI=12, LCK=9, TAL=8),
                        dict(AGI=None, LCK=12, TAL=7), dict(AGI=True, LCK=22, TAL=7)):
             self.assertFalse(target_met(values))
 
