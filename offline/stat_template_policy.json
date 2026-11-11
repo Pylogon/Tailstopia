@@ -1,0 +1,449 @@
+{
+  "algorithm_version": 1,
+  "detector_sha256": "dbff4d4e38e01e2419193eeefa17c5b800a4ad1098ed007c9b55dd86d1caaa00",
+  "development_signature": "3408f533e1d11fc65aacf48989808646ce8d3799be3b7c836b95663d884df206",
+  "methods": {
+    "whole": {
+      "policy": {
+        "threshold": 0.8,
+        "margin": 0.12
+      },
+      "selected": {
+        "threshold": 0.8,
+        "margin": 0.12,
+        "correct": 2,
+        "wrong": 0,
+        "unknown": 6
+      },
+      "grid": [
+        {
+          "threshold": 0.8,
+          "margin": 0.03,
+          "correct": 2,
+          "wrong": 0,
+          "unknown": 6
+        },
+        {
+          "threshold": 0.8,
+          "margin": 0.05,
+          "correct": 2,
+          "wrong": 0,
+          "unknown": 6
+        },
+        {
+          "threshold": 0.8,
+          "margin": 0.08,
+          "correct": 2,
+          "wrong": 0,
+          "unknown": 6
+        },
+        {
+          "threshold": 0.8,
+          "margin": 0.12,
+          "correct": 2,
+          "wrong": 0,
+          "unknown": 6
+        },
+        {
+          "threshold": 0.85,
+          "margin": 0.03,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.85,
+          "margin": 0.05,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.85,
+          "margin": 0.08,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.85,
+          "margin": 0.12,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.9,
+          "margin": 0.03,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.9,
+          "margin": 0.05,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.9,
+          "margin": 0.08,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.9,
+          "margin": 0.12,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.93,
+          "margin": 0.03,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.93,
+          "margin": 0.05,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.93,
+          "margin": 0.08,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.93,
+          "margin": 0.12,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.95,
+          "margin": 0.03,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.95,
+          "margin": 0.05,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.95,
+          "margin": 0.08,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.95,
+          "margin": 0.12,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.97,
+          "margin": 0.03,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.97,
+          "margin": 0.05,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.97,
+          "margin": 0.08,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.97,
+          "margin": 0.12,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.99,
+          "margin": 0.03,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.99,
+          "margin": 0.05,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.99,
+          "margin": 0.08,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.99,
+          "margin": 0.12,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        }
+      ],
+      "supported": [
+        3,
+        5,
+        6,
+        7,
+        11,
+        12
+      ],
+      "training_failures": []
+    },
+    "digit": {
+      "policy": {
+        "threshold": 0.8,
+        "margin": 0.12
+      },
+      "selected": {
+        "threshold": 0.8,
+        "margin": 0.12,
+        "correct": 2,
+        "wrong": 0,
+        "unknown": 6
+      },
+      "grid": [
+        {
+          "threshold": 0.8,
+          "margin": 0.03,
+          "correct": 2,
+          "wrong": 0,
+          "unknown": 6
+        },
+        {
+          "threshold": 0.8,
+          "margin": 0.05,
+          "correct": 2,
+          "wrong": 0,
+          "unknown": 6
+        },
+        {
+          "threshold": 0.8,
+          "margin": 0.08,
+          "correct": 2,
+          "wrong": 0,
+          "unknown": 6
+        },
+        {
+          "threshold": 0.8,
+          "margin": 0.12,
+          "correct": 2,
+          "wrong": 0,
+          "unknown": 6
+        },
+        {
+          "threshold": 0.85,
+          "margin": 0.03,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.85,
+          "margin": 0.05,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.85,
+          "margin": 0.08,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.85,
+          "margin": 0.12,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.9,
+          "margin": 0.03,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.9,
+          "margin": 0.05,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.9,
+          "margin": 0.08,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.9,
+          "margin": 0.12,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.93,
+          "margin": 0.03,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.93,
+          "margin": 0.05,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.93,
+          "margin": 0.08,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.93,
+          "margin": 0.12,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.95,
+          "margin": 0.03,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.95,
+          "margin": 0.05,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.95,
+          "margin": 0.08,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.95,
+          "margin": 0.12,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.97,
+          "margin": 0.03,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.97,
+          "margin": 0.05,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.97,
+          "margin": 0.08,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.97,
+          "margin": 0.12,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.99,
+          "margin": 0.03,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.99,
+          "margin": 0.05,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.99,
+          "margin": 0.08,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        },
+        {
+          "threshold": 0.99,
+          "margin": 0.12,
+          "correct": 0,
+          "wrong": 0,
+          "unknown": 8
+        }
+      ],
+      "supported": [
+        1,
+        2,
+        3,
+        5,
+        6,
+        7
+      ],
+      "training_failures": []
+    }
+  },
+  "selection": "zero false reads in development leave-one-image-out; maximize correct, then stricter policy",
+  "caveat": "Retrospective, tiny two-source corpus; not an independent new-data validation of OCR."
+}

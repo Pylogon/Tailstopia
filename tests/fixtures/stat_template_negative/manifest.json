@@ -1,0 +1,93 @@
+[
+  {
+    "file": "label_INT.png",
+    "value": null,
+    "source": "failure_20261104_negative",
+    "source_sha256": "8cc1cbde1bf7612b39326ae1293cc1657609829eea6989b219f0588b1d409809",
+    "panel_box": [
+      59,
+      10,
+      83,
+      28
+    ],
+    "meaning": "Saved nonnumeric panel crop; source shared with retrospective failure holdout."
+  },
+  {
+    "file": "label_CHA.png",
+    "value": null,
+    "source": "failure_20261104_negative",
+    "source_sha256": "8cc1cbde1bf7612b39326ae1293cc1657609829eea6989b219f0588b1d409809",
+    "panel_box": [
+      59,
+      30,
+      83,
+      48
+    ],
+    "meaning": "Saved nonnumeric panel crop; source shared with retrospective failure holdout."
+  },
+  {
+    "file": "label_TAL.png",
+    "value": null,
+    "source": "failure_20261104_negative",
+    "source_sha256": "8cc1cbde1bf7612b39326ae1293cc1657609829eea6989b219f0588b1d409809",
+    "panel_box": [
+      59,
+      50,
+      83,
+      68
+    ],
+    "meaning": "Saved nonnumeric panel crop; source shared with retrospective failure holdout."
+  },
+  {
+    "file": "icon_top.png",
+    "value": null,
+    "source": "failure_20261104_negative",
+    "source_sha256": "8cc1cbde1bf7612b39326ae1293cc1657609829eea6989b219f0588b1d409809",
+    "panel_box": [
+      29,
+      10,
+      53,
+      28
+    ],
+    "meaning": "Saved nonnumeric panel crop; source shared with retrospective failure holdout."
+  },
+  {
+    "file": "icon_bottom.png",
+    "value": null,
+    "source": "failure_20261104_negative",
+    "source_sha256": "8cc1cbde1bf7612b39326ae1293cc1657609829eea6989b219f0588b1d409809",
+    "panel_box": [
+      29,
+      70,
+      53,
+      88
+    ],
+    "meaning": "Saved nonnumeric panel crop; source shared with retrospective failure holdout."
+  },
+  {
+    "file": "blank_mid.png",
+    "value": null,
+    "source": "failure_20261104_negative",
+    "source_sha256": "8cc1cbde1bf7612b39326ae1293cc1657609829eea6989b219f0588b1d409809",
+    "panel_box": [
+      83,
+      30,
+      107,
+      48
+    ],
+    "meaning": "Saved nonnumeric panel crop; source shared with retrospective failure holdout."
+  },
+  {
+    "file": "blank_bottom.png",
+    "value": null,
+    "source": "failure_20261104_negative",
+    "source_sha256": "8cc1cbde1bf7612b39326ae1293cc1657609829eea6989b219f0588b1d409809",
+    "panel_box": [
+      83,
+      70,
+      107,
+      88
+    ],
+    "meaning": "Saved nonnumeric panel crop; source shared with retrospective failure holdout."
+  }
+]
