@@ -1,0 +1,565 @@
+{
+  "cases": [
+    {
+      "file": "1_ATK_11.png",
+      "value": 11,
+      "source": "1",
+      "split": "development",
+      "stat": "ATK",
+      "desktop_box": [
+        638,
+        302,
+        662,
+        320
+      ],
+      "source_sha256": "819b91f14e01afd878f62c5e7f6784e180272f11020d774382fb32eb56f74a62"
+    },
+    {
+      "file": "1_DEF_4.png",
+      "value": 4,
+      "source": "1",
+      "split": "development",
+      "stat": "DEF",
+      "desktop_box": [
+        638,
+        322,
+        662,
+        340
+      ],
+      "source_sha256": "819b91f14e01afd878f62c5e7f6784e180272f11020d774382fb32eb56f74a62"
+    },
+    {
+      "file": "1_AGI_10.png",
+      "value": 10,
+      "source": "1",
+      "split": "development",
+      "stat": "AGI",
+      "desktop_box": [
+        638,
+        342,
+        662,
+        360
+      ],
+      "source_sha256": "819b91f14e01afd878f62c5e7f6784e180272f11020d774382fb32eb56f74a62"
+    },
+    {
+      "file": "1_VIT_6.png",
+      "value": 6,
+      "source": "1",
+      "split": "development",
+      "stat": "VIT",
+      "desktop_box": [
+        638,
+        362,
+        662,
+        380
+      ],
+      "source_sha256": "819b91f14e01afd878f62c5e7f6784e180272f11020d774382fb32eb56f74a62"
+    },
+    {
+      "file": "1_INT_4.png",
+      "value": 4,
+      "source": "1",
+      "split": "development",
+      "stat": "INT",
+      "desktop_box": [
+        638,
+        382,
+        662,
+        400
+      ],
+      "source_sha256": "819b91f14e01afd878f62c5e7f6784e180272f11020d774382fb32eb56f74a62"
+    },
+    {
+      "file": "1_CHA_5.png",
+      "value": 5,
+      "source": "1",
+      "split": "development",
+      "stat": "CHA",
+      "desktop_box": [
+        638,
+        402,
+        662,
+        420
+      ],
+      "source_sha256": "819b91f14e01afd878f62c5e7f6784e180272f11020d774382fb32eb56f74a62"
+    },
+    {
+      "file": "1_TAL_7.png",
+      "value": 7,
+      "source": "1",
+      "split": "development",
+      "stat": "TAL",
+      "desktop_box": [
+        638,
+        422,
+        662,
+        440
+      ],
+      "source_sha256": "819b91f14e01afd878f62c5e7f6784e180272f11020d774382fb32eb56f74a62"
+    },
+    {
+      "file": "1_LCK_9.png",
+      "value": 9,
+      "source": "1",
+      "split": "development",
+      "stat": "LCK",
+      "desktop_box": [
+        638,
+        442,
+        662,
+        460
+      ],
+      "source_sha256": "819b91f14e01afd878f62c5e7f6784e180272f11020d774382fb32eb56f74a62"
+    },
+    {
+      "file": "2_ATK_7.png",
+      "value": 7,
+      "source": "2",
+      "split": "development",
+      "stat": "ATK",
+      "desktop_box": [
+        638,
+        302,
+        662,
+        320
+      ],
+      "source_sha256": "a2e2a767f030619c1a6dca519d6ccf7e1f41f5a23804af851fbf0ecf5a6d472d"
+    },
+    {
+      "file": "2_DEF_4.png",
+      "value": 4,
+      "source": "2",
+      "split": "development",
+      "stat": "DEF",
+      "desktop_box": [
+        638,
+        322,
+        662,
+        340
+      ],
+      "source_sha256": "a2e2a767f030619c1a6dca519d6ccf7e1f41f5a23804af851fbf0ecf5a6d472d"
+    },
+    {
+      "file": "2_AGI_12.png",
+      "value": 12,
+      "source": "2",
+      "split": "development",
+      "stat": "AGI",
+      "desktop_box": [
+        638,
+        342,
+        662,
+        360
+      ],
+      "source_sha256": "a2e2a767f030619c1a6dca519d6ccf7e1f41f5a23804af851fbf0ecf5a6d472d"
+    },
+    {
+      "file": "2_VIT_6.png",
+      "value": 6,
+      "source": "2",
+      "split": "development",
+      "stat": "VIT",
+      "desktop_box": [
+        638,
+        362,
+        662,
+        380
+      ],
+      "source_sha256": "a2e2a767f030619c1a6dca519d6ccf7e1f41f5a23804af851fbf0ecf5a6d472d"
+    },
+    {
+      "file": "2_INT_4.png",
+      "value": 4,
+      "source": "2",
+      "split": "development",
+      "stat": "INT",
+      "desktop_box": [
+        638,
+        382,
+        662,
+        400
+      ],
+      "source_sha256": "a2e2a767f030619c1a6dca519d6ccf7e1f41f5a23804af851fbf0ecf5a6d472d"
+    },
+    {
+      "file": "2_CHA_6.png",
+      "value": 6,
+      "source": "2",
+      "split": "development",
+      "stat": "CHA",
+      "desktop_box": [
+        638,
+        402,
+        662,
+        420
+      ],
+      "source_sha256": "a2e2a767f030619c1a6dca519d6ccf7e1f41f5a23804af851fbf0ecf5a6d472d"
+    },
+    {
+      "file": "2_TAL_7.png",
+      "value": 7,
+      "source": "2",
+      "split": "development",
+      "stat": "TAL",
+      "desktop_box": [
+        638,
+        422,
+        662,
+        440
+      ],
+      "source_sha256": "a2e2a767f030619c1a6dca519d6ccf7e1f41f5a23804af851fbf0ecf5a6d472d"
+    },
+    {
+      "file": "2_LCK_10.png",
+      "value": 10,
+      "source": "2",
+      "split": "development",
+      "stat": "LCK",
+      "desktop_box": [
+        638,
+        442,
+        662,
+        460
+      ],
+      "source_sha256": "a2e2a767f030619c1a6dca519d6ccf7e1f41f5a23804af851fbf0ecf5a6d472d"
+    },
+    {
+      "file": "3_ATK_9.png",
+      "value": 9,
+      "source": "3",
+      "split": "development",
+      "stat": "ATK",
+      "desktop_box": [
+        638,
+        302,
+        662,
+        320
+      ],
+      "source_sha256": "dd7ddf62adfb201e492a0abb393f2b41d1f479885f0220208a840b84c1afc6dd"
+    },
+    {
+      "file": "3_DEF_5.png",
+      "value": 5,
+      "source": "3",
+      "split": "development",
+      "stat": "DEF",
+      "desktop_box": [
+        638,
+        322,
+        662,
+        340
+      ],
+      "source_sha256": "dd7ddf62adfb201e492a0abb393f2b41d1f479885f0220208a840b84c1afc6dd"
+    },
+    {
+      "file": "3_AGI_11.png",
+      "value": 11,
+      "source": "3",
+      "split": "development",
+      "stat": "AGI",
+      "desktop_box": [
+        638,
+        342,
+        662,
+        360
+      ],
+      "source_sha256": "dd7ddf62adfb201e492a0abb393f2b41d1f479885f0220208a840b84c1afc6dd"
+    },
+    {
+      "file": "3_VIT_6.png",
+      "value": 6,
+      "source": "3",
+      "split": "development",
+      "stat": "VIT",
+      "desktop_box": [
+        638,
+        362,
+        662,
+        380
+      ],
+      "source_sha256": "dd7ddf62adfb201e492a0abb393f2b41d1f479885f0220208a840b84c1afc6dd"
+    },
+    {
+      "file": "3_INT_3.png",
+      "value": 3,
+      "source": "3",
+      "split": "development",
+      "stat": "INT",
+      "desktop_box": [
+        638,
+        382,
+        662,
+        400
+      ],
+      "source_sha256": "dd7ddf62adfb201e492a0abb393f2b41d1f479885f0220208a840b84c1afc6dd"
+    },
+    {
+      "file": "3_CHA_4.png",
+      "value": 4,
+      "source": "3",
+      "split": "development",
+      "stat": "CHA",
+      "desktop_box": [
+        638,
+        402,
+        662,
+        420
+      ],
+      "source_sha256": "dd7ddf62adfb201e492a0abb393f2b41d1f479885f0220208a840b84c1afc6dd"
+    },
+    {
+      "file": "3_TAL_8.png",
+      "value": 8,
+      "source": "3",
+      "split": "development",
+      "stat": "TAL",
+      "desktop_box": [
+        638,
+        422,
+        662,
+        440
+      ],
+      "source_sha256": "dd7ddf62adfb201e492a0abb393f2b41d1f479885f0220208a840b84c1afc6dd"
+    },
+    {
+      "file": "3_LCK_10.png",
+      "value": 10,
+      "source": "3",
+      "split": "development",
+      "stat": "LCK",
+      "desktop_box": [
+        638,
+        442,
+        662,
+        460
+      ],
+      "source_sha256": "dd7ddf62adfb201e492a0abb393f2b41d1f479885f0220208a840b84c1afc6dd"
+    },
+    {
+      "file": "4_ATK_9.png",
+      "value": 9,
+      "source": "4",
+      "split": "evaluation",
+      "stat": "ATK",
+      "desktop_box": [
+        638,
+        302,
+        662,
+        320
+      ],
+      "source_sha256": "1d1cdafccf334fa478bd6cde1c9982cbcf5938b7791af2aba9d4f414d4c10532"
+    },
+    {
+      "file": "4_DEF_4.png",
+      "value": 4,
+      "source": "4",
+      "split": "evaluation",
+      "stat": "DEF",
+      "desktop_box": [
+        638,
+        322,
+        662,
+        340
+      ],
+      "source_sha256": "1d1cdafccf334fa478bd6cde1c9982cbcf5938b7791af2aba9d4f414d4c10532"
+    },
+    {
+      "file": "4_AGI_11.png",
+      "value": 11,
+      "source": "4",
+      "split": "evaluation",
+      "stat": "AGI",
+      "desktop_box": [
+        638,
+        342,
+        662,
+        360
+      ],
+      "source_sha256": "1d1cdafccf334fa478bd6cde1c9982cbcf5938b7791af2aba9d4f414d4c10532"
+    },
+    {
+      "file": "4_VIT_7.png",
+      "value": 7,
+      "source": "4",
+      "split": "evaluation",
+      "stat": "VIT",
+      "desktop_box": [
+        638,
+        362,
+        662,
+        380
+      ],
+      "source_sha256": "1d1cdafccf334fa478bd6cde1c9982cbcf5938b7791af2aba9d4f414d4c10532"
+    },
+    {
+      "file": "4_INT_4.png",
+      "value": 4,
+      "source": "4",
+      "split": "evaluation",
+      "stat": "INT",
+      "desktop_box": [
+        638,
+        382,
+        662,
+        400
+      ],
+      "source_sha256": "1d1cdafccf334fa478bd6cde1c9982cbcf5938b7791af2aba9d4f414d4c10532"
+    },
+    {
+      "file": "4_CHA_6.png",
+      "value": 6,
+      "source": "4",
+      "split": "evaluation",
+      "stat": "CHA",
+      "desktop_box": [
+        638,
+        402,
+        662,
+        420
+      ],
+      "source_sha256": "1d1cdafccf334fa478bd6cde1c9982cbcf5938b7791af2aba9d4f414d4c10532"
+    },
+    {
+      "file": "4_TAL_7.png",
+      "value": 7,
+      "source": "4",
+      "split": "evaluation",
+      "stat": "TAL",
+      "desktop_box": [
+        638,
+        422,
+        662,
+        440
+      ],
+      "source_sha256": "1d1cdafccf334fa478bd6cde1c9982cbcf5938b7791af2aba9d4f414d4c10532"
+    },
+    {
+      "file": "4_LCK_8.png",
+      "value": 8,
+      "source": "4",
+      "split": "evaluation",
+      "stat": "LCK",
+      "desktop_box": [
+        638,
+        442,
+        662,
+        460
+      ],
+      "source_sha256": "1d1cdafccf334fa478bd6cde1c9982cbcf5938b7791af2aba9d4f414d4c10532"
+    },
+    {
+      "file": "5_ATK_9.png",
+      "value": 9,
+      "source": "5",
+      "split": "evaluation",
+      "stat": "ATK",
+      "desktop_box": [
+        638,
+        302,
+        662,
+        320
+      ],
+      "source_sha256": "8ea030ad322094cd8ed2d57407098d906674534de5d5e98f69a15f36be8ad14d"
+    },
+    {
+      "file": "5_DEF_5.png",
+      "value": 5,
+      "source": "5",
+      "split": "evaluation",
+      "stat": "DEF",
+      "desktop_box": [
+        638,
+        322,
+        662,
+        340
+      ],
+      "source_sha256": "8ea030ad322094cd8ed2d57407098d906674534de5d5e98f69a15f36be8ad14d"
+    },
+    {
+      "file": "5_AGI_11.png",
+      "value": 11,
+      "source": "5",
+      "split": "evaluation",
+      "stat": "AGI",
+      "desktop_box": [
+        638,
+        342,
+        662,
+        360
+      ],
+      "source_sha256": "8ea030ad322094cd8ed2d57407098d906674534de5d5e98f69a15f36be8ad14d"
+    },
+    {
+      "file": "5_VIT_5.png",
+      "value": 5,
+      "source": "5",
+      "split": "evaluation",
+      "stat": "VIT",
+      "desktop_box": [
+        638,
+        362,
+        662,
+        380
+      ],
+      "source_sha256": "8ea030ad322094cd8ed2d57407098d906674534de5d5e98f69a15f36be8ad14d"
+    },
+    {
+      "file": "5_INT_3.png",
+      "value": 3,
+      "source": "5",
+      "split": "evaluation",
+      "stat": "INT",
+      "desktop_box": [
+        638,
+        382,
+        662,
+        400
+      ],
+      "source_sha256": "8ea030ad322094cd8ed2d57407098d906674534de5d5e98f69a15f36be8ad14d"
+    },
+    {
+      "file": "5_CHA_5.png",
+      "value": 5,
+      "source": "5",
+      "split": "evaluation",
+      "stat": "CHA",
+      "desktop_box": [
+        638,
+        402,
+        662,
+        420
+      ],
+      "source_sha256": "8ea030ad322094cd8ed2d57407098d906674534de5d5e98f69a15f36be8ad14d"
+    },
+    {
+      "file": "5_TAL_8.png",
+      "value": 8,
+      "source": "5",
+      "split": "evaluation",
+      "stat": "TAL",
+      "desktop_box": [
+        638,
+        422,
+        662,
+        440
+      ],
+      "source_sha256": "8ea030ad322094cd8ed2d57407098d906674534de5d5e98f69a15f36be8ad14d"
+    },
+    {
+      "file": "5_LCK_10.png",
+      "value": 10,
+      "source": "5",
+      "split": "evaluation",
+      "stat": "LCK",
+      "desktop_box": [
+        638,
+        442,
+        662,
+        460
+      ],
+      "source_sha256": "8ea030ad322094cd8ed2d57407098d906674534de5d5e98f69a15f36be8ad14d"
+    }
+  ],
+  "protocol": "Images 1-3 development; 4-5 labels added only after frozen policy. Exclude cross-split pixel duplicates; repeated same-font shapes are not novel fonts."
+}
