@@ -67,11 +67,15 @@ class RerollTests(unittest.TestCase):
             select_game_window([dict(hwnd=1, title="TalesofTails", size=(1920, 1080))], 1)
 
     def test_both_boundaries_required(self):
-        for values in (GOOD, dict(AGI=11, LCK=10, TAL=9), dict(AGI=10, LCK=11, TAL=10)):
+        for values in (GOOD, dict(AGI=12, LCK=9, TAL=9), dict(AGI=12, LCK=9, TAL=10)):
             self.assertTrue(target_met(values))
         for values in (dict(AGI=12, LCK=12, TAL=7), dict(AGI=12, LCK=9, TAL=8),
                        dict(AGI=None, LCK=12, TAL=7), dict(AGI=True, LCK=22, TAL=7)):
             self.assertFalse(target_met(values))
+
+    def test_agi_must_equal_twelve_even_if_both_sums_pass(self):
+        for agi in (11, 13):
+            self.assertFalse(target_met(dict(AGI=agi, TAL=10, LCK=10)))
 
     def test_success_requires_two_fresh_reads_and_no_extra_click(self):
         io = FakeIO()

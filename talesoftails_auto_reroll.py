@@ -30,6 +30,7 @@ class Settings:
     result_wait: float = 2.75
     confirmation_wait: float = 0.20
     read_attempts: int = 4  # Re-read only; UNKNOWN never triggers another click.
+    agi_exact: int = 12
     tal_agi_min: int = 20
     tal_agi_lck_min: int = 30
     max_rolls: int = 0  # 0 = until success or F9.
@@ -46,7 +47,8 @@ def target_met(values, settings=SETTINGS):
     if any(type(values.get(k)) is not int for k in STAT_BOXES):
         return False
     pair = values["TAL"] + values["AGI"]
-    return pair >= settings.tal_agi_min and pair + values["LCK"] >= settings.tal_agi_lck_min
+    return (values["AGI"] == settings.agi_exact and pair >= settings.tal_agi_min
+            and pair + values["LCK"] >= settings.tal_agi_lck_min)
 
 
 def select_game_window(candidates, foreground, settings=SETTINGS):
@@ -239,7 +241,7 @@ def main():
 
         print(f"Log: {folder.resolve()}")
         print("F8 = focus TalesofTails and start | F9 = EXIT")
-        print(f"TAL + AGI >= {SETTINGS.tal_agi_min} AND TAL + AGI + LCK >= {SETTINGS.tal_agi_lck_min}; wait {SETTINGS.result_wait}s after click")
+        print(f"AGI = {SETTINGS.agi_exact} AND TAL + AGI >= {SETTINGS.tal_agi_min} AND TAL + AGI + LCK >= {SETTINGS.tal_agi_lck_min}; wait {SETTINGS.result_wait}s after click")
         log("settings", settings=asdict(SETTINGS))
         while not window.pressed(0x77):
             if window.pressed(0x78):
