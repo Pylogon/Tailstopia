@@ -70,11 +70,11 @@ class RerollTests(unittest.TestCase):
             select_game_window([dict(hwnd=1, title="TalesofTails", size=(1920, 1080))], 1)
 
     def test_both_boundaries_required(self):
-        for values in (GOOD, dict(AGI=9, CHA=11, VIT=6, INT=6, TAL=6),
+        for values in (GOOD, dict(AGI=9, CHA=9), dict(AGI=9, CHA=11, VIT=6, INT=6, TAL=6),
                        dict(AGI=12, CHA=10, VIT=6, INT=5, TAL=5)):
             self.assertTrue(target_met(values))
         for values in (dict(AGI=7, CHA=10, VIT=7, INT=7, TAL=7),
-                       dict(AGI=9, CHA=9, VIT=7, INT=7, TAL=7),
+                       dict(AGI=10, CHA=8), dict(AGI=8, CHA=9),
                        dict(GOOD, AGI=None), dict(GOOD, AGI=True)):
             self.assertFalse(target_met(values))
 

@@ -33,7 +33,7 @@ class Settings:
     match_threshold: float = 0.96  # Live profile; frozen offline benchmark stays 0.97.
     match_margin: float = 0.12
     agi_cha_min: int = 18
-    cha_min: int = 10
+    cha_min: int = 9
     max_rolls: int = 0  # 0 = until success or F9.
 
 
