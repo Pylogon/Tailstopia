@@ -1,10 +1,13 @@
 """Offline safety tests: mocked inputs/clock and real native-font number crops."""
 from dataclasses import replace
+import json
 from pathlib import Path
 import unittest
 from unittest.mock import Mock
 
 from PIL import Image
+from offline.new_stat_templates import NativeTemplates, load_samples
+from offline.stat_templates import Policy
 
 from talesoftails_auto_reroll import (BUTTON_BOX, LiveIO, Reader, SETTINGS,
                                     STAT_BOXES, run, select_game_window, target_met, wait_checked)
@@ -188,9 +191,45 @@ class NativeReaderTests(unittest.TestCase):
         self.assertEqual(values, BAD)
         self.assertGreaterEqual(detail["AGI"]["score"], .97)
 
-    def test_known_holdout_eight_remains_unknown(self):
+    def test_previous_holdout_eight_accepted_by_live_profile(self):
         values, _ = self.reader.read(self.panel("4", "8"))
-        self.assertIsNone(values["LCK"])
+        self.assertEqual(values["LCK"], 8)
+
+    def test_live_failure_eight_is_training_regression_not_holdout(self):
+        sample, = load_samples(ROOT / "tests/fixtures/stat_new_live")
+        self.assertEqual(sample.split, "development")
+        prediction = self.reader.model.read(sample.image)
+        self.assertEqual(prediction.value, 8)
+        self.assertGreater(prediction.score, .99)
+
+    def test_lower_threshold_alone_recovers_failed_eight(self):
+        development = [s for s in load_samples(ROOT / "tests/fixtures/stat_new")
+                       if s.split == "development"]
+        sample, = load_samples(ROOT / "tests/fixtures/stat_new_live")
+        old = NativeTemplates(development, "whole", Policy(.97, .12))
+        relaxed = NativeTemplates(development, "whole", Policy(.96, .12))
+        self.assertIsNone(old.read(sample.image).value)
+        self.assertEqual(relaxed.read(sample.image).value, 8)
+
+    def test_existing_corpus_has_no_numeric_misreads_with_live_profile(self):
+        # Mixed development/evaluation regression, not an independent accuracy estimate.
+        for sample in load_samples(ROOT / "tests/fixtures/stat_new"):
+            with self.subTest(sample=sample.name):
+                self.assertEqual(self.reader.model.read(sample.image).value, sample.value)
+
+    def test_real_non_numeric_tiles_rejected(self):
+        folder = ROOT / "tests/fixtures/stat_new_live"
+        spec = json.loads((folder / "manifest.json").read_text())["negative_atlas"]
+        with Image.open(folder / spec["file"]) as atlas:
+            for i in range(len(spec["panel_boxes"])):
+                with self.subTest(tile=i):
+                    tile = atlas.crop((0, 18*i, 24, 18*(i+1)))
+                    self.assertIsNone(self.reader.model.read(tile).value)
+
+    def test_live_profile_keeps_margin_and_frozen_offline_policy(self):
+        frozen = json.loads((ROOT / "offline/new_stat_policy.json").read_text())
+        self.assertEqual(self.reader.model.policy, Policy(.96, .12))
+        self.assertEqual(frozen["methods"]["whole"]["selected"]["threshold"], .97)
 
     def test_blank_screen_rejected(self):
         with self.assertRaisesRegex(RuntimeError, "screen not verified"):

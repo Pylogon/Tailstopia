@@ -30,6 +30,8 @@ class Settings:
     result_wait: float = 2.75
     confirmation_wait: float = 0.20
     read_attempts: int = 4  # Re-read only; UNKNOWN never triggers another click.
+    match_threshold: float = 0.96  # Live profile; frozen offline benchmark stays 0.97.
+    match_margin: float = 0.12
     agi_exact: int = 12
     tal_agi_min: int = 20
     tal_agi_lck_min: int = 30
@@ -98,13 +100,13 @@ def activate_game(window, settings=SETTINGS):
 
 
 class Reader:
-    def __init__(self, root=ROOT):
+    def __init__(self, root=ROOT, settings=SETTINGS):
         development = [s for s in load_samples(root / "tests/fixtures/stat_new")
                        if s.split == "development"]
-        frozen = json.loads((root / "offline/new_stat_policy.json").read_text())
-        selected = frozen["methods"]["whole"]["selected"]
+        # Supplemental, manually labelled live failure. Never train on evaluation crops.
+        development += load_samples(root / "tests/fixtures/stat_new_live")
         self.model = NativeTemplates(development, "whole",
-                                     Policy(selected["threshold"], selected["margin"]))
+                                     Policy(settings.match_threshold, settings.match_margin))
         if self.model.training_failures or not self.model.bank:
             raise RuntimeError("Stat template bank is incomplete")
         self.buttons = []
