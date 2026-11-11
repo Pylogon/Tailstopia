@@ -15,8 +15,8 @@ from tailstopia_macro_replay import StopRequested
 
 
 ROOT = Path(__file__).resolve().parents[1]
-GOOD = {"AGI": 8, "CHA": 10}
-BAD = {"AGI": 10, "CHA": 5}
+GOOD = {"ATK": 11, "VIT": 6, "AGI": 10}
+BAD = {"ATK": 10, "VIT": 6, "AGI": 10}
 
 
 class FakeIO:
@@ -70,12 +70,10 @@ class RerollTests(unittest.TestCase):
             select_game_window([dict(hwnd=1, title="TalesofTails", size=(1920, 1080))], 1)
 
     def test_both_boundaries_required(self):
-        for values in (GOOD, dict(AGI=9, CHA=9), dict(AGI=9, CHA=11, VIT=6, INT=6, TAL=6),
-                       dict(AGI=12, CHA=10, VIT=6, INT=5, TAL=5)):
+        for values in (GOOD, dict(ATK=12, VIT=6, AGI=9), dict(ATK=11, VIT=5, AGI=11)):
             self.assertTrue(target_met(values))
-        for values in (dict(AGI=7, CHA=10, VIT=7, INT=7, TAL=7),
-                       dict(AGI=10, CHA=8), dict(AGI=8, CHA=9),
-                       dict(GOOD, AGI=None), dict(GOOD, AGI=True)):
+        for values in (dict(ATK=10, VIT=6, AGI=11), dict(ATK=11, VIT=6, AGI=9),
+                       dict(GOOD, ATK=None), dict(GOOD, ATK=True)):
             self.assertFalse(target_met(values))
 
     def test_old_agi_exact_and_lck_constraints_removed(self):
@@ -83,17 +81,17 @@ class RerollTests(unittest.TestCase):
         self.assertNotEqual(GOOD["AGI"], 12)
 
     def test_unknown_required_stats_never_allow_next_roll(self):
-        for name in ("AGI", "CHA"):
+        for name in ("ATK", "VIT", "AGI"):
             io = FakeIO()
             with self.subTest(stat=name), self.assertRaisesRegex(RuntimeError, "UNKNOWN"):
                 run(io, fake_reader([dict(GOOD, **{name: None})] * 4), Mock())
             self.assertEqual(io.clicks, 1)
 
     def test_total_condition_removed_and_other_stats_not_required(self):
-        self.assertEqual(set(STAT_BOXES), {"AGI", "CHA"})
+        self.assertEqual(set(STAT_BOXES), {"ATK", "VIT", "AGI"})
         self.assertTrue(target_met(GOOD))
-        self.assertTrue(target_met(dict(GOOD, VIT=None, INT=None, TAL=None)))
-        self.assertTrue(target_met(dict(GOOD, VIT=1, INT=1, TAL=1)))
+        self.assertTrue(target_met(dict(GOOD, CHA=None, INT=None, TAL=None)))
+        self.assertTrue(target_met(dict(GOOD, CHA=1, INT=1, TAL=1)))
 
     def test_success_requires_two_fresh_reads_and_no_extra_click(self):
         io = FakeIO()
@@ -123,7 +121,7 @@ class RerollTests(unittest.TestCase):
 
     def test_unknown_can_recover_by_reading_only(self):
         io = FakeIO()
-        self.assertEqual(run(io, fake_reader([dict(GOOD, TAL=None), GOOD, GOOD]), Mock()), GOOD)
+        self.assertEqual(run(io, fake_reader([dict(GOOD, VIT=None), GOOD, GOOD]), Mock()), GOOD)
         self.assertEqual(io.clicks, 1)
 
     def test_unverified_ui_never_clicks(self):
@@ -193,7 +191,7 @@ class NativeReaderTests(unittest.TestCase):
         # Test composition only: real glyphs at the documented client offsets.
         image = Image.new("RGB", (155, 180), "white")
         fixtures = ROOT / "tests/fixtures/stat_new"
-        for name, file in {"AGI": "1_AGI_10.png", "CHA": "1_CHA_5.png"}.items():
+        for name, file in {"ATK": "1_ATK_11.png", "VIT": "1_VIT_6.png", "AGI": "1_AGI_10.png"}.items():
             with Image.open(fixtures / file) as crop:
                 image.paste(crop, STAT_BOXES[name][:2])
         with Image.open(fixtures / "random_stats_normal.png") as button:
@@ -202,7 +200,7 @@ class NativeReaderTests(unittest.TestCase):
 
     def test_actual_native_font_crops_and_coordinates(self):
         values, detail = self.reader.read(self.panel())
-        self.assertEqual(values, BAD)
+        self.assertEqual(values, GOOD)
         self.assertGreaterEqual(detail["AGI"]["score"], .97)
 
     def test_previous_holdout_eight_accepted_by_live_profile(self):
