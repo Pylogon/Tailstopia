@@ -7,7 +7,7 @@ from unittest.mock import Mock
 from PIL import Image
 
 from talesoftails_auto_reroll import (BUTTON_BOX, LiveIO, Reader, SETTINGS,
-                                    STAT_BOXES, run, target_met, wait_checked)
+                                    STAT_BOXES, run, select_game_window, target_met, wait_checked)
 from tailstopia_macro_replay import StopRequested
 
 
@@ -43,6 +43,29 @@ def fake_reader(sequence):
 
 
 class RerollTests(unittest.TestCase):
+    def test_focused_game_selected_when_two_clients_match(self):
+        candidates = [dict(hwnd=i, title="TalesofTails", size=(1280, 600)) for i in (1, 2)]
+        self.assertEqual(select_game_window(candidates, 2), 2)
+
+    def test_vscode_title_match_does_not_count_as_game(self):
+        candidates = [dict(hwnd=1, title="TalesofTails", size=(1280, 600)),
+                      dict(hwnd=2, title="TalesofTails - Visual Studio Code", size=(1366, 700))]
+        self.assertEqual(select_game_window(candidates, 2), 1)
+
+    def test_exact_game_title_preferred_over_other_same_size_title(self):
+        candidates = [dict(hwnd=1, title="TalesofTails", size=(1280, 600)),
+                      dict(hwnd=2, title="TalesofTails Launcher", size=(1280, 600))]
+        self.assertEqual(select_game_window(candidates, 3), 1)
+
+    def test_two_unfocused_clients_fail_safely(self):
+        candidates = [dict(hwnd=i, title="TalesofTails", size=(1280, 600)) for i in (1, 2)]
+        with self.assertRaisesRegex(RuntimeError, "Cannot select one"):
+            select_game_window(candidates, 3)
+
+    def test_no_compatible_client_fails_safely(self):
+        with self.assertRaises(RuntimeError):
+            select_game_window([dict(hwnd=1, title="TalesofTails", size=(1920, 1080))], 1)
+
     def test_both_boundaries_required(self):
         for values in (GOOD, dict(AGI=11, LCK=12, TAL=7), dict(AGI=12, LCK=12, TAL=6)):
             self.assertTrue(target_met(values))

@@ -49,6 +49,52 @@ def target_met(values, settings=SETTINGS):
     return pair >= settings.agi_lck_min and pair + values["TAL"] >= settings.agi_lck_tal_min
 
 
+def select_game_window(candidates, foreground, settings=SETTINGS):
+    """Prefer the focused game, never choose arbitrarily between game clients."""
+    eligible = [c for c in candidates if c["size"] == settings.client_size
+                and settings.window_title.casefold() in c["title"].casefold()]
+    focused = [c for c in eligible if c["hwnd"] == foreground]
+    if len(focused) == 1:
+        return focused[0]["hwnd"]
+    exact = [c for c in eligible if c["title"].casefold() == settings.window_title.casefold()]
+    pool = exact or eligible
+    if len(pool) != 1:
+        raise RuntimeError(f"Cannot select one game window: {candidates}. "
+                           "Focus the intended 1280x600 game and press F8 again.")
+    return pool[0]["hwnd"]
+
+
+def activate_game(window, settings=SETTINGS):
+    import ctypes
+    from ctypes import wintypes
+
+    api = window.api
+    foreground = api.GetForegroundWindow()
+    candidates = []
+    @window.callback_type
+    def visit(hwnd, _):
+        if api.IsWindowVisible(hwnd):
+            text = ctypes.create_unicode_buffer(api.GetWindowTextLengthW(hwnd) + 1)
+            api.GetWindowTextW(hwnd, text, len(text))
+            if settings.window_title.casefold() in text.value.casefold():
+                rect = wintypes.RECT()
+                if api.GetClientRect(hwnd, ctypes.byref(rect)):
+                    candidates.append(dict(hwnd=hwnd, title=text.value,
+                                           size=(rect.right, rect.bottom)))
+        return True
+    api.EnumWindows(visit, 0)
+    window.hwnd = select_game_window(candidates, foreground, settings)
+    if api.IsIconic(window.hwnd):
+        api.ShowWindow(window.hwnd, 9)
+    if foreground != window.hwnd:
+        api.SetForegroundWindow(window.hwnd)
+        for _ in range(100):
+            if window.pressed(0x78) or api.GetForegroundWindow() == window.hwnd:
+                break
+            time.sleep(.01)
+    window.check()
+
+
 class Reader:
     def __init__(self, root=ROOT):
         development = [s for s in load_samples(root / "tests/fixtures/stat_new")
@@ -202,7 +248,9 @@ def main():
             time.sleep(.025)
         io = LiveIO(window, pyautogui)
         try:
-            window.activate()
+            log("start_requested", foreground=window.api.GetForegroundWindow())
+            activate_game(window)
+            log("game_selected", hwnd=window.hwnd, geometry=window.geometry())
             values = run(io, reader, log)
             log("success", values=values)
             if io.last_image is not None:
